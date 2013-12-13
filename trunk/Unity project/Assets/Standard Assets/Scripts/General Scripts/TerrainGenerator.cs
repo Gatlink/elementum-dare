@@ -5,21 +5,32 @@ public class TerrainGenerator : MonoBehaviour
 {
 	public string terrainFilePath = @"Assets\HeightMaps\heightMap_1.hmap";
 
-	private const int CUBE_SIZE = 50;
+	private const int CUBE_SIZE = 10;
 
-	private int[,] heightMatrix;
-	private int width;
-	private int length;
+	private int[,] _heightMatrix;
+	private int _width;
+	private int _length;
 
 	// Use this for initialization
 	void Start () 
 	{
-		heightMatrix = BuildMatrixFromTextInput();
+		//Start by reading the whole file
+		string[] lines = System.IO.File.ReadAllLines(terrainFilePath);
 
-		width = heightMatrix.GetLength(0);
-		length = heightMatrix.GetLength(1);
+		//Get the dimensions from the first line
+		if(!ReadMapDimensions(lines, _width, _length))
+		{
+			Debug.Log ("Error reading heightmap dimensions.");
+			System.Environment.Exit(-1);
+		}
 
-		Debug.Log(width + "-" + length);
+		if(!BuildMatrixFromTextInput(lines, _heightMatrix))
+		{
+			Debug.Log ("Error building the heightmap matrix.");
+			System.Environment.Exit(-1);
+		}
+
+		Debug.Log(_width + "-" + _length);
 	}
 	
 	// Update is called once per frame
@@ -28,22 +39,23 @@ public class TerrainGenerator : MonoBehaviour
 	
 	}
 
-	int[,] BuildMatrixFromTextInput ()
+	bool ReadMapDimensions(string[] lines, int width, int length)
 	{
-		int[,] tmpMatrix = {};
+		System.IO.FileStream stream = System.IO.File.OpenRead(terrainFilePath);
+	}
 
-		string[] lines = System.IO.File.ReadAllLines(terrainFilePath);
-		
+	bool BuildMatrixFromTextInput(string[] lines, int[,] matrix)
+	{
 		for( int lineNb = 0;  lineNb < lines.Length; ++lineNb)
 		{
 			string currentLine = lines[lineNb];
 
 			for( int columnNb = 0; columnNb < currentLine.Length; ++columnNb)
 			{
-				tmpMatrix[lineNb, columnNb] = System.Convert.ToInt32(currentLine[columnNb]);
+				matrix[lineNb, columnNb] = System.Convert.ToInt32(currentLine[columnNb]);
 			}
 		}
 
-		return tmpMatrix;
+		return true;
 	}
 }
