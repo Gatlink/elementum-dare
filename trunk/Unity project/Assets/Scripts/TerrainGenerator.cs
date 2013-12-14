@@ -4,35 +4,47 @@ using System.IO;
 
 public class TerrainGenerator : MonoBehaviour 
 {
-	public string terrainFilePath = @"Assets\HeightMaps\heightMap_1.hmap";
+	public string mapFilePath = @"Assets\HeightMaps\heightMap_1.hmap";
 
-	private const int CUBE_SIZE = 10;
+	public Map terrainObject;
+	
+	private const int DIMENSIONS_LINE = 0;
+	private const int SECTIONS_LINE_JUMP = 1;
 
 	private int[,] _heightMatrix;
 	private string[,] _elementsMatrix;
 	private int _width;
 	private int _length;
-
+	
 	// Use this for initialization
 	void Start () 
 	{
-		Debug.Log("STARTING");
+		GenerateMatrixes();
+		ParameterMap();
+		FillMap();		
+	}
+	
+	// Update is called once per frame
+	void Update ()
+	{}
 
-		if (!File.Exists(terrainFilePath))
+	private void GenerateMatrixes()
+	{
+		if (!File.Exists(mapFilePath))
 		{
-			Debug.Log ("File does not exist. [" + terrainFilePath +"]");
+			Debug.Log ("File does not exist. [" + mapFilePath +"]");
 			return;
 		}
-
+		
 		//Start by reading the whole file
-		string[] lines = File.ReadAllLines(terrainFilePath);
-
+		string[] lines = File.ReadAllLines(mapFilePath);
+		
 		if(lines.Length == 0)
 		{
 			Debug.Log ("Heightmap file is empty.");
 			return;
 		}
-
+		
 		//Get the dimensions from the first line
 		if(!ReadMapDimensions(lines, ref _width, ref _length))
 		{
@@ -40,31 +52,27 @@ public class TerrainGenerator : MonoBehaviour
 			return;
 		}
 		
-		Debug.Log(_width + "-" + _length);
-
+		_heightMatrix = new int[_width, _length];
+		_elementsMatrix = new string[_width, _length];
+		
 		if(!BuildHeightMatrix(lines, ref _heightMatrix))
 		{
 			Debug.Log ("Error building the heightmap matrix.");
 			return;
 		}
-
+		
 		if(!BuildElementMatrix(lines, ref _elementsMatrix))
 		{
 			Debug.Log ("Error building the heightmap matrix.");
 			return;
 		}
-
-	}
-	
-	// Update is called once per frame
-	void Update ()
-	{
-	
+		
+		Debug.Log("Terrain matrixes successfully generated.");
 	}
 
 	private bool ReadMapDimensions(string[] lines, ref int width, ref int length)
 	{
-		string dimensions = lines[0];
+		string dimensions = lines[DIMENSIONS_LINE];
 
 		if(dimensions.Length < 3)
 		{
@@ -72,8 +80,16 @@ public class TerrainGenerator : MonoBehaviour
 			return false;
 		}
 
-		width = 8;//System.Convert.ToInt32(new string(dimensions[0]));
-		length = 8;//System.Convert.ToInt32(new string(dimensions[2]));
+		string[] result = dimensions.Split (new char[]{','}, 2, System.StringSplitOptions.RemoveEmptyEntries);
+
+		if(result.Length != 2)
+		{
+			Debug.Log("Dimension's line is ill formated (incorrect number of parameters).");
+			return false;
+		}
+
+		width = System.Convert.ToInt32(result[0]);
+		length = System.Convert.ToInt32(result[1]);
 
 		return true;
 	}
@@ -81,7 +97,7 @@ public class TerrainGenerator : MonoBehaviour
 	private bool BuildHeightMatrix(string[] lines, ref int[,] matrix)
 	{
 		//Skip dimensions line and first line jump
-		int start = 2;
+		int start = DIMENSIONS_LINE + SECTIONS_LINE_JUMP + 1;
 		int end = start + _width;
 
 		if(lines.Length < end)
@@ -92,17 +108,11 @@ public class TerrainGenerator : MonoBehaviour
 
 		for( int lineNb = start;  lineNb < end; ++lineNb)
 		{
-			string currentLine = lines[lineNb];
-
-			if(currentLine.Length < _length)
-			{
-				Debug.Log("Heightmap dimensions do not match dimensions specified in file.");
-				return false;
-			}
+			string[] result = lines[lineNb].Split (new char[]{' '}, _length, System.StringSplitOptions.RemoveEmptyEntries);
 
 			for( int columnNb = 0; columnNb < _length; ++columnNb)
 			{
-				matrix[lineNb, columnNb] = System.Convert.ToInt32(currentLine[columnNb]);
+				matrix[lineNb-start, columnNb] = System.Convert.ToInt32(result[columnNb]);
 			}
 		}
 
@@ -111,6 +121,45 @@ public class TerrainGenerator : MonoBehaviour
 
 	private bool BuildElementMatrix(string[] lines, ref string[,] matrix)
 	{
+		//Skip dimensions line, height map and line jumps
+		int start = DIMENSIONS_LINE + 2*SECTIONS_LINE_JUMP + _width + 1;
+		int end = start + _width;
+
+		if(lines.Length < end)
+		{
+			Debug.Log("Elementstmap dimensions do not match dimensions specified in file.");
+			return false;
+		}
+		
+		for( int lineNb = start;  lineNb < end; ++lineNb)
+		{
+			string[] result = lines[lineNb].Split (new char[]{' '}, _length, System.StringSplitOptions.RemoveEmptyEntries);
+			
+			for( int columnNb = 0; columnNb < _length; ++columnNb)
+			{
+				matrix[lineNb-start, columnNb] = result[columnNb];
+			}
+		}
+
 		return true;
+	}
+
+	private void ParameterMap()
+	{
+		terrainObject.Initialize(_width, _length);
+
+		Debug.Log("Map successfully initialized.");
+	}
+
+	private void FillMap()
+	{
+		for(int x = 0; x < _width; ++x)
+		{
+			for(int y = 0; y < _length; ++y)
+			{
+				for(int count = 0; count < _heightMatrix[x,y] / 10; ++count)
+					terrainObject.InsertBloc(x, y, BlocFactory.CreateBloc());
+			}
+		}
 	}
 }
