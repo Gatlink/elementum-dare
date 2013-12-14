@@ -31,7 +31,11 @@ public class SelectUnit : MonoBehaviour {
 		if (Physics.Raycast(ray, out hit, Mathf.Infinity))
 		{
 			if (Selected != null && hit.collider.CompareTag("Bloc"))
-				Selected.GetComponent<MoveToObject>().enabled = true;
+			{
+				MoveToObject script = Selected.GetComponent<MoveToObject>();
+				script.Target = hit.collider.transform;
+				script.enabled = true;
+			}
 			else if (hit.collider == Selected || !hit.collider.CompareTag("Unit"))
 				Selected = null;
 			else
