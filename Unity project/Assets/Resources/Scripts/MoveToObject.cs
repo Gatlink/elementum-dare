@@ -35,7 +35,9 @@ public class MoveToObject : MonoBehaviour {
 		else if (transform.position != vDest)
 		{
 			// Climb up
-			if (Physics.Raycast(transform.position + _relOriginForwardRay, transform.forward, vDest.magnitude))
+			Debug.DrawRay(transform.position + _relOriginForwardRay, transform.forward * (vDest - transform.position).magnitude, Color.red);
+			if (Physics.Raycast(collider.bounds.center, Vector3.down, 5 + collider.bounds.size.y/2)
+				|| Physics.Raycast(transform.position + _relOriginForwardRay, transform.forward, (vDest - transform.position).magnitude))
 				transform.position = Vector3.MoveTowards(transform.position, transform.position + Vector3.up, MoveSpeed * Time.deltaTime);
 			// Move toward target
 			else
@@ -56,7 +58,7 @@ public class MoveToObject : MonoBehaviour {
 
 		// Compute the ray to check for collision in front of the unit
 		_relOriginForwardRay = collider.bounds.center - transform.position;
-		_relOriginForwardRay.z = _relOriginForwardRay.z + collider.bounds.size.z/2;
+		_relOriginForwardRay.z = _relOriginForwardRay.z - collider.bounds.size.z/2;
 		_relOriginForwardRay.y = _relOriginForwardRay.y - collider.bounds.size.y/2 - 5;
 	}
 
