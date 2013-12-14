@@ -14,7 +14,12 @@ public class BlocFactory
 	{
 		//TODO implement with type and all
 		GameObject bloc = Object.Instantiate(defaultCube) as GameObject;
+
+		bloc.SetActive(true);
 		bloc.name = "Bloc #" + blocID++;
+		bloc.tag = "Untagged";
+		bloc.layer = LayerMask.NameToLayer("Terrain");
+
 		bloc.transform.position = pos;
 		bloc.transform.rotation = Quaternion.identity;
 
@@ -45,7 +50,7 @@ public class BlocFactory
 
 		obj.AddComponent("Bloc");
 
-		obj.isStatic = true;
+		obj.SetActive(false);
 		obj.name = "Default Bloc";
 		obj.tag = "Default Bloc";
 		obj.layer = LayerMask.NameToLayer("Game Start Objects");
