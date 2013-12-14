@@ -32,9 +32,9 @@ public class SelectUnit : MonoBehaviour {
 		{
 			if (Selected != null && hit.collider.CompareTag("Bloc"))
 				Selected.GetComponent<MoveToObject>().enabled = true;
-			else if (hit.collider == Selected)
+			else if (hit.collider == Selected || !hit.collider.CompareTag("Unit"))
 				Selected = null;
-			else if (hit.collider.CompareTag("Unit"))
+			else
 				Selected = hit.collider;
 		}
 	    else
