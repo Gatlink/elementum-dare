@@ -10,17 +10,16 @@ public class BlocFactory
 
 	private static GameObject defaultCube = CreateDefaultCube();
 
-	public static GameObject CreateBloc(Bloc.BlocType type = Bloc.BlocType.TerrainBloc, Vector3 pos = default(Vector3))
+	public static GameObject CreateBloc(Bloc.BlocType type = Bloc.BlocType.TerrainBloc)
 	{
-		//TODO implement with type and all
 		GameObject bloc = Object.Instantiate(defaultCube) as GameObject;
 
 		bloc.SetActive(true);
 		bloc.name = "Bloc #" + blocID++;
-		bloc.tag = "Bloc";
+		bloc.tag = "Untagged";
 		bloc.layer = LayerMask.NameToLayer("Terrain");
 
-		bloc.transform.position = pos;
+		bloc.transform.position = Vector3.zero;
 		bloc.transform.rotation = Quaternion.identity;
 
 		MeshRenderer renderer = bloc.GetComponent("MeshRenderer") as MeshRenderer;
@@ -65,8 +64,8 @@ public class BlocFactory
 		tmpDictionnary.Add(Bloc.BlocType.TerrainBloc, Resources.Load("Mesh/Materials/Bloc_Terre", typeof(Material)) as Material);
 		tmpDictionnary.Add(Bloc.BlocType.Earth, Resources.Load("Mesh/Materials/Bloc_Herbe", typeof(Material)) as Material);
 		tmpDictionnary.Add(Bloc.BlocType.Rock, Resources.Load("Mesh/Materials/Bloc_Pierre", typeof(Material)) as Material);
-		tmpDictionnary.Add(Bloc.BlocType.Ice, Resources.Load("Mesh/Materials/Bloc_Pierre", typeof(Material)) as Material);
-		tmpDictionnary.Add(Bloc.BlocType.Metal, Resources.Load("Mesh/Materials/Bloc_Pierre", typeof(Material)) as Material);
+		tmpDictionnary.Add(Bloc.BlocType.Ice, Resources.Load("Mesh/Materials/Bloc_Glace", typeof(Material)) as Material);
+		tmpDictionnary.Add(Bloc.BlocType.Metal, Resources.Load("Mesh/Materials/Bloc_Metal", typeof(Material)) as Material);
 		tmpDictionnary.Add(Bloc.BlocType.Plant, Resources.Load("Mesh/Materials/Bloc_Plante", typeof(Material)) as Material);
 		tmpDictionnary.Add(Bloc.BlocType.Upgraded_Plant, Resources.Load("Mesh/Materials/Bloc_Plante", typeof(Material)) as Material);
 

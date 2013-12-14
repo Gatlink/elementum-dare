@@ -166,11 +166,14 @@ public class TerrainGenerator : MonoBehaviour
 				}
 
 				Bloc.BlocType type = stringToElementType[_elementsMatrix[x,y]];
-
+				Debug.Log (type.ToString());
 				terrainObject.InsertBloc(x, y, BlocFactory.CreateBloc(type));
+
 				//TODO check for spawn
 			}
 		}
+
+		Debug.Log("Map successfully filled. Map is ready for use.");
 	}
 
 	private static Dictionary<string, Bloc.BlocType> CreateElementsDictionnary()
