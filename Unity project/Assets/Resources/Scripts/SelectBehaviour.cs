@@ -2,8 +2,10 @@
 using System.Collections;
 
 public class SelectBehaviour : MonoBehaviour {
-	public Color DisabledColor = new Color(55,55,55);
-	public Color ActiveColor = new Color(235,235,235);
+	public Color OutlineColor;
+
+	private Shader _selectedShader;
+	private Shader _oldShader;
 
 	private bool _isSelected;
 	public bool IsSelected
@@ -12,12 +14,15 @@ public class SelectBehaviour : MonoBehaviour {
 		set
 		{
 			_isSelected = value;
-			renderer.material.color = value ? ActiveColor : DisabledColor;
+			renderer.material.shader = _isSelected ? _selectedShader : _oldShader;
 		}
 	}
 
 	void Start()
 	{
+		_selectedShader = Shader.Find("Toon/Basic Outline");
+
+		_oldShader = renderer.material.shader;
 		IsSelected = false;
 	}
 
