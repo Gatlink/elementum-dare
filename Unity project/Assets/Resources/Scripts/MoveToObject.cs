@@ -8,6 +8,7 @@ public class MoveToObject : MonoBehaviour {
 	public float RotateStep;
 
 	private Quaternion _rotateTo;
+	private Vector3 _target;
 
 	void Start() {
 		enabled = false;
@@ -15,6 +16,9 @@ public class MoveToObject : MonoBehaviour {
 		Vector3 moveDir = getMoveDirection();
 		_rotateTo = new Quaternion();
 		_rotateTo.SetFromToRotation(transform.forward, moveDir);
+
+		_target = Target.position;
+		_target.y = transform.position.y;
 	}
 
 	void Update() {
@@ -24,7 +28,7 @@ public class MoveToObject : MonoBehaviour {
 		if (transform.rotation != _rotateTo)
 			transform.rotation = Quaternion.Lerp(transform.rotation, _rotateTo, RotateStep * Time.deltaTime);
 		else
-			transform.position = Vector3.MoveTowards(transform.position, Target.position, MoveStep * Time.deltaTime);
+			transform.position = Vector3.MoveTowards(transform.position, _target, MoveStep * Time.deltaTime);
 	}
 
 	private Vector3 getMoveDirection()
