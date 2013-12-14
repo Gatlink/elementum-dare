@@ -3,6 +3,7 @@ using System.Collections;
 
 public class SelectBehaviour : MonoBehaviour {
 	public Color OutlineColor;
+	public float OutlineWidth;
 
 	private Shader _selectedShader;
 	private Shader _oldShader;
@@ -21,6 +22,9 @@ public class SelectBehaviour : MonoBehaviour {
 	void Start()
 	{
 		_selectedShader = Shader.Find("Toon/Basic Outline");
+		OutlineWidth = Mathf.Clamp(OutlineWidth, .002f, .03f);
+		renderer.material.SetColor("_OutlineColor", OutlineColor);
+		renderer.material.SetFloat("_Outline", OutlineWidth);
 
 		_oldShader = renderer.material.shader;
 		IsSelected = false;
