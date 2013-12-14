@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 public class TerrainGenerator : MonoBehaviour 
 {
-	public string mapFilePath = @"Assets\HeightMaps\heightMap_1.hmap";
+	public string mapFilePath = @"Assets\Resources\HeightMaps\heightMap_1.hmap";
 
 	public Map terrainObject;
 	
@@ -15,6 +16,8 @@ public class TerrainGenerator : MonoBehaviour
 	private string[,] _elementsMatrix;
 	private int _width;
 	private int _length;
+
+	private static Dictionary<string, Bloc.BlocType> stringToElementType = CreateElementsDictionnary();
 	
 	// Use this for initialization
 	void Start () 
@@ -157,9 +160,30 @@ public class TerrainGenerator : MonoBehaviour
 		{
 			for(int y = 0; y < _length; ++y)
 			{
-				for(int count = 0; count < _heightMatrix[x,y] / 10; ++count)
+				for(int count = 0; count < (_heightMatrix[x,y] / 10) - 1; ++count)
+				{
 					terrainObject.InsertBloc(x, y, BlocFactory.CreateBloc());
+				}
+
+				Bloc.BlocType type = stringToElementType[_elementsMatrix[x,y]];
+
+				terrainObject.InsertBloc(x, y, BlocFactory.CreateBloc(type));
+				//TODO check for spawn
 			}
 		}
+	}
+
+	private static Dictionary<string, Bloc.BlocType> CreateElementsDictionnary()
+	{
+		Dictionary<string, Bloc.BlocType> tmpDictionnary = new Dictionary<string, Bloc.BlocType>();
+		
+		tmpDictionnary.Add("G", Bloc.BlocType.Earth);
+		tmpDictionnary.Add("R", Bloc.BlocType.Rock);
+		tmpDictionnary.Add("I", Bloc.BlocType.Ice);
+		tmpDictionnary.Add("M", Bloc.BlocType.Metal);
+		tmpDictionnary.Add("P", Bloc.BlocType.Plant);
+		tmpDictionnary.Add("S", Bloc.BlocType.Earth);
+		
+		return tmpDictionnary;
 	}
 }

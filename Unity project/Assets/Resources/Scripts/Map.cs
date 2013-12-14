@@ -46,6 +46,7 @@ public class Map : MonoBehaviour
 
 	public static Vector3 IndexToPosition(int x, int y, int z)
 	{
-		return new Vector3(Bloc.BLOC_SIZE.x * -y, Bloc.BLOC_SIZE.y * z, Bloc.BLOC_SIZE.z * x);
+		Vector3 size = BlocFactory.GetBlocSize();
+		return new Vector3(size.x * -y, size.y * z, size.z * x);
 	}
 }
