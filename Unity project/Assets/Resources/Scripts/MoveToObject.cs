@@ -2,14 +2,23 @@
 using System.Collections;
 
 public class MoveToObject : MonoBehaviour {
-
-	public Transform Target;
+	
 	public float MoveSpeed;
 	public float RotateSpeed;
 
 	private Quaternion _rotateTo;
 	private Vector3 _target;
 	private bool _elevate;
+	
+	public Transform Target
+	{
+		set
+		{
+			_target = value.position;
+			_target.y = transform.position.y;
+			Reset();
+		}
+	}
 
 	void Start() {
 		enabled = false;
@@ -22,7 +31,7 @@ public class MoveToObject : MonoBehaviour {
 			enabled = false;
 
 		if (transform.rotation != _rotateTo)
-			transform.rotation = Quaternion.Lerp(transform.rotation, _rotateTo, RotateSpeed * Time.deltaTime);
+			transform.rotation = Quaternion.RotateTowards(transform.rotation, _rotateTo, RotateSpeed * Time.deltaTime);
 		else if (_elevate)
 		{
 			transform.position = Vector3.MoveTowards(transform.position, transform.position + Vector3.up, MoveSpeed * Time.deltaTime);
@@ -42,20 +51,15 @@ public class MoveToObject : MonoBehaviour {
 		_elevate = false;
 	}
 
-	void Reset()
+	public void Reset()
 	{
 		Vector3 moveDir = getMoveDirection();
-		_rotateTo = new Quaternion();
-		_rotateTo.SetFromToRotation(transform.forward, moveDir);
-		
-		_target = Target.position;
-		_target.y = transform.position.y;
+		_rotateTo = Quaternion.LookRotation(moveDir);
 	}
 
 	private Vector3 getMoveDirection()
 	{
-		Vector3 direction = Target.position - transform.position;
-		direction.y = 0;
+		Vector3 direction = _target - transform.position;
 		return direction.normalized;
 	}
 }
