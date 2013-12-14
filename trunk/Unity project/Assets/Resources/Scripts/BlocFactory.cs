@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Runtime.InteropServices;
 
-public class BlocFactory 
+public class BlocFactory : ScriptableObject
 {
 	private static int blocID = 0;
 
