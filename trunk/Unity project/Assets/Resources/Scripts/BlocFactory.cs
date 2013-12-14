@@ -1,27 +1,74 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
-public class BlocFactory : ScriptableObject
+public class BlocFactory
 {
 	private static int blocID = 0;
 
-	static public GameObject CreateBloc(Vector3 pos = default(Vector3))
+	private static Dictionary<Bloc.BlocType, Material> materialsByType = CreateMaterialsDictionnary();
+
+	private static GameObject defaultCube = CreateDefaultCube();
+
+	public static GameObject CreateBloc(Bloc.BlocType type = Bloc.BlocType.TerrainBloc, Vector3 pos = default(Vector3))
 	{
 		//TODO implement with type and all
-		GameObject bloc = new GameObject("Bloc #" + blocID++);
+		GameObject bloc = Object.Instantiate(defaultCube) as GameObject;
+		bloc.name = "Bloc #" + blocID++;
 		bloc.transform.position = pos;
+		bloc.transform.rotation = Quaternion.identity;
 
-		MeshFilter filter = bloc.AddComponent("Mesh Filter") as MeshFilter;
-		filter.mesh = new Mesh();
-		//filter.mesh.
+		MeshRenderer renderer = bloc.GetComponent("MeshRenderer") as MeshRenderer;
 
-		bloc.AddComponent("Bloc");
+		renderer.material = materialsByType[type];
 
-		BoxCollider hitBox = bloc.collider as BoxCollider;
-		hitBox.center = pos;
-
-		// TODO add a rigidBody?
 		return bloc;
+	}
+
+	private static GameObject CreateDefaultCube()
+	{
+		GameObject obj = Object.Instantiate(Resources.Load("Mesh/Bloc_01")) as GameObject;
+		obj.transform.position = Vector3.zero;
+		obj.transform.rotation = Quaternion.identity;
+
+		MeshCollider col = obj.GetComponent("MeshCollider") as MeshCollider;
+		if(col)
+			Object.DestroyImmediate(col);
+
+		Animator anim = obj.GetComponent("Animator") as Animator;
+		if(anim)
+			Object.DestroyImmediate(anim);
+
+		BoxCollider hitBox = obj.AddComponent("BoxCollider") as BoxCollider;
+		hitBox.transform.parent = obj.transform;
+		hitBox.transform.position = obj.transform.position;
+
+		obj.AddComponent("Bloc");
+
+		obj.name = "Default Cube";
+		obj.tag = "DefaultCube";
+		obj.layer = LayerMask.NameToLayer("Game Start Objects");
+
+		return obj;
+	}
+
+	private static Dictionary<Bloc.BlocType, Material> CreateMaterialsDictionnary()
+	{
+		Dictionary<Bloc.BlocType, Material> tmpDictionnary = new Dictionary<Bloc.BlocType, Material>();
+
+		tmpDictionnary.Add(Bloc.BlocType.TerrainBloc, Resources.Load("Mesh/Materials/Bloc_Terre", typeof(Material)) as Material);
+		tmpDictionnary.Add(Bloc.BlocType.Earth, Resources.Load("Mesh/Materials/Bloc_Herbe", typeof(Material)) as Material);
+		tmpDictionnary.Add(Bloc.BlocType.Rock, Resources.Load("Mesh/Materials/Bloc_Pierre", typeof(Material)) as Material);
+		tmpDictionnary.Add(Bloc.BlocType.Ice, Resources.Load("Mesh/Materials/Bloc_Pierre", typeof(Material)) as Material);
+		tmpDictionnary.Add(Bloc.BlocType.Metal, Resources.Load("Mesh/Materials/Bloc_Pierre", typeof(Material)) as Material);
+		tmpDictionnary.Add(Bloc.BlocType.Plant, Resources.Load("Mesh/Materials/Bloc_Plante", typeof(Material)) as Material);
+
+		return tmpDictionnary;
+	}
+
+	public static Vector3 GetBlocSize()
+	{
+		BoxCollider hitBox = defaultCube.GetComponent("BoxCollider") as BoxCollider;
+		return hitBox.size;
 	}
 }
