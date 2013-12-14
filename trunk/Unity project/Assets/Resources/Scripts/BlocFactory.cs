@@ -45,8 +45,9 @@ public class BlocFactory
 
 		obj.AddComponent("Bloc");
 
-		obj.name = "Default Cube";
-		obj.tag = "DefaultCube";
+		obj.isStatic = true;
+		obj.name = "Default Bloc";
+		obj.tag = "Default Bloc";
 		obj.layer = LayerMask.NameToLayer("Game Start Objects");
 
 		return obj;
@@ -62,6 +63,7 @@ public class BlocFactory
 		tmpDictionnary.Add(Bloc.BlocType.Ice, Resources.Load("Mesh/Materials/Bloc_Pierre", typeof(Material)) as Material);
 		tmpDictionnary.Add(Bloc.BlocType.Metal, Resources.Load("Mesh/Materials/Bloc_Pierre", typeof(Material)) as Material);
 		tmpDictionnary.Add(Bloc.BlocType.Plant, Resources.Load("Mesh/Materials/Bloc_Plante", typeof(Material)) as Material);
+		tmpDictionnary.Add(Bloc.BlocType.Upgraded_Plant, Resources.Load("Mesh/Materials/Bloc_Plante", typeof(Material)) as Material);
 
 		return tmpDictionnary;
 	}

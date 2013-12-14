@@ -10,7 +10,8 @@ public class Bloc : MonoBehaviour
 		Rock,
 		Ice,
 		Metal,
-		Plant
+		Plant, 
+		Upgraded_Plant
 	};
 
 	public static Vector3 BLOC_SIZE;
