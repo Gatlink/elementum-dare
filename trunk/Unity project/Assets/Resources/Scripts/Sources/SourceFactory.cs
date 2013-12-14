@@ -10,7 +10,7 @@ public class SourceFactory
 	private static Dictionary<Source.SourceType, string> scriptTypenameByElementType = CreateScriptTypenamesDisctionnary();
 
 
-	public static GameObject CreateSource(Source.SourceType type, int x = 0, int y = 0, int z = 0)
+	public static GameObject CreateSource(Source.SourceType type)
 	{
 		SourceInfo source = sourceInfoByType[type];
 
@@ -20,10 +20,10 @@ public class SourceFactory
 			return null;
 		}
 
-		Vector3 pos = Map.IndexToPosition(x,y,z);
-
 		//TODO implement with type and all
-		GameObject sourceObj = CreateObjectFromSourceInfo(source, pos);
+		GameObject sourceObj = CreateObjectFromSourceInfo(source);
+		sourceObj.tag = "Source";
+		sourceObj.layer = LayerMask.NameToLayer("Sources");
 
 		if(!sourceObj)
 		{
@@ -39,11 +39,9 @@ public class SourceFactory
 		sourceInfoByType.Add(info.type, info);
 	}
 
-	private static GameObject CreateObjectFromSourceInfo(SourceInfo source, Vector3 pos)
+	private static GameObject CreateObjectFromSourceInfo(SourceInfo source)
 	{
 		GameObject obj = new GameObject(source.type.ToString() + " Source #" + (++sourceID));
-		obj.transform.position = pos;
-		obj.transform.rotation = Quaternion.identity;
 
 		//Need a mesh filter and a mesh renderer for the source's mesh rendering
 		MeshFilter filter = obj.AddComponent("MeshFilter") as MeshFilter;
@@ -54,7 +52,6 @@ public class SourceFactory
 		//Add a box collider
 		BoxCollider hitBox = obj.AddComponent("BoxCollider") as BoxCollider;
 		hitBox.transform.parent = obj.transform;
-		hitBox.transform.position = obj.transform.position;
 
 		//Add proper source script
 		Source script = obj.AddComponent(scriptTypenameByElementType[source.type]) as Source;

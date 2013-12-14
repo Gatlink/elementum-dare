@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class SelectUnit : MonoBehaviour {
-	public static Collider _selected;
+	private static Collider _selected;
 	public static Collider Selected
 	{
 		get { return _selected; }
@@ -20,10 +20,10 @@ public class SelectUnit : MonoBehaviour {
 
 	void Update()
 	{
-		Vector3 mousePos = Input.mousePosition;
-
 		if (!Input.GetMouseButtonDown(0))
 			return;
+
+		Vector3 mousePos = Input.mousePosition;
 
 		RaycastHit hit = new RaycastHit();
 		Ray ray = Camera.main.ScreenPointToRay(mousePos);
