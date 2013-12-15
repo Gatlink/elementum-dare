@@ -18,15 +18,25 @@ public abstract class Source : MonoBehaviour
 	protected int _duration;
 
 	private Bloc _bloc;
-
-	public bool IsOnBloc()
+	public Bloc Bloc
 	{
-		return _bloc != null;
-	}
+		get { return _bloc; }
+		set 
+		{
+			if (_bloc != null)
+				_bloc.ReceiveSource(null);
 
-	public void SetOnBloc(Bloc bloc)
-	{
-		_bloc = bloc;
+			if (value != null)
+			{
+				BlocIndex sourceIndex = value.indexInMap;
+				sourceIndex.z += 1;
+				transform.position = Map.IndexToPosition(sourceIndex);
+				value.ReceiveSource(this);
+				_bloc = value;
+			}
+			else
+				_bloc = null;
+		}
 	}
 
 	public void Initialize(SourceInfo source)

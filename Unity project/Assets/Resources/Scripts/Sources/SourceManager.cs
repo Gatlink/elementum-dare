@@ -13,16 +13,8 @@ public class SourceManager : IManager<Source>, PhaseEventListener
 		if(bloc == null || !bloc.IsReachable())
 			return;
 		
-		BlocIndex sourceIndex = bloc.indexInMap;
-		sourceIndex.z += 1;
-		
-		Vector3 pos = Map.IndexToPosition(sourceIndex);
-		
 		Source source = SourceFactory.CreateSource(type);
-		source.gameObject.transform.position = pos;
-		
-		source.SetOnBloc(bloc);
-		bloc.ReceiveSource(source);
+		source.Bloc = bloc;
 		
 		RegisterElement(source);
 	}

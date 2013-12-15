@@ -10,8 +10,11 @@ class InputDetector : MonoBehaviour
 		if(!Input.anyKeyDown)
 			return;
 
-		if(Input.GetKeyDown(KeyCode.Space))
-			SourceManager.Instance().SpawnSource(Source.GetRandomSourceType());
+		if(Input.GetKeyDown(KeyCode.Space) && Selector.Selected.CompareTag("Unit"))
+		{
+			GetComponent<InputSource>().enabled = true;
+			enabled = false;
+		}
 
 		if(Input.GetKeyDown(KeyCode.Return))
 		{
