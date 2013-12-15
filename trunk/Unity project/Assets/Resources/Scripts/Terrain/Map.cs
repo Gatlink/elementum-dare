@@ -170,6 +170,9 @@ public class Map
 		{
 			for(int y = minY; y <= maxY; ++y)
 			{
+				if(x != index.x && y != index.y)
+					continue;
+
 				Bloc bloc = GetBlocAt(x, y);//get the one on top
 					
 				if(bloc == null)
