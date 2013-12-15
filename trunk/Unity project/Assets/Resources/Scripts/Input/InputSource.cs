@@ -9,14 +9,14 @@ public class InputSource : MonoBehaviour
 
 	void Update()
 	{
-		if (Selector.Selected != null && Selector.Selected.CompareTag("Unit"))
+		if (Selector.HasTargetSelected("Unit"))
 		{
 			Bloc bloc = null;
 			if (_handledSource == null)
 			{
 				Unit unit = Selector.Selected.gameObject.GetComponent<Unit>();
 				bloc = unit.CurrentBloc;
-				_handledSource = SourceFactory.CreateSource(unit.SourceType);
+				_handledSource = SourceManager.Instance().SpawnSource(unit.SourceType);
 			}
 			else
 			{

@@ -10,7 +10,7 @@ class InputDetector : MonoBehaviour
 		if(!Input.anyKeyDown)
 			return;
 
-		if(Input.GetKeyDown(KeyCode.Space) && Selector.Selected.CompareTag("Unit"))
+		if(Input.GetKeyDown(KeyCode.Space) && Selector.HasTargetSelected("Unit"))
 		{
 			GetComponent<InputSource>().enabled = true;
 			enabled = false;

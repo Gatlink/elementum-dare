@@ -3,20 +3,13 @@ using System.Collections.Generic;
 
 public class SourceManager : IManager<Source>, PhaseEventListener
 {
-	public void SpawnSource(Source.SourceType type)
+	public Source SpawnSource(Source.SourceType type)
 	{
-		if(!Selector.HasTargetSelected("Bloc"))
-			return;
-		
-		Bloc bloc = Selector.Selected.gameObject.GetComponent<Bloc>();
-		
-		if(bloc == null || !bloc.IsReachable())
-			return;
-		
 		Source source = SourceFactory.CreateSource(type);
-		source.Bloc = bloc;
 		
 		RegisterElement(source);
+
+		return source;
 	}
 
 	public void onEndPhase(GameTickerEvent e)

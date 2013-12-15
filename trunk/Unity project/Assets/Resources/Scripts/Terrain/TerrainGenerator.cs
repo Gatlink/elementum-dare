@@ -171,7 +171,7 @@ public class TerrainGenerator : MonoBehaviour
 
 				if (_stringToTeams.ContainsKey(key))
 				{
-					Unit unit = UnitFactory.CreateUnit(_stringToTeams[key], "Terre", "Foudre");
+					Unit unit = UnitFactory.CreateUnit(_stringToTeams[key], "Glace", "Lave");
 					unit.MoveToBloc(bloc);
 					unit.FaceYourOpponent();
 				}
