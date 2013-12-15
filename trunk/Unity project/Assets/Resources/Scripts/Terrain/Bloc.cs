@@ -18,6 +18,7 @@ public class Bloc : MonoBehaviour
 	public BlocIndex indexInMap {get; private set;}
 
 	private Source _source;
+	private Unit _unit = null;
 
 	public bool HoldASource()
 	{
@@ -29,7 +30,15 @@ public class Bloc : MonoBehaviour
 		_source = source;
 	}
 
-	public bool HostACharacter {get; set;} //TODO change that
+	public bool HostAUnit()
+	{
+		return _unit != null;
+	}
+
+	public bool WelcomeUnit(Unit unit)
+	{
+		return _unit = unit;
+	}
 
 	public void InsertedAt(BlocIndex pos)
 	{
@@ -41,7 +50,7 @@ public class Bloc : MonoBehaviour
 
 	public bool IsReachable() //TODO déterminer si on passe un Vec3 ou un BlocIndex
 	{
-		if(HoldASource() || HostACharacter)
+		if(HoldASource() || HostAUnit())
 			return false;
 
 		//TODO déterminer si on lui passe le bloc de départ (potentiellement à 2 blocs d'écart, ou juste le bloc adjacent)
