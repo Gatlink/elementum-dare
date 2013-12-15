@@ -18,6 +18,8 @@ public static class UnitFactory
 		// GAMEOBJECT
 		string unitName = string.Format("Unit_{0}_{1}", team, _teamId[team]++);
 		GameObject obj = new GameObject(unitName);
+		obj.tag = "Unit";
+		obj.layer = LayerMask.NameToLayer("Units");
 
 		// MESH
 		string meshPath = string.Format("Mesh/Units/{0}/{0}_{1}", team, bloc);

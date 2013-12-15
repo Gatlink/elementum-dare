@@ -9,5 +9,5 @@ public class LavaSource : Source
 	// Update is called once per frame
 	void Update() {}
 	
-	protected override void RunSource() {}
+	public override void RunSource() {}
 }

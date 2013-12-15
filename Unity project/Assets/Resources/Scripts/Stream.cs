@@ -10,11 +10,11 @@ public class Stream : MonoBehaviour
 		Water
 	}
 
-	private StreamType _type;
+	//private StreamType _type;
 
 	public void Initialize(StreamType type)
 	{
-		_type = type;
+		//_type = type;
 	}
 
 	// Use this for initialization
