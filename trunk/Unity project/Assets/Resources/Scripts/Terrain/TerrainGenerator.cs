@@ -5,7 +5,7 @@ using System.IO;
 
 public class TerrainGenerator : MonoBehaviour 
 {
-	public string mapFilePath = @"Assets\Resources\HeightMaps\heightMap_1.hmap";
+	public string mapFilePath = @"Assets/Resources/HeightMaps/heightMap_1.hmap";
 	
 	private const int DIMENSIONS_LINE = 0;
 	private const int SECTIONS_LINE_JUMP = 1;
