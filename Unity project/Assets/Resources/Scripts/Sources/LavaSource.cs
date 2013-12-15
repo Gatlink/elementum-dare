@@ -23,77 +23,98 @@ public class LavaSource : Source
 
 		List<Bloc> update = new List<Bloc>();
 		update.Add(_bloc);
-		List<Bloc> processed = new List<Bloc>();
 
-		MakeSpread(ref update, ref processed);
+		/*List<Bloc> processedList = */MakeSpread(ref update);
+
+		// KEEP FOR TWEAKING?
+		// Reprocess all first-pass processed blocs for safety
+		// Process them the other way around to balance the streams on the edges
+
+		//processedList.Sort(new BlocRefDelegate(null));
+		//MakeSpread(ref processedList);
 	}
 
 	private List<Bloc> DiscardInvalidNeighbors(Bloc refBloc, ref List<Bloc> neighbors, ref List<Bloc> seen)
 	{
 		List<Bloc> list = new List<Bloc>(neighbors.Except(seen));
 
-		BlocRefDelegate del = new BlocRefDelegate(refBloc);
+		LavaBlocRefDelegate del = new LavaBlocRefDelegate(refBloc);
 		list.RemoveAll(del.BlocIsHigher);
 		list.RemoveAll(del.BlocHasMoreLava);
 		return list;
 	}
 
-	private void MakeSpread(ref List<Bloc> spreadFrom, ref List<Bloc> processed)
+	private List<Bloc> MakeSpread(ref List<Bloc> spreadFrom, List<Bloc> processed = null)
 	{
+		if(processed == null)
+			processed = new List<Bloc>();
+
 		if(spreadFrom.Count == 0)
-			return;
+			return processed;
 
 		List<Bloc> nextRound = new List<Bloc>();
 
 		foreach(Bloc bloc in spreadFrom)
 		{
+			processed.Add(bloc);
+
+			if(bloc.Elements.Lava <= 1)
+				continue;
+
 			List<Bloc> surroundings = Map.FetchNeighbors2D(bloc.indexInMap, 1);
 			
 			List<Bloc> validNeighbors = DiscardInvalidNeighbors(bloc, ref surroundings, ref processed);
-			
-			if(validNeighbors.Count == 0)
+
+			int validated = validNeighbors.Count;
+
+			if(validated == 0)
 			{
 				//check si passe au dessus
+
 				continue;
 			}
-			
-			int denominator = validNeighbors.Count;
-			
+
+			int maxNbOfNeighbors = 4;
+			int oneShare = (int) Mathf.Floor((float) bloc.Elements.Lava / (float)(maxNbOfNeighbors + 1));
+			//int amountToShare = (int) Mathf.Floor((float) denominator * ((float) bloc.Elements.Lava / 5.0f));
+			int amountToShare = validated * oneShare;
+			amountToShare += (maxNbOfNeighbors - validated) * (int) Mathf.Floor(oneShare * 0.5f);
+			//half a share for the invalid neighbors to be redistributed
+
+			int denominator = validated;
 			foreach(Bloc neighbor in validNeighbors)
 			{
-				denominator += Bloc.IsLower(neighbor, bloc) ? 1 : 0 ;
+				denominator += Bloc.IsLower(neighbor, bloc) ? 2 : 0 ;
 			}
-
-			int amountToShare = bloc.Elements.Lava - 1;
 
 			if((amountToShare / denominator) < 1) //not enough to share
 				continue; //skip TODO replace ave les voisins directs
 
 			foreach(Bloc neighbor in validNeighbors)
 			{
-				int share = Bloc.IsLower(neighbor, bloc) ? 2 : 1 ;
+				int share = Bloc.IsLower(neighbor, bloc) ? 3 : 1 ;
 				int amountMoved = (int) Mathf.Round(amountToShare * ((float)share / (float)denominator));
 				neighbor.Elements.Lava += amountMoved;
 				bloc.Elements.Lava -= amountMoved;
-				Debug.Log (amountMoved + " from " + bloc.name + " to " + neighbor.name);
+
+				//Debug.Log (amountMoved + " from " + bloc.name + " to " + neighbor.name);
+
 				if(neighbor.Elements.Lava > 1)
 					nextRound.Add(neighbor);
 			}
-
-			processed.Add(bloc);
 		}
 
-		nextRound.Sort(new BlocRefDelegate(null));
+		nextRound.Sort(new LavaBlocRefDelegate(null));
 
-		MakeSpread(ref nextRound, ref processed);
+		return MakeSpread(ref nextRound, processed);
 	}
 }
 
-class BlocRefDelegate : IComparer<Bloc>
+class LavaBlocRefDelegate : IComparer<Bloc>
 {
 	Bloc _refBloc;
 
-	public BlocRefDelegate( Bloc refBloc )
+	public LavaBlocRefDelegate( Bloc refBloc )
 	{	_refBloc = refBloc;	}
 
 	public bool BlocIsHigher(Bloc bloc)
@@ -108,11 +129,11 @@ class BlocRefDelegate : IComparer<Bloc>
 
 	public int Compare(Bloc left, Bloc right)
 	{
-		if(left.Elements.Lava < right.Elements.Lava)
-			return 1;
-		else if (left.Elements.Lava > right.Elements.Lava)
-			return -1;
+		if(left.Elements.Lava > right.Elements.Lava)
+			return 1; //right goes after left
+		else if (left.Elements.Lava < right.Elements.Lava)
+			return -1; //left goes after right
 		else
-			return 0;
+			return 0; //equal
 	}
 }
