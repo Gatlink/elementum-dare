@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SelectUnit : MonoBehaviour {
+public class Selector : MonoBehaviour {
 	private static Collider _selected;
 	public static Collider Selected
 	{
@@ -16,6 +16,16 @@ public class SelectUnit : MonoBehaviour {
 			if (_selected != null)
 				Selected.SendMessage("Select");
 		}
+	}
+
+	public static string GetSelectedTag()
+	{
+		return Selected ? Selected.tag : "Untagged";
+	}
+
+	public static bool HasTargetSelected(string tag)
+	{
+		return (Selected && Selected.tag == tag);
 	}
 
 	void Update()
@@ -55,9 +65,12 @@ public class SelectUnit : MonoBehaviour {
 						Selected = null;
 				}
 			}
-			else if(tag == "Bloc") //It is a UNIT
+			else if(tag == "Bloc") //It is a BLOC
 			{
-
+				if(Physics.Raycast(ray, out hit, Mathf.Infinity))
+				{
+					Selected = (hit.collider == Selected) ? null : hit.collider;
+				}
 			}
 		}
 		else //nothing selected

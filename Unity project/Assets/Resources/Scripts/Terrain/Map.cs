@@ -2,40 +2,52 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public struct BlocIndex
+{
+	public BlocIndex(int _x, int _y, int _z)
+	{
+		x = _x;
+		y = _y;
+		z = _z;
+	}
+
+	public int x {get; set;}
+	public int y {get; set;}
+	public int z {get; set;}
+}
+
 public class Map : MonoBehaviour 
 {
-	private Stack<GameObject>[,] _internalMap;
+	private Stack<Bloc>[,] _internalMap;
 
 	// Use this for initialization
-	void Start () {
-	
-	}
+	void Start (){}
 	
 	// Update is called once per frame
-	void Update () {
-	
-	}
+	void Update (){}
 
 	public void Initialize(int width, int length)
 	{
-		_internalMap = new Stack<GameObject>[width, length];
+		_internalMap = new Stack<Bloc>[width, length];
 
 		for(int x = 0; x < width; ++x)
 		{
 			for(int y = 0; y < length; ++y)
 			{
-				_internalMap[x,y] = new Stack<GameObject>();
+				_internalMap[x,y] = new Stack<Bloc>();
 			}
 		}
 	}
 
-	public void InsertBloc(int x, int y, GameObject bloc)
+	public void InsertBloc(int x, int y, Bloc bloc)
 	{
 		if(bloc != null)
 		{
+			int z = _internalMap[x,y].Count;
+
+			bloc.InsertedAt(new BlocIndex(x,y,z));
+
 			_internalMap[x,y].Push(bloc);
-			bloc.transform.position = IndexToPosition(x,y,_internalMap[x,y].Count-1);
-			bloc.transform.parent = transform;
 		}
 	}
 
@@ -48,5 +60,10 @@ public class Map : MonoBehaviour
 	{
 		Vector3 size = BlocFactory.GetBlocSize();
 		return new Vector3(size.x * -y, size.y * z, size.z * x);
+	}
+
+	public static Vector3 IndexToPosition(BlocIndex index)
+	{
+		return IndexToPosition(index.x, index.y, index.z);
 	}
 }

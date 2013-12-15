@@ -10,7 +10,7 @@ public class BlocFactory
 
 	private static GameObject defaultCube = CreateDefaultCube();
 
-	public static GameObject CreateBloc(Bloc.BlocType type = Bloc.BlocType.TerrainBloc)
+	public static Bloc CreateBloc(Bloc.BlocType type = Bloc.BlocType.TerrainBloc)
 	{
 		GameObject bloc = Object.Instantiate(defaultCube) as GameObject;
 
@@ -23,10 +23,9 @@ public class BlocFactory
 		bloc.transform.rotation = Quaternion.identity;
 
 		MeshRenderer renderer = bloc.GetComponent("MeshRenderer") as MeshRenderer;
-
 		renderer.material = materialsByType[type];
 
-		return bloc;
+		return bloc.GetComponent<Bloc>();
 	}
 
 	private static GameObject CreateDefaultCube()
@@ -48,6 +47,8 @@ public class BlocFactory
 		hitBox.transform.position = obj.transform.position;
 
 		obj.AddComponent("Bloc");
+
+		obj.AddComponent("Selectable");
 
 		obj.SetActive(false);
 		obj.name = "Default Bloc";

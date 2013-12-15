@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Bloc : MonoBehaviour 
 {
+	public BlocIndex indexInMap {get; set;}
+
 	public enum BlocType
 	{
 		TerrainBloc,
@@ -14,14 +16,15 @@ public class Bloc : MonoBehaviour
 		Upgraded_Plant
 	};
 
-	public static Vector3 BLOC_SIZE;
+	public void InsertedAt(BlocIndex pos)
+	{
+		gameObject.transform.position = Map.IndexToPosition(pos);
+	}
+
 
 	// Use this for initialization
-	void Start () {
-	}
+	void Start() {}
 	
 	// Update is called once per frame
-	void Update () {
-	
-	}
+	void Update() {}
 }
