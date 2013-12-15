@@ -18,29 +18,78 @@ public class Bloc : MonoBehaviour
 	{
 		private Dictionary<Stream.StreamType, int> _state;
 
+		///////////////////////////////////////////////////// WATER
 		public bool IsFlooded
 		{
 			get
 			{ return _state[Stream.StreamType.Water] > 0; }
 		}
+		public int Water
+		{
+			get
+			{ return _state[Stream.StreamType.Water]; }
 
-		public bool IsElectrified {get; set;}
+			set 
+			{ _state[Stream.StreamType.Water] = value; }
+		}
 
+		///////////////////////////////////////////////////// SAND
 		public bool IsQuickSanded
 		{
 			get
 			{ return _state[Stream.StreamType.Sand] > 0; }
 		}
+		public int Sand
+		{
+			get
+			{ return _state[Stream.StreamType.Sand]; }
+			
+			set 
+			{ _state[Stream.StreamType.Sand] = value; }
+		}
 
+		///////////////////////////////////////////////////// LAVA
 		public bool IsUnderLava
 		{
 			get
 			{ return _state[Stream.StreamType.Lava] > 0; }
 		}
+		public int Lava
+		{
+			get
+			{ return _state[Stream.StreamType.Lava]; }
+			
+			set 
+			{  _state[Stream.StreamType.Lava] = value; }
+		}
+
+		///////////////////////////////////////////////////// ELEC & WIND
+		public bool IsElectrified {get; set;}
+		public bool HasWindBlowing {get; set;}
 
 		public bool HasStreamOfType(Stream.StreamType type)
 		{
 			return _state[type] > 0;
+		}
+
+		public Stream.StreamType CurrentType
+		{
+			get
+			{
+				Stream.StreamType t = Stream.StreamType.None;
+				int val = 0;
+
+				foreach(KeyValuePair<Stream.StreamType, int> pair in _state)
+				{
+					if(pair.Value > val)
+					{
+						t = pair.Key;
+						val = pair.Value;
+					}
+				}
+
+				return t;
+			}
 		}
 
 		public ElementsState()
