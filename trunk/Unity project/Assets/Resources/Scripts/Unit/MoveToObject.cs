@@ -4,7 +4,7 @@ using System.Collections;
 public class MoveToObject : MonoBehaviour {
 	
 	public float MoveSpeed = 150;
-	public float RotateSpeed = 200;
+	public float RotateSpeed = 400;
 
 	private Quaternion _rotateTo;
 	private Transform _target = null;
