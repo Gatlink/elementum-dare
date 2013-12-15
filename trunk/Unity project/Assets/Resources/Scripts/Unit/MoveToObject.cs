@@ -50,9 +50,10 @@ public class MoveToObject : MonoBehaviour {
 		else if (transform.position != vDest)
 		{
 			// Climb up
-			Debug.DrawRay(transform.position + _relOriginForwardRay, transform.forward * (vDest - transform.position).magnitude, Color.red);
+			// Debug.DrawRay(collider.bounds.center, Vector3.down * (5 + collider.bounds.size.y/2), Color.red);
+			// Debug.DrawRay(transform.position + _relOriginForwardRay, transform.forward * (vDest - transform.position).magnitude, Color.red);
 			if (Physics.Raycast(collider.bounds.center, Vector3.down, 5 + collider.bounds.size.y/2)
-				|| Physics.Raycast(transform.position + _relOriginForwardRay, transform.forward))
+				|| Physics.Raycast(transform.position + _relOriginForwardRay, transform.forward, (vDest - transform.position).magnitude))
 				transform.position = Vector3.MoveTowards(transform.position, transform.position + Vector3.up, MoveSpeed * Time.deltaTime);
 			// Move toward target
 			else
@@ -65,7 +66,7 @@ public class MoveToObject : MonoBehaviour {
 		else
 		{
 			Bloc dest = Target.gameObject.GetComponent<Bloc>();
-			unit.CurrentBloc = dest;
+			unit.MoveToBloc(dest);
 			enabled = false;
 		}
 	}

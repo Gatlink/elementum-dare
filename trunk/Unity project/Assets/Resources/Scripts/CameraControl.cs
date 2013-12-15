@@ -8,8 +8,6 @@ public class CameraControl : MonoBehaviour
 
 	void Update ()
 	{
-		Debug.DrawRay(Map.Get2DMapCenter(), Vector3.up * 100);
-
 		// TRANSLATION
 		if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
 			transform.position = Vector3.MoveTowards(transform.position, transform.position + transform.right, MoveSpeed * Time.deltaTime);
@@ -28,9 +26,9 @@ public class CameraControl : MonoBehaviour
 
 		// ROTATION
 		if (Input.GetKey(KeyCode.E))
-			RotateAroundMapCenter(-45);
+			RotateAroundMapCenter(-RotationSpeed);
 	    else if (Input.GetKey(KeyCode.A))
-			RotateAroundMapCenter(45);
+			RotateAroundMapCenter(RotationSpeed);
 	}
 
 	private void RotateAroundMapCenter(float angle)
