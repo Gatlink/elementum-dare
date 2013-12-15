@@ -46,6 +46,9 @@ public static class UnitFactory
 		// SELECTABLE
 		obj.AddComponent<Selectable>();
 
-		return obj.AddComponent<Unit>();
+		Unit unit = obj.AddComponent<Unit>();
+		unit.Team = team;
+
+		return unit;
 	}
 }
