@@ -7,14 +7,19 @@ public class MoveToObject : MonoBehaviour {
 	public float RotateSpeed;
 
 	private Quaternion _rotateTo;
-	private Vector3 _target;
+	private Transform _target = null;
 	private Vector3 _relOriginForwardRay;
 	
 	public Transform Target
 	{
+		get
+		{
+			return _target;
+		}
+
 		set
 		{
-			_target = value.position;
+			_target = value;
 			Reset();
 		}
 	}
@@ -26,14 +31,27 @@ public class MoveToObject : MonoBehaviour {
 	}
 
 	void Update() {
-		Vector3 vDest = _target;
+		if(!TargetIsAccessible())
+			return;
+
+		Vector3 vDest = Target.transform.position;
 		vDest.y = transform.position.y;
+
+		Unit unit = gameObject.GetComponent<Unit>();
+		if(unit == null || unit.CurrentBloc == null)
+		{
+			enabled = false;
+			return;
+		}
 
 		// Face the destination
 		if (transform.rotation != _rotateTo)
 			transform.rotation = Quaternion.RotateTowards(transform.rotation, _rotateTo, RotateSpeed * Time.deltaTime);
 		else if (transform.position != vDest)
 		{
+			//Tell the departing bloc it doesn't host a unit anymore
+			unit.CurrentBloc.WelcomeUnit(null);
+
 			// Climb up
 			Debug.DrawRay(transform.position + _relOriginForwardRay, transform.forward * (vDest - transform.position).magnitude, Color.red);
 			if (Physics.Raycast(collider.bounds.center, Vector3.down, 5 + collider.bounds.size.y/2)
@@ -48,7 +66,14 @@ public class MoveToObject : MonoBehaviour {
 			transform.position = Vector3.MoveTowards(transform.position, transform.position + Vector3.down, MoveSpeed * Time.deltaTime);
 		// End of the road
 		else
+		{
+			Bloc dest = Target.gameObject.GetComponent<Bloc>();
+
+			dest.WelcomeUnit(unit);
+			unit.CurrentBloc = dest;
+
 			enabled = false;
+		}
 	}
 
 	public void Reset()
@@ -64,8 +89,19 @@ public class MoveToObject : MonoBehaviour {
 
 	private Vector3 getMoveDirection()
 	{
-		Vector3 direction = _target - transform.position;
+		Vector3 direction = (Target ? Target.transform.position : Vector3.zero) - transform.position;
 		direction.y = 0;
 		return direction.normalized;
+	}
+
+	private bool TargetIsAccessible()
+	{
+		//Assume Target is a Bloc
+		Bloc bloc = Target.GetComponent<Bloc>();
+
+		if(bloc == null)
+			return false;
+
+		return bloc.IsReachable();
 	}
 }
