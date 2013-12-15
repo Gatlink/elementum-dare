@@ -16,6 +16,12 @@ public class Selectable : MonoBehaviour {
 		{
 			_isSelected = value;
 			renderer.material.shader = _isSelected ? _selectedShader : _oldShader;
+
+			if (_isSelected)
+			{
+				renderer.material.SetColor("_OutlineColor", OutlineColor);
+				renderer.material.SetFloat("_Outline", OutlineWidth);
+			}
 		}
 	}
 
@@ -23,8 +29,6 @@ public class Selectable : MonoBehaviour {
 	{
 		_selectedShader = Shader.Find("Toon/Basic Outline");
 		OutlineWidth = Mathf.Clamp(OutlineWidth, .002f, .03f);
-		renderer.material.SetColor("_OutlineColor", OutlineColor);
-		renderer.material.SetFloat("_Outline", OutlineWidth);
 
 		_oldShader = renderer.material.shader;
 		IsSelected = false;

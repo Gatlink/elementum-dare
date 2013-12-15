@@ -11,7 +11,22 @@ public class Unit : MonoBehaviour {
 	public Teams Team = Teams.Totem;
 	public int Hitpoints= 2;
 	public int Moves = 2;
-	public Bloc CurrentBloc {get; set;}
+
+	private Bloc _bloc;
+	public Bloc CurrentBloc
+	{
+		get { return _bloc; }
+		set
+		{
+			if (_bloc != null)
+				_bloc.WelcomeUnit(null);
+
+			_bloc = value;
+
+			if (_bloc != null)
+				_bloc.WelcomeUnit(this);
+		}
+	}
 
 	void Start ()
 	{
@@ -29,7 +44,6 @@ public class Unit : MonoBehaviour {
 		position.y += bloc.collider.bounds.size.y;
 		transform.position = position;
 		CurrentBloc = bloc;
-		bloc.WelcomeUnit(this);
 	}
 
 	public void FaceYourOpponent()
