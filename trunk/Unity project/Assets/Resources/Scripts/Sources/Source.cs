@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class Source : MonoBehaviour, PhaseEventListener
+public abstract class Source : MonoBehaviour
 {
 	public enum SourceType
 	{
@@ -37,25 +37,35 @@ public abstract class Source : MonoBehaviour, PhaseEventListener
 		_duration = source.duration;
 	}
 
-	public void onEndPhase(GameTickerEvent e)
-	{
-		RunSource();
-	}
+	public abstract void RunSource();
 
-	public void onStartNewPhase(GameTickerEvent e)
-	{
-		UpdateSourceState();
-	}
-
-	protected abstract void RunSource();
-
-	protected void UpdateSourceState()
+	public void UpdateSourceState()
 	{
 		--_duration;
 
 		if(_duration == 0)
 		{
+			//Debug.Log ("Dead " + ToString());
+
 			//TODO remove source from game
 		}
+	}
+
+	public static SourceType GetRandomSourceType()
+	{
+		SourceType begin = Source.SourceType.Sand;
+		SourceType end = Source.SourceType.Water;
+
+		float startRange = (int)begin - 0.49f;
+		float endRange = (int)end + 0.49f;
+
+		int rand = (int)System.Math.Round(Random.Range(startRange, endRange));
+
+		return (SourceType) rand;
+	}
+
+	public new string ToString()
+	{
+		return gameObject.name;
 	}
 }

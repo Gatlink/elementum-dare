@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class Bloc : MonoBehaviour 
 {
@@ -14,6 +14,48 @@ public class Bloc : MonoBehaviour
 		Upgraded_Plant
 	};
 
+	public class ElementsState
+	{
+		private Dictionary<Stream.StreamType, int> _state;
+
+		public bool IsFlooded
+		{
+			get
+			{ return _state[Stream.StreamType.Water] > 0; }
+		}
+
+		public bool IsElectrified {get; set;}
+
+		public bool IsQuickSanded
+		{
+			get
+			{ return _state[Stream.StreamType.Sand] > 0; }
+		}
+
+		public bool IsUnderLava
+		{
+			get
+			{ return _state[Stream.StreamType.Lava] > 0; }
+		}
+
+		public bool HasStreamOfType(Stream.StreamType type)
+		{
+			return _state[type] > 0;
+		}
+
+		public ElementsState()
+		{
+			_state = new Dictionary<Stream.StreamType, int>();
+
+			_state.Add(Stream.StreamType.Sand, 0);
+			_state.Add(Stream.StreamType.Lava, 0);
+			_state.Add(Stream.StreamType.Water, 0);
+		}
+	}
+
+	private ElementsState _elements;
+
+	public ElementsState Elements { get{ return _elements; } }
 
 	public BlocIndex indexInMap {get; private set;}
 
@@ -64,7 +106,10 @@ public class Bloc : MonoBehaviour
 	}
 
 	// Use this for initialization
-	void Start() {}
+	void Start()
+	{
+		_elements = new ElementsState();
+	}
 	
 	// Update is called once per frame
 	void Update() {}

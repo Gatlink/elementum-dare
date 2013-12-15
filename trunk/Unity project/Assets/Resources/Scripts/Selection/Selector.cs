@@ -11,7 +11,8 @@ public class Selector : MonoBehaviour {
 			if (_selected != null)
 				Selected.SendMessage("Unselect");
 
-			_selected = value;
+			bool valueIsSelectable = (value != null) && (value.gameObject.GetComponent<Selectable>() != null);
+			_selected = valueIsSelectable? value : null;
 
 			if (_selected != null)
 				Selected.SendMessage("Select");

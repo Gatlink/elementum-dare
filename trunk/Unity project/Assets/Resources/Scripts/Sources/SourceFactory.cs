@@ -9,6 +9,8 @@ public class SourceFactory
 	private static Dictionary<Source.SourceType, SourceInfo> sourceInfoByType = new Dictionary<Source.SourceType, SourceInfo>();
 	private static Dictionary<Source.SourceType, string> scriptTypenameByElementType = CreateScriptTypenamesDisctionnary();
 
+	private static GameObject sourceNode = new GameObject("Sources") ;
+	// Commodity, to assemble all sources under an object's hierarchy node in the editor
 
 	public static Source CreateSource(Source.SourceType type)
 	{
@@ -24,6 +26,7 @@ public class SourceFactory
 		GameObject sourceObj = CreateObjectFromSourceInfo(source);
 		sourceObj.tag = "Source";
 		sourceObj.layer = LayerMask.NameToLayer("Sources");
+		sourceObj.transform.parent = sourceNode.transform;
 
 		if(!sourceObj)
 		{
@@ -41,16 +44,17 @@ public class SourceFactory
 
 	private static GameObject CreateObjectFromSourceInfo(SourceInfo source)
 	{
-		GameObject obj = new GameObject(source.type.ToString() + " Source #" + (++sourceID));
+		GameObject obj = new GameObject(" Source #" + (++sourceID) + " ("+source.type.ToString()+")");
 
 		//Need a mesh filter and a mesh renderer for the source's mesh rendering
 		MeshFilter filter = obj.AddComponent("MeshFilter") as MeshFilter;
 		filter.mesh = Object.Instantiate(source.mesh) as Mesh;
 
-		/*MeshRenderer renderer = */obj.AddComponent("MeshRenderer")/* as MeshRenderer*/;
+		MeshRenderer renderer = obj.AddComponent("MeshRenderer") as MeshRenderer;
+		renderer.material = Object.Instantiate(source.mat) as Material;
 
 		//Add a box collider
-		BoxCollider hitBox = obj.AddComponent("BoxCollider") as BoxCollider;
+		MeshCollider hitBox = obj.AddComponent("MeshCollider") as MeshCollider;
 		hitBox.transform.parent = obj.transform;
 
 		//Add proper source script

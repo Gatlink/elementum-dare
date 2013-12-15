@@ -30,31 +30,28 @@ public class BlocFactory
 
 	private static GameObject CreateDefaultCube()
 	{
-		GameObject obj = Object.Instantiate(Resources.Load("Mesh/Bloc_01")) as GameObject;
+		GameObject obj = new GameObject("Default Bloc");
+		obj.tag = "Default Bloc";
+		obj.layer = LayerMask.NameToLayer("Game Start Objects");
 		obj.transform.position = Vector3.zero;
 		obj.transform.rotation = Quaternion.identity;
+		
+		//Need a mesh filter and a mesh renderer for the bloc's mesh rendering
+		MeshFilter filter = obj.AddComponent("MeshFilter") as MeshFilter;
+		filter.mesh = Resources.Load("Mesh/Bloc_01", typeof(Mesh)) as Mesh;
+		
+		obj.AddComponent("MeshRenderer"); //material set on a per bloc basis
 
-		MeshCollider col = obj.GetComponent("MeshCollider") as MeshCollider;
-		if(col)
-			Object.DestroyImmediate(col);
-
-		Animator anim = obj.GetComponent("Animator") as Animator;
-		if(anim)
-			Object.DestroyImmediate(anim);
-
+		//Set a box collider. Must be done after mesh filter to deduce proper dimensions
 		BoxCollider hitBox = obj.AddComponent("BoxCollider") as BoxCollider;
 		hitBox.transform.parent = obj.transform;
 		hitBox.transform.position = obj.transform.position;
 
 		obj.AddComponent("Bloc");
-
 		obj.AddComponent("Selectable");
-
+		
 		obj.SetActive(false);
-		obj.name = "Default Bloc";
-		obj.tag = "Default Bloc";
-		obj.layer = LayerMask.NameToLayer("Game Start Objects");
-
+		
 		return obj;
 	}
 

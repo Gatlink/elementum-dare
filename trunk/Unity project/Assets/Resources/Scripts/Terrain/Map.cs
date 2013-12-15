@@ -69,7 +69,7 @@ public class Map
 	public static Vector3 IndexToPosition(int x, int y, int z)
 	{
 		Vector3 size = BlocFactory.GetBlocSize();
-		return new Vector3(size.x * -y, size.y * z, size.z * x);
+		return new Vector3(size.x * x, size.y * z, size.z * y);
 	}
 
 	public static Vector3 IndexToPosition(BlocIndex index)
@@ -80,7 +80,7 @@ public class Map
 	public static Vector3 DimensionRatioToPosition(float xRatio, float yRatio)
 	{
 		Vector3 size = BlocFactory.GetBlocSize();
-		return new Vector3(size.x * -yRatio, 0.0f, size.z * xRatio);
+		return new Vector3(size.x * xRatio, 0.0f, size.z * yRatio);
 	}
 
 	public static Vector3 Get2DMapCenter()
