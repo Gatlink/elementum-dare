@@ -21,5 +21,10 @@ class InputDetector : MonoBehaviour
 			GameTicker.EndPhase();
 			GameTicker.StartNewPhase();
 		}
+
+		if(Input.GetKeyDown(KeyCode.LeftControl) && Selector.HasTargetSelected("Bloc"))
+		{
+			Debug.Log(Selector.Selected.gameObject.GetComponent<Bloc>().Elements.ToString());
+		}
 	}
 }
