@@ -9,9 +9,9 @@ public class Unit : MonoBehaviour {
 	}
 
 	public Teams Team = Teams.Totem;
-	public int Dammages = 0;
+	public int Damages = 0;
 	public int Moves = 2;
-	public Bloc CurrentBloc;
+	public Bloc CurrentBloc {get; set;}
 
 	void Start ()
 	{
