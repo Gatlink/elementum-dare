@@ -15,8 +15,12 @@ class InputDetector : MonoBehaviour
 			GetComponent<InputSource>().enabled = true;
 			enabled = false;
 		}
-
-		if(Input.GetKeyDown(KeyCode.Return))
+		else if(Input.GetKeyDown(KeyCode.LeftAlt))
+		{
+			GetComponent<InputBloc>().enabled = true;
+			enabled = false;
+		}
+		else if(Input.GetKeyDown(KeyCode.Return))
 		{
 			GameTicker.EndPhase();
 			GameTicker.StartNewPhase();

@@ -31,7 +31,9 @@ public class Selector : MonoBehaviour {
 
 	void Update()
 	{
-		if (!Input.GetMouseButtonDown(0) || gameObject.GetComponent<InputSource>().enabled)
+		if (!Input.GetMouseButtonDown(0)
+		    || gameObject.GetComponent<InputSource>().enabled
+		    || gameObject.GetComponent<InputBloc>().enabled)
 			return;
 
 		Vector3 mousePos = Input.mousePosition;

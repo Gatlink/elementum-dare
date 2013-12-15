@@ -81,6 +81,8 @@ public class Map
 			bloc.InsertedAt(new BlocIndex(x,y,z));
 
 			_internalMap[x,y].Add(bloc);
+
+			bloc.gameObject.layer = LayerMask.NameToLayer("Terrain");
 		}
 	}
 

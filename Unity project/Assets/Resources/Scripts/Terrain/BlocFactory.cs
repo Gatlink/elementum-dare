@@ -17,7 +17,6 @@ public class BlocFactory
 		bloc.SetActive(true);
 		bloc.name = "Bloc #" + blocID++;
 		bloc.tag = "Bloc";
-		bloc.layer = LayerMask.NameToLayer("Terrain");
 
 		bloc.transform.position = Vector3.zero;
 		bloc.transform.rotation = Quaternion.identity;
