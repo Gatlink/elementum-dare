@@ -35,7 +35,7 @@ public class Unit : MonoBehaviour {
 
 	void Update ()
 	{
-		Debug.DrawRay(transform.position, transform.forward * 10f);
+
 	}
 
 	public void MoveToBloc(Bloc bloc)
