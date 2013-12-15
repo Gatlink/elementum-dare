@@ -173,6 +173,7 @@ public class TerrainGenerator : MonoBehaviour
 				{
 					Unit unit = UnitFactory.CreateUnit(_stringToTeams[key], "Terre", "Foudre");
 					unit.MoveToBloc(bloc);
+					unit.FaceYourOpponent();
 				}
 			}
 		}

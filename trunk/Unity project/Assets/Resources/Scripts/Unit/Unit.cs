@@ -9,27 +9,18 @@ public class Unit : MonoBehaviour {
 	}
 
 	public Teams Team = Teams.Totem;
-	public int Damages = 0;
+	public int Hitpoints= 2;
 	public int Moves = 2;
 	public Bloc CurrentBloc {get; set;}
 
 	void Start ()
 	{
-		// Change default outline color to red if team Monster.
-		// Monsters face left at start, Totems right.
-		if (Team == Teams.Monstre)
-		{
-			GetComponent<Selectable>().OutlineColor = Color.red;
-			transform.rotation.SetFromToRotation(transform.forward, Vector3.left);
-		}
-		else
-			transform.rotation.SetFromToRotation(transform.forward, Vector3.right);
 
 	}
 
 	void Update ()
 	{
-	
+		Debug.DrawRay(transform.position, transform.forward * 10f);
 	}
 
 	public void MoveToBloc(Bloc bloc)
@@ -38,5 +29,15 @@ public class Unit : MonoBehaviour {
 		position.y += bloc.collider.bounds.size.y;
 		transform.position = position;
 		CurrentBloc = bloc;
+		bloc.WelcomeUnit(this);
+	}
+
+	public void FaceYourOpponent()
+	{
+		if (Team == Teams.Monstre)
+		{
+			GetComponent<Selectable>().OutlineColor = Color.red;
+			transform.Rotate(transform.up, 180);
+		}
 	}
 }
