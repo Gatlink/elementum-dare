@@ -15,7 +15,8 @@ public class TerrainGenerator : MonoBehaviour
 	private int _width;
 	private int _length;
 
-	private static Dictionary<string, Bloc.BlocType> stringToElementType = CreateElementsDictionnary();
+	private static Dictionary<string, Bloc.BlocType> _stringToElementType = CreateElementsDictionary();
+	private static Dictionary<string, Unit.Teams> _stringToTeams = CreateTeamsDictionary();
 	
 	// Use this for initialization
 	void Start () 
@@ -162,19 +163,24 @@ public class TerrainGenerator : MonoBehaviour
 				{
 					Map.InsertBloc(x, y, BlocFactory.CreateBloc());
 				}
+				string key = _elementsMatrix[x,y];
+				Bloc.BlocType type = _stringToElementType[key];
 
-				Bloc.BlocType type = stringToElementType[_elementsMatrix[x,y]];
+				Bloc bloc = BlocFactory.CreateBloc(type);
+				Map.InsertBloc(x, y, bloc);
 
-				Map.InsertBloc(x, y, BlocFactory.CreateBloc(type));
-
-				//TODO check for spawn
+				if (_stringToTeams.ContainsKey(key))
+				{
+					Unit unit = UnitFactory.CreateUnit(_stringToTeams[key], "Terre", "Foudre");
+					unit.MoveToBloc(bloc);
+				}
 			}
 		}
 
 		Debug.Log("Map successfully filled. Map is ready for use.");
 	}
 
-	private static Dictionary<string, Bloc.BlocType> CreateElementsDictionnary()
+	private static Dictionary<string, Bloc.BlocType> CreateElementsDictionary()
 	{
 		Dictionary<string, Bloc.BlocType> tmpDictionnary = new Dictionary<string, Bloc.BlocType>();
 		
@@ -183,8 +189,19 @@ public class TerrainGenerator : MonoBehaviour
 		tmpDictionnary.Add("I", Bloc.BlocType.Ice);
 		tmpDictionnary.Add("M", Bloc.BlocType.Metal);
 		tmpDictionnary.Add("P", Bloc.BlocType.Plant);
-		tmpDictionnary.Add("S", Bloc.BlocType.Earth);
+		tmpDictionnary.Add("1", Bloc.BlocType.Earth);
+		tmpDictionnary.Add("2", Bloc.BlocType.Earth);
 		
 		return tmpDictionnary;
+	}
+
+	private static Dictionary<string, Unit.Teams> CreateTeamsDictionary()
+	{
+		var dict = new Dictionary<string, Unit.Teams>();
+
+		dict.Add("1", Unit.Teams.Totem);
+		dict.Add("2", Unit.Teams.Monstre);
+
+		return dict;
 	}
 }
