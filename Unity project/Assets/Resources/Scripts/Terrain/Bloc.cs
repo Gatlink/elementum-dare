@@ -100,6 +100,18 @@ public class Bloc : MonoBehaviour
 			_state.Add(Stream.StreamType.Lava, 0);
 			_state.Add(Stream.StreamType.Water, 0);
 		}
+
+		public new string ToString()
+		{
+			string msg = "ELEMENTS:\n";
+
+			foreach(KeyValuePair<Stream.StreamType, int> pair in _state)
+			{
+				msg += pair.Key.ToString() + " -> " + pair.Value.ToString() + "\n";
+			}
+
+			return msg;
+		}
 	}
 
 	private ElementsState _elements;
@@ -149,9 +161,14 @@ public class Bloc : MonoBehaviour
 		return true;
 	}
 
-	public bool CanTakeFlow()
+	public static bool IsLower(Bloc a, Bloc b)
 	{
-		return !HoldASource();
+		return (a.indexInMap.z < b.indexInMap.z );
+	}
+
+	public static bool IsHigher(Bloc a, Bloc b)
+	{
+		return (a.indexInMap.z > b.indexInMap.z );
 	}
 
 	// Use this for initialization

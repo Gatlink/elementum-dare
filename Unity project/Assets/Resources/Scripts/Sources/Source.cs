@@ -17,7 +17,7 @@ public abstract class Source : MonoBehaviour
 	protected int _generate;
 	protected int _duration;
 
-	private Bloc _bloc;
+	protected Bloc _bloc;
 	public Bloc Bloc
 	{
 		get { return _bloc; }
