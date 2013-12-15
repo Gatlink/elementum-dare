@@ -3,8 +3,8 @@ using System.Collections;
 
 public class MoveToObject : MonoBehaviour {
 	
-	public float MoveSpeed;
-	public float RotateSpeed;
+	public float MoveSpeed = 150;
+	public float RotateSpeed = 200;
 
 	private Quaternion _rotateTo;
 	private Transform _target = null;

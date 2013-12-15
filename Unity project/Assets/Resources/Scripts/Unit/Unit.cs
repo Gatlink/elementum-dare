@@ -5,7 +5,7 @@ public class Unit : MonoBehaviour {
 	public enum Teams
 	{
 		Totem,
-		Monster
+		Monstre
 	}
 
 	public Teams Team = Teams.Totem;
@@ -17,7 +17,7 @@ public class Unit : MonoBehaviour {
 	{
 		// Change default outline color to red if team Monster.
 		// Monsters face left at start, Totems right.
-		if (Team == Teams.Monster)
+		if (Team == Teams.Monstre)
 		{
 			GetComponent<Selectable>().OutlineColor = Color.red;
 			transform.rotation.SetFromToRotation(transform.forward, Vector3.left);
@@ -30,5 +30,13 @@ public class Unit : MonoBehaviour {
 	void Update ()
 	{
 	
+	}
+
+	public void MoveToBloc(Bloc bloc)
+	{
+		Vector3 position = bloc.transform.position;
+		position.y += bloc.collider.bounds.size.y;
+		transform.position = position;
+		CurrentBloc = bloc;
 	}
 }
