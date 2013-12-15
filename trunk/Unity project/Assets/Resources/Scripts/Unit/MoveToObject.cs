@@ -49,9 +49,6 @@ public class MoveToObject : MonoBehaviour {
 			transform.rotation = Quaternion.RotateTowards(transform.rotation, _rotateTo, RotateSpeed * Time.deltaTime);
 		else if (transform.position != vDest)
 		{
-			//Tell the departing bloc it doesn't host a unit anymore
-			unit.CurrentBloc.WelcomeUnit(null);
-
 			// Climb up
 			Debug.DrawRay(transform.position + _relOriginForwardRay, transform.forward * (vDest - transform.position).magnitude, Color.red);
 			if (Physics.Raycast(collider.bounds.center, Vector3.down, 5 + collider.bounds.size.y/2)
@@ -68,10 +65,7 @@ public class MoveToObject : MonoBehaviour {
 		else
 		{
 			Bloc dest = Target.gameObject.GetComponent<Bloc>();
-
-			dest.WelcomeUnit(unit);
 			unit.CurrentBloc = dest;
-
 			enabled = false;
 		}
 	}
