@@ -24,7 +24,7 @@ public class WaterSource : Source
 		List<Bloc> update = new List<Bloc>();
 		update.Add(_bloc);
 		
-		List<Bloc> processedList = MakeSpread(ref update);
+		/*List<Bloc> processedList = */MakeSpread(ref update);
 		
 		// KEEP FOR TWEAKING?
 		// Reprocess all first-pass processed blocs for safety
