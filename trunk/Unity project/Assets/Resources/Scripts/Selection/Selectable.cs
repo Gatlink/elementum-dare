@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SelectBehaviour : MonoBehaviour {
-	public Color OutlineColor;
-	public float OutlineWidth;
+public class Selectable : MonoBehaviour {
+	public Color OutlineColor = Color.green;
+	public float OutlineWidth = .005f;
 
 	private Shader _selectedShader;
 	private Shader _oldShader;
