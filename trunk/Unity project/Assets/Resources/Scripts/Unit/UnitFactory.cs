@@ -25,6 +25,8 @@ public static class UnitFactory
 		string materialPath = string.Format ("Mesh/Materials/{0}_{1}", team, source);
 		MeshRenderer renderer = obj.AddComponent<MeshRenderer>();
 		renderer.material = Resources.Load<Material>(materialPath);
+		string texturePath = string.Format("Texture/Units/{0}/{0}_{1}_DFF", team, source);
+		renderer.material.mainTexture = Resources.Load<Texture>(texturePath);
 
 		// BOX COLLIDER
 		BoxCollider boxCollider = obj.AddComponent<BoxCollider>();
