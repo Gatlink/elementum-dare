@@ -6,8 +6,6 @@ using System.IO;
 public class TerrainGenerator : MonoBehaviour 
 {
 	public string mapFilePath = @"Assets\Resources\HeightMaps\heightMap_1.hmap";
-
-	public Map terrainObject;
 	
 	private const int DIMENSIONS_LINE = 0;
 	private const int SECTIONS_LINE_JUMP = 1;
@@ -149,7 +147,7 @@ public class TerrainGenerator : MonoBehaviour
 
 	private void ParameterMap()
 	{
-		terrainObject.Initialize(_width, _length);
+		Map.Initialize(_width, _length);
 
 		Debug.Log("Map successfully initialized.");
 	}
@@ -162,12 +160,12 @@ public class TerrainGenerator : MonoBehaviour
 			{
 				for(int count = 0; count < (_heightMatrix[x,y] / 10) - 1; ++count)
 				{
-					terrainObject.InsertBloc(x, y, BlocFactory.CreateBloc());
+					Map.InsertBloc(x, y, BlocFactory.CreateBloc());
 				}
 
 				Bloc.BlocType type = stringToElementType[_elementsMatrix[x,y]];
 
-				terrainObject.InsertBloc(x, y, BlocFactory.CreateBloc(type));
+				Map.InsertBloc(x, y, BlocFactory.CreateBloc(type));
 
 				//TODO check for spawn
 			}
