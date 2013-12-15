@@ -55,7 +55,7 @@ public class MoveToObject : MonoBehaviour {
 			// Climb up
 			Debug.DrawRay(transform.position + _relOriginForwardRay, transform.forward * (vDest - transform.position).magnitude, Color.red);
 			if (Physics.Raycast(collider.bounds.center, Vector3.down, 5 + collider.bounds.size.y/2)
-				|| Physics.Raycast(transform.position + _relOriginForwardRay, transform.forward, (vDest - transform.position).magnitude))
+				|| Physics.Raycast(transform.position + _relOriginForwardRay, transform.forward))
 				transform.position = Vector3.MoveTowards(transform.position, transform.position + Vector3.up, MoveSpeed * Time.deltaTime);
 			// Move toward target
 			else
