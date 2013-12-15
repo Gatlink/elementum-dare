@@ -5,6 +5,7 @@ public class Stream : MonoBehaviour
 {
 	public enum StreamType
 	{
+		None,
 		Sand,
 		Lava,
 		Water
