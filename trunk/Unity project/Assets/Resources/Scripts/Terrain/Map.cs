@@ -16,20 +16,24 @@ public struct BlocIndex
 	public int z {get; set;}
 }
 
-public class Map : MonoBehaviour 
+public class Map 
 {
-	private Stack<Bloc>[,] _internalMap;
+	private static Stack<Bloc>[,] _internalMap;
 
-	private int _width;
-	private int _length;
+	private static int _width;
+	private static int _length;
 
-	// Use this for initialization
-	void Start (){}
-	
-	// Update is called once per frame
-	void Update (){}
+	private static GameObject _mapRef = null;
 
-	public void Initialize(int width, int length)
+	public static Transform GetMapRefTransform()
+	{
+		if(_mapRef == null)
+			_mapRef = GameObject.Find("Terrain");
+
+		return _mapRef.transform;
+	}
+
+	public static void Initialize(int width, int length)
 	{
 		_width = width;
 		_length = length;
@@ -45,19 +49,19 @@ public class Map : MonoBehaviour
 		}
 	}
 
-	public void InsertBloc(int x, int y, Bloc bloc)
+	public static void InsertBloc(int x, int y, Bloc bloc)
 	{
 		if(bloc != null)
 		{
 			int z = _internalMap[x,y].Count;
 
-			bloc.InsertedAt(new BlocIndex(x,y,z), this);
+			bloc.InsertedAt(new BlocIndex(x,y,z));
 
 			_internalMap[x,y].Push(bloc);
 		}
 	}
 
-	public void RemoveBloc(int x, int y)
+	public static void RemoveBloc(int x, int y)
 	{
 		//TODO pop bloc and remove from parenting hierarchy
 	}
@@ -79,7 +83,7 @@ public class Map : MonoBehaviour
 		return new Vector3(size.x * -yRatio, 0.0f, size.z * xRatio);
 	}
 
-	public Vector3 Get2DMapCenter()
+	public static Vector3 Get2DMapCenter()
 	{
 		return DimensionRatioToPosition(_width * 0.5f, _length * 0.5f); 
 	}

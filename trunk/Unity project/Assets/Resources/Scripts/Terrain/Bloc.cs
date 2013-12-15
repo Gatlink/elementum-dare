@@ -31,12 +31,12 @@ public class Bloc : MonoBehaviour
 
 	public bool HostACharacter {get; set;} //TODO change that
 
-	public void InsertedAt(BlocIndex pos, Map map)
+	public void InsertedAt(BlocIndex pos)
 	{
 		indexInMap = pos;
 
 		gameObject.transform.position = Map.IndexToPosition(pos);
-		gameObject.transform.parent = map.transform;
+		gameObject.transform.parent = Map.GetMapRefTransform();
 	}
 
 	public bool IsReachable() //TODO déterminer si on passe un Vec3 ou un BlocIndex
