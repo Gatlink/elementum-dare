@@ -4,17 +4,12 @@ using System.Collections.Generic;
 
 public static class UnitFactory
 {
-	private static Dictionary<Unit.Teams, int> _teamId = null;
+	private static Dictionary<Unit.ETeam, int> _teamId = InitTeamIds();
+	private static Dictionary<string, Source.SourceType> _sourceTypes = InitSourceTypes();
+	private static Dictionary<string, Bloc.BlocType> _blocTypes = InitBlocTypes();
 
-	public static Unit CreateUnit(Unit.Teams team, string bloc, string source)
+	public static Unit CreateUnit(Unit.ETeam team, string bloc, string source)
 	{
-		if (_teamId == null)
-		{
-			_teamId = new Dictionary<Unit.Teams, int>();
-			_teamId.Add(Unit.Teams.Monstre, 1);
-			_teamId.Add(Unit.Teams.Totem, 1);
-		}
-
 		// GAMEOBJECT
 		string unitName = string.Format("Unit_{0}_{1}", team, _teamId[team]++);
 		GameObject obj = new GameObject(unitName);
@@ -48,7 +43,45 @@ public static class UnitFactory
 
 		Unit unit = obj.AddComponent<Unit>();
 		unit.Team = team;
+		unit.BlocType = _blocTypes[bloc];
+		unit.SourceType = _sourceTypes[source];
 
 		return unit;
+	}
+
+	private static Dictionary<Unit.ETeam, int> InitTeamIds()
+	{
+		var dict = new Dictionary<Unit.ETeam, int>();
+
+		dict.Add(Unit.ETeam.Monstre, 1);
+		dict.Add(Unit.ETeam.Totem, 1);
+
+		return dict;
+	}
+
+	private static Dictionary<string, Source.SourceType> InitSourceTypes()
+	{
+		var dict = new Dictionary<string, Source.SourceType>();
+
+		dict.Add("Foudre", Source.SourceType.Electricity);
+		dict.Add("Lave", Source.SourceType.Lava);
+		dict.Add("Sable", Source.SourceType.Sand);
+		dict.Add("Eau", Source.SourceType.Water);
+		dict.Add("Vent", Source.SourceType.Wind);
+
+		return dict;
+	}
+
+	private static Dictionary<string, Bloc.BlocType> InitBlocTypes()
+	{
+		var dict = new Dictionary<string, Bloc.BlocType>();
+		
+		dict.Add("Terre", Bloc.BlocType.Earth);
+		dict.Add("Glace", Bloc.BlocType.Ice);
+		dict.Add("Metal", Bloc.BlocType.Metal);
+		dict.Add("Plante", Bloc.BlocType.Plant);
+		dict.Add("Pierre", Bloc.BlocType.Rock);
+		
+		return dict;
 	}
 }

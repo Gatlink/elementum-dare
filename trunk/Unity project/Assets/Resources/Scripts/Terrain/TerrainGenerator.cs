@@ -16,7 +16,7 @@ public class TerrainGenerator : MonoBehaviour
 	private int _length;
 
 	private static Dictionary<string, Bloc.BlocType> _stringToElementType = CreateElementsDictionary();
-	private static Dictionary<string, Unit.Teams> _stringToTeams = CreateTeamsDictionary();
+	private static Dictionary<string, Unit.ETeam> _stringToTeams = CreateTeamsDictionary();
 	
 	// Use this for initialization
 	void Start () 
@@ -196,12 +196,12 @@ public class TerrainGenerator : MonoBehaviour
 		return tmpDictionnary;
 	}
 
-	private static Dictionary<string, Unit.Teams> CreateTeamsDictionary()
+	private static Dictionary<string, Unit.ETeam> CreateTeamsDictionary()
 	{
-		var dict = new Dictionary<string, Unit.Teams>();
+		var dict = new Dictionary<string, Unit.ETeam>();
 
-		dict.Add("1", Unit.Teams.Totem);
-		dict.Add("2", Unit.Teams.Monstre);
+		dict.Add("1", Unit.ETeam.Totem);
+		dict.Add("2", Unit.ETeam.Monstre);
 
 		return dict;
 	}

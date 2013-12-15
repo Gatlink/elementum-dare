@@ -2,15 +2,17 @@
 using System.Collections;
 
 public class Unit : MonoBehaviour {
-	public enum Teams
+	public enum ETeam
 	{
 		Totem,
 		Monstre
 	}
 
-	public Teams Team = Teams.Totem;
+	public ETeam Team = ETeam.Totem;
 	public int Hitpoints= 2;
 	public int Moves = 2;
+	public Source.SourceType SourceType;
+	public Bloc.BlocType BlocType;
 
 	private Bloc _bloc;
 	public Bloc CurrentBloc
@@ -40,18 +42,23 @@ public class Unit : MonoBehaviour {
 
 	public void MoveToBloc(Bloc bloc)
 	{
-		Vector3 position = bloc.transform.position;
-		position.y += bloc.collider.bounds.size.y;
-		transform.position = position;
+		BlocIndex positionIndex = bloc.indexInMap;
+		positionIndex.z += 1;
+		transform.position = Map.IndexToPosition(positionIndex);
 		CurrentBloc = bloc;
 	}
 
 	public void FaceYourOpponent()
 	{
-		if (Team == Teams.Monstre)
+		if (Team == ETeam.Monstre)
 		{
 			GetComponent<Selectable>().OutlineColor = Color.red;
 			transform.Rotate(transform.up, 180);
 		}
+	}
+
+	public void CreateSource(Bloc target)
+	{
+		SourceManager.Instance().SpawnSource(SourceType);
 	}
 }

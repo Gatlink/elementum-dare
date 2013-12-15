@@ -31,7 +31,7 @@ public class Selector : MonoBehaviour {
 
 	void Update()
 	{
-		if (!Input.GetMouseButtonDown(0))
+		if (!Input.GetMouseButtonDown(0) || gameObject.GetComponent<InputSource>().enabled)
 			return;
 
 		Vector3 mousePos = Input.mousePosition;
@@ -69,17 +69,11 @@ public class Selector : MonoBehaviour {
 			else if(tag == "Bloc") //It is a BLOC
 			{
 				if(Physics.Raycast(ray, out hit, Mathf.Infinity))
-				{
 					Selected = (hit.collider == Selected) ? null : hit.collider;
-				}
 			}
 		}
-		else //nothing selected
-		{
-			if(Physics.Raycast(ray, out hit, Mathf.Infinity))
-			{
-				Selected = hit.collider;
-			}
-		}
+		// Nothing is selected
+		else if(Physics.Raycast(ray, out hit, Mathf.Infinity))
+			Selected = hit.collider;
 	}
 }
