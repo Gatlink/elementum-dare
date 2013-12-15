@@ -49,7 +49,7 @@ public abstract class Source : MonoBehaviour
 
 	public abstract void RunSource();
 
-	public void UpdateSourceState()
+	public bool UpdateSourceState()
 	{
 		--_duration;
 
@@ -58,7 +58,11 @@ public abstract class Source : MonoBehaviour
 			//Debug.Log ("Dead " + ToString());
 
 			//TODO remove source from game
+
+			return true;
 		}
+
+		return false;
 	}
 
 	public static SourceType GetRandomSourceType()

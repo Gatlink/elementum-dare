@@ -22,9 +22,19 @@ public class SourceManager : IManager<Source>, PhaseEventListener
 	
 	public void onStartNewPhase(GameTickerEvent e)
 	{
+		List<Source> markedForDeletion = new List<Source>();
 		foreach(Source source in _items)
 		{
-			source.UpdateSourceState();
+			if(source.UpdateSourceState())
+				markedForDeletion.Add (source);
+		}
+
+		if(markedForDeletion.Count > 0)
+		{
+			foreach(Source corpse in markedForDeletion)
+			{
+				UnregisterElement(corpse);
+			}
 		}
 	}
 	
