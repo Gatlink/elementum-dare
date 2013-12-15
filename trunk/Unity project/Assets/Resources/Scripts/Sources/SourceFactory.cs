@@ -10,7 +10,7 @@ public class SourceFactory
 	private static Dictionary<Source.SourceType, string> scriptTypenameByElementType = CreateScriptTypenamesDisctionnary();
 
 
-	public static GameObject CreateSource(Source.SourceType type)
+	public static Source CreateSource(Source.SourceType type)
 	{
 		SourceInfo source = sourceInfoByType[type];
 
@@ -31,7 +31,7 @@ public class SourceFactory
 			return null;
 		}
 
-		return sourceObj;
+		return sourceObj.GetComponent<Source>();
 	}
 
 	public static void RegisterSourceInfo(SourceInfo info)

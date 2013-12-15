@@ -17,6 +17,18 @@ public abstract class Source : MonoBehaviour, PhaseEventListener
 	protected int _generate;
 	protected int _duration;
 
+	private Bloc _bloc;
+
+	public bool IsOnBloc()
+	{
+		return _bloc != null;
+	}
+
+	public void SetOnBloc(Bloc bloc)
+	{
+		_bloc = bloc;
+	}
+
 	public void Initialize(SourceInfo source)
 	{
 		_type = source.type;

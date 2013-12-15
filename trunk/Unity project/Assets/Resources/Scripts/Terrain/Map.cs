@@ -20,6 +20,9 @@ public class Map : MonoBehaviour
 {
 	private Stack<Bloc>[,] _internalMap;
 
+	private int _width;
+	private int _length;
+
 	// Use this for initialization
 	void Start (){}
 	
@@ -28,6 +31,9 @@ public class Map : MonoBehaviour
 
 	public void Initialize(int width, int length)
 	{
+		_width = width;
+		_length = length;
+
 		_internalMap = new Stack<Bloc>[width, length];
 
 		for(int x = 0; x < width; ++x)
@@ -45,7 +51,7 @@ public class Map : MonoBehaviour
 		{
 			int z = _internalMap[x,y].Count;
 
-			bloc.InsertedAt(new BlocIndex(x,y,z));
+			bloc.InsertedAt(new BlocIndex(x,y,z), this);
 
 			_internalMap[x,y].Push(bloc);
 		}
@@ -65,5 +71,16 @@ public class Map : MonoBehaviour
 	public static Vector3 IndexToPosition(BlocIndex index)
 	{
 		return IndexToPosition(index.x, index.y, index.z);
+	}
+
+	public static Vector3 DimensionRatioToPosition(float xRatio, float yRatio)
+	{
+		Vector3 size = BlocFactory.GetBlocSize();
+		return new Vector3(size.x * -yRatio, 0.0f, size.z * xRatio);
+	}
+
+	public Vector3 Get2DMapCenter()
+	{
+		return DimensionRatioToPosition(_width * 0.5f, _length * 0.5f); 
 	}
 }
