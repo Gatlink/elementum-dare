@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public abstract class Source : MonoBehaviour
 {
@@ -81,5 +81,71 @@ public abstract class Source : MonoBehaviour
 	public new string ToString()
 	{
 		return gameObject.name;
+	}
+}
+
+
+class SourceBlocRefDelegate
+{
+	Bloc _refBloc;
+	Stream.StreamType checkType;
+	
+	public SourceBlocRefDelegate( Stream.StreamType type, Bloc refBloc = null )
+	{	
+		checkType = type;
+		_refBloc = refBloc;	
+	}
+	
+	public bool BlocIsHigher(Bloc bloc)
+	{
+		if(_refBloc == null)
+			return true;
+
+		return Bloc.IsHigher(bloc, _refBloc);  
+	}
+	
+	public bool BlocHasMoreOfStream(Bloc bloc)
+	{
+		if(_refBloc == null)
+			return false;
+
+		return !Bloc.IsLower(bloc, _refBloc) && (bloc.Elements[checkType] > _refBloc.Elements[checkType]);
+	}
+}
+
+public struct StreamAscSorter : IComparer<Bloc>
+{
+	private Stream.StreamType checkType;
+
+	public StreamAscSorter(Stream.StreamType type)
+	{ checkType = type; }
+
+	public int Compare(Bloc left, Bloc right)
+	{
+		if(left.Elements[checkType] < right.Elements[checkType])
+			return 1; //right goes after left
+		else if (left.Elements[checkType] > right.Elements[checkType])
+			return -1; //left goes after right
+		else
+			return 0; //equal
+	}
+}
+
+
+public struct StreamDescSorter : IComparer<Bloc>
+{
+	private Stream.StreamType checkType;
+	
+	public StreamDescSorter(Stream.StreamType type)
+	{ checkType = type; }
+
+	public int Compare(Bloc left, Bloc right)
+	{
+		if(left.Elements[checkType] > right.Elements[checkType])
+			return 1; //right goes after left
+		else if (left.Elements[checkType] < right.Elements[checkType])
+			return -1; //left goes after right
+		else
+			return 0; //equal
 	}
 }

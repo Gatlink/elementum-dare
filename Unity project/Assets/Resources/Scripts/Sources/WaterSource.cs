@@ -38,9 +38,9 @@ public class WaterSource : Source
 	{
 		List<Bloc> list = new List<Bloc>(neighbors.Except(seen));
 		
-		WaterBlocRefDelegate del = new WaterBlocRefDelegate(refBloc);
+		SourceBlocRefDelegate del = new SourceBlocRefDelegate(Stream.StreamType.Lava, refBloc);
 		list.RemoveAll(del.BlocIsHigher);
-		list.RemoveAll(del.BlocHasMoreLava);
+		list.RemoveAll(del.BlocHasMoreOfStream);
 		return list;
 	}
 	
@@ -104,37 +104,9 @@ public class WaterSource : Source
 			}
 		}
 		
-		nextRound.Sort(new WaterBlocRefDelegate(null));
+		nextRound.Sort(new StreamDescSorter(Stream.StreamType.Water));
 		
 		return MakeSpread(ref nextRound, processed);
-	}
-}
-
-class WaterBlocRefDelegate : IComparer<Bloc>
-{
-	Bloc _refBloc;
-	
-	public WaterBlocRefDelegate( Bloc refBloc )
-	{	_refBloc = refBloc;	}
-	
-	public bool BlocIsHigher(Bloc bloc)
-	{
-		return Bloc.IsHigher(bloc, _refBloc);  
-	}
-	
-	public bool BlocHasMoreLava(Bloc bloc)
-	{
-		return !Bloc.IsLower(bloc, _refBloc) && (bloc.Elements.Water  > _refBloc.Elements.Water );
-	}
-	
-	public int Compare(Bloc left, Bloc right)
-	{
-		if(left.Elements.Water  > right.Elements.Water )
-			return 1; //right goes after left
-		else if (left.Elements.Water  < right.Elements.Water )
-			return -1; //left goes after right
-		else
-			return 0; //equal
 	}
 }
 

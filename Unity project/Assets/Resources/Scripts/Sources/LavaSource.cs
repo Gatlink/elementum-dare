@@ -38,9 +38,9 @@ public class LavaSource : Source
 	{
 		List<Bloc> list = new List<Bloc>(neighbors.Except(seen));
 
-		LavaBlocRefDelegate del = new LavaBlocRefDelegate(refBloc);
+		SourceBlocRefDelegate del = new SourceBlocRefDelegate(Stream.StreamType.Lava, refBloc);
 		list.RemoveAll(del.BlocIsHigher);
-		list.RemoveAll(del.BlocHasMoreLava);
+		list.RemoveAll(del.BlocHasMoreOfStream);
 		return list;
 	}
 
@@ -104,36 +104,8 @@ public class LavaSource : Source
 			}
 		}
 
-		nextRound.Sort(new LavaBlocRefDelegate(null));
+		nextRound.Sort(new StreamDescSorter(Stream.StreamType.Lava));
 
 		return MakeSpread(ref nextRound, processed);
-	}
-}
-
-class LavaBlocRefDelegate : IComparer<Bloc>
-{
-	Bloc _refBloc;
-
-	public LavaBlocRefDelegate( Bloc refBloc )
-	{	_refBloc = refBloc;	}
-
-	public bool BlocIsHigher(Bloc bloc)
-	{
-		return Bloc.IsHigher(bloc, _refBloc);  
-	}
-
-	public bool BlocHasMoreLava(Bloc bloc)
-	{
-		return !Bloc.IsLower(bloc, _refBloc) && (bloc.Elements.Lava > _refBloc.Elements.Lava);
-	}
-
-	public int Compare(Bloc left, Bloc right)
-	{
-		if(left.Elements.Lava > right.Elements.Lava)
-			return 1; //right goes after left
-		else if (left.Elements.Lava < right.Elements.Lava)
-			return -1; //left goes after right
-		else
-			return 0; //equal
 	}
 }
