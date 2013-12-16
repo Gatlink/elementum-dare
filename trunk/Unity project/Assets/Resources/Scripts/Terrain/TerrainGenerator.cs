@@ -159,7 +159,7 @@ public class TerrainGenerator : MonoBehaviour
 		{
 			for(int y = 0; y < _length; ++y)
 			{
-				for(int count = 0; count < (_heightMatrix[x,y] / 10) - 1; ++count)
+				for(int count = 0; count < (_heightMatrix[x,y] / 10); ++count)
 				{
 					Map.InsertBloc(x, y, BlocFactory.CreateBloc());
 				}

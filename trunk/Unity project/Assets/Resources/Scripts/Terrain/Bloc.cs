@@ -67,11 +67,6 @@ public class Bloc : MonoBehaviour
 		public bool IsElectrified {get; set;}
 		public bool HasWindBlowing {get; set;}
 
-		public bool HasStreamOfType(Stream.StreamType type)
-		{
-			return _state[type] > 0;
-		}
-
 		public Stream.StreamType CurrentType
 		{
 			get
@@ -90,6 +85,15 @@ public class Bloc : MonoBehaviour
 
 				return t;
 			}
+		}
+
+		public int this[Stream.StreamType type]
+		{
+			get
+			{ return _state[type]; }
+
+			set
+			{ _state[type] = value; }
 		}
 
 		public ElementsState()

@@ -136,6 +136,9 @@ public class Map
 			{
 				for(int z = minZ; z <= maxZ; ++z)
 				{
+					if(x != index.x && y != index.y)
+						continue;
+
 					Bloc bloc = GetBlocAt(x, y, index.z);
 					
 					if(bloc == null)
