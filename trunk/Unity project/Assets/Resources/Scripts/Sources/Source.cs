@@ -11,6 +11,8 @@ public abstract class Source : MonoBehaviour
 		Wind,
 		Water
 	}
+	public static int NB_OF_TYPES = (int)SourceType.Water;
+	// must be last of enum
 
 	protected SourceType _type;
 
