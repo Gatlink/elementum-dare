@@ -7,7 +7,6 @@ public class SourceInfo : MonoBehaviour {
 	public int generate;
 	public int duration;
 	public Mesh mesh;
-	public Material mat;
 
 	// Use this for initialization
 	void Start ()
