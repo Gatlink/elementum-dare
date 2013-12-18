@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 public class TerrainGenerator : MonoBehaviour 
 {
@@ -17,12 +18,18 @@ public class TerrainGenerator : MonoBehaviour
 
 	private static Dictionary<string, Bloc.BlocType> _stringToElementType = CreateElementsDictionary();
 	private static Dictionary<string, Unit.ETeam> _stringToTeams = CreateTeamsDictionary();
-	
+
 	// Use this for initialization
 	void Start () 
 	{
 		GenerateMatrixes();
 		ParameterMap();
+
+		if(!FactoriesReady())
+		{
+			Debug.Log("Factories not ready. A reference object may be missing or is not registering properly unsing Awake()");
+		}
+
 		FillMap();		
 	}
 	
@@ -165,7 +172,7 @@ public class TerrainGenerator : MonoBehaviour
 				}
 				string key = _elementsMatrix[x,y];
 				Bloc.BlocType type = _stringToElementType[key];
-
+				Debug.Log(type.ToString());
 				Bloc bloc = BlocFactory.CreateBloc(type);
 				Map.InsertBloc(x, y, bloc);
 
@@ -204,5 +211,17 @@ public class TerrainGenerator : MonoBehaviour
 		dict.Add("2", Unit.ETeam.Monstre);
 
 		return dict;
+	}
+
+	private static bool FactoriesReady()
+	{
+		return BlocFactory.IsReady()
+			&& SourceFactory.IsReady()
+			&& StreamFactory.IsReady();
+	}
+
+	private static void WaitForFactories( System.Object state, bool timedOut)
+	{
+
 	}
 }

@@ -22,7 +22,6 @@ public class SourceFactory
 			return null;
 		}
 
-		//TODO implement with type and all
 		GameObject sourceObj = CreateObjectFromSourceInfo(source);
 		sourceObj.tag = "Source";
 		sourceObj.layer = LayerMask.NameToLayer("Sources");
@@ -39,19 +38,20 @@ public class SourceFactory
 
 	public static void RegisterSourceInfo(SourceInfo info)
 	{
+		Debug.Log ("registering " + info.type.ToString());
 		sourceInfoByType.Add(info.type, info);
 	}
 
 	private static GameObject CreateObjectFromSourceInfo(SourceInfo source)
 	{
-		GameObject obj = new GameObject(" Source #" + (++sourceID) + " ("+source.type.ToString()+")");
+		GameObject obj = new GameObject(" Source #" + (sourceID++) + " ("+source.type.ToString()+")");
 
 		//Need a mesh filter and a mesh renderer for the source's mesh rendering
 		MeshFilter filter = obj.AddComponent("MeshFilter") as MeshFilter;
 		filter.mesh = Object.Instantiate(source.mesh) as Mesh;
 
 		MeshRenderer renderer = obj.AddComponent("MeshRenderer") as MeshRenderer;
-		renderer.material = Resources.Load<Material>("Mesh/Materials/Sources");
+		renderer.material = Object.Instantiate(source.material) as Material;
 
 		//Add a box collider
 		MeshCollider hitBox = obj.AddComponent("MeshCollider") as MeshCollider;
@@ -68,13 +68,18 @@ public class SourceFactory
 	{
 		Dictionary<Source.SourceType, string> tmpDictionnary = new Dictionary<Source.SourceType, string>();
 
-		tmpDictionnary.Add (Source.SourceType.Sand, "SandSource");
-		tmpDictionnary.Add (Source.SourceType.Lava, "LavaSource");
-		tmpDictionnary.Add (Source.SourceType.Water, "WaterSource");
-		tmpDictionnary.Add (Source.SourceType.Wind, "WindSource");
-		tmpDictionnary.Add (Source.SourceType.Electricity, "ElectricitySource");
+		tmpDictionnary.Add(Source.SourceType.Sand, "SandSource");
+		tmpDictionnary.Add(Source.SourceType.Lava, "LavaSource");
+		tmpDictionnary.Add(Source.SourceType.Water, "WaterSource");
+		tmpDictionnary.Add(Source.SourceType.Wind, "WindSource");
+		tmpDictionnary.Add(Source.SourceType.Electricity, "ElectricitySource");
 
 		return tmpDictionnary;
+	}
+
+	public static bool IsReady()
+	{
+		return sourceInfoByType.Count >= Source.NB_OF_TYPES;
 	}
 }
 

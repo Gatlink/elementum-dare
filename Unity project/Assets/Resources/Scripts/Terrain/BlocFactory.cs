@@ -6,72 +6,65 @@ public class BlocFactory
 {
 	private static int blocID = 0;
 
-	private static Dictionary<Bloc.BlocType, Material> materialsByType = CreateMaterialsDictionnary();
-
-	private static GameObject defaultCube = CreateDefaultCube();
+	private static Dictionary<Bloc.BlocType, BlocInfo> blocInfoByType = new Dictionary<Bloc.BlocType, BlocInfo>();
 
 	public static Bloc CreateBloc(Bloc.BlocType type = Bloc.BlocType.TerrainBloc)
 	{
-		GameObject bloc = Object.Instantiate(defaultCube) as GameObject;
+		BlocInfo bloc = blocInfoByType[type];
+		
+		if(!bloc)
+		{
+			Debug.LogError("Creating a bloc of an unknown type. [" + type.ToString() + "]");
+			return null;
+		}
 
-		bloc.SetActive(true);
-		bloc.name = "Bloc #" + blocID++;
-		bloc.tag = "Bloc";
-
-		bloc.transform.position = Vector3.zero;
-		bloc.transform.rotation = Quaternion.identity;
-
-		MeshRenderer renderer = bloc.GetComponent("MeshRenderer") as MeshRenderer;
-		renderer.material = materialsByType[type];
-
-		return bloc.GetComponent<Bloc>();
+		GameObject blocObj = CreateObjectFromBlocInfo(bloc);
+		blocObj.tag = "Bloc";
+		blocObj.layer = LayerMask.NameToLayer("Terrain");
+		
+		if(!blocObj)
+		{
+			Debug.LogError("Error creating the bloc. [" + type.ToString() + "]");
+			return null;
+		}
+		
+		return blocObj.GetComponent<Bloc>();
 	}
 
-	private static GameObject CreateDefaultCube()
+	public static void RegisterBlocInfo(BlocInfo info)
 	{
-		GameObject obj = new GameObject("Default Bloc");
-		obj.tag = "Default Bloc";
-		obj.layer = LayerMask.NameToLayer("Game Start Objects");
-		obj.transform.position = Vector3.zero;
-		obj.transform.rotation = Quaternion.identity;
+		blocInfoByType.Add(info.type, info);
+	}
+	
+	private static GameObject CreateObjectFromBlocInfo(BlocInfo bloc)
+	{
+		GameObject obj = new GameObject("Bloc #" + blocID++);
 		
-		//Need a mesh filter and a mesh renderer for the bloc's mesh rendering
+		//Need a mesh filter and a mesh renderer for the stream's mesh rendering
 		MeshFilter filter = obj.AddComponent("MeshFilter") as MeshFilter;
-		filter.mesh = Resources.Load("Mesh/Bloc_01", typeof(Mesh)) as Mesh;
+		filter.mesh = Object.Instantiate(bloc.mesh) as Mesh;
 		
-		obj.AddComponent("MeshRenderer"); //material set on a per bloc basis
-
-		//Set a box collider. Must be done after mesh filter to deduce proper dimensions
-		BoxCollider hitBox = obj.AddComponent("BoxCollider") as BoxCollider;
+		MeshRenderer renderer = obj.AddComponent("MeshRenderer") as MeshRenderer;
+		renderer.material = Object.Instantiate(bloc.material) as Material;
+		
+		//Add a box collider
+		MeshCollider hitBox = obj.AddComponent("MeshCollider") as MeshCollider;
 		hitBox.transform.parent = obj.transform;
-		hitBox.transform.position = obj.transform.position;
-
-		obj.AddComponent("Bloc");
-		obj.AddComponent("Selectable");
 		
-		obj.SetActive(false);
+		//Add proper stream script
+		obj.AddComponent("Selectable");
+		obj.AddComponent("Bloc");
 		
 		return obj;
 	}
 
-	private static Dictionary<Bloc.BlocType, Material> CreateMaterialsDictionnary()
+	public static Vector3 GetBlocSize(Bloc.BlocType type = Bloc.BlocType.TerrainBloc)
 	{
-		Dictionary<Bloc.BlocType, Material> tmpDictionnary = new Dictionary<Bloc.BlocType, Material>();
-
-		tmpDictionnary.Add(Bloc.BlocType.TerrainBloc, Resources.Load("Mesh/Materials/Bloc_Terre", typeof(Material)) as Material);
-		tmpDictionnary.Add(Bloc.BlocType.Earth, Resources.Load("Mesh/Materials/Bloc_Herbe", typeof(Material)) as Material);
-		tmpDictionnary.Add(Bloc.BlocType.Rock, Resources.Load("Mesh/Materials/Bloc_Pierre", typeof(Material)) as Material);
-		tmpDictionnary.Add(Bloc.BlocType.Ice, Resources.Load("Mesh/Materials/Bloc_Glace", typeof(Material)) as Material);
-		tmpDictionnary.Add(Bloc.BlocType.Metal, Resources.Load("Mesh/Materials/Bloc_Metal", typeof(Material)) as Material);
-		tmpDictionnary.Add(Bloc.BlocType.Plant, Resources.Load("Mesh/Materials/Bloc_Plante", typeof(Material)) as Material);
-		tmpDictionnary.Add(Bloc.BlocType.Upgraded_Plant, Resources.Load("Mesh/Materials/Bloc_Ronces", typeof(Material)) as Material);
-
-		return tmpDictionnary;
+		return blocInfoByType[type].mesh.bounds.size;
 	}
 
-	public static Vector3 GetBlocSize()
+	public static bool IsReady()
 	{
-		BoxCollider hitBox = defaultCube.GetComponent("BoxCollider") as BoxCollider;
-		return hitBox.size;
+		return blocInfoByType.Count >= Bloc.NB_OF_TYPES;
 	}
 }

@@ -10,13 +10,10 @@ public class Stream : MonoBehaviour
 		Lava,
 		Water
 	}
+	public static int NB_OF_TYPES = (int)StreamType.Water;
+	// must be last of enum
 
-	//private StreamType _type;
-
-	public void Initialize(StreamType type)
-	{
-		//_type = type;
-	}
+	public StreamType type { get; set;}
 
 	// Use this for initialization
 	void Start () {}

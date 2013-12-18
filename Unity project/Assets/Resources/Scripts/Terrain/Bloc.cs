@@ -13,6 +13,8 @@ public class Bloc : MonoBehaviour
 		Plant, 
 		Upgraded_Plant
 	};
+	public static int NB_OF_TYPES = (int)BlocType.Upgraded_Plant;
+	// must be last of enum
 
 	public class ElementsState
 	{

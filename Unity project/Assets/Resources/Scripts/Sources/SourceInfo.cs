@@ -7,13 +7,11 @@ public class SourceInfo : MonoBehaviour {
 	public int generate;
 	public int duration;
 	public Mesh mesh;
+	public Material material;
 
 	// Use this for initialization
-	void Start ()
+	void Awake ()
 	{
 		SourceFactory.RegisterSourceInfo(this);
 	}
-	
-	// Update is called once per frame
-	void Update (){}
 }
