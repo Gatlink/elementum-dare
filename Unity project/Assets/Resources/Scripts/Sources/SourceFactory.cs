@@ -7,7 +7,7 @@ public class SourceFactory
 	private static int sourceID = 0;
 
 	private static Dictionary<Source.SourceType, SourceInfo> sourceInfoByType = new Dictionary<Source.SourceType, SourceInfo>();
-	private static Dictionary<Source.SourceType, string> scriptTypenameByElementType = CreateScriptTypenamesDisctionnary();
+	private static Dictionary<Source.SourceType, string> scriptTypenameByElementType = CreateScriptTypenamesDictionnary();
 
 	private static GameObject sourceNode = new GameObject("Sources") ;
 	// Commodity, to assemble all sources under an object's hierarchy node in the editor
@@ -51,7 +51,7 @@ public class SourceFactory
 		filter.mesh = Object.Instantiate(source.mesh) as Mesh;
 
 		MeshRenderer renderer = obj.AddComponent("MeshRenderer") as MeshRenderer;
-		renderer.material = Object.Instantiate(source.mat) as Material;
+		renderer.material = Resources.Load<Material>("Mesh/Materials/Sources");
 
 		//Add a box collider
 		MeshCollider hitBox = obj.AddComponent("MeshCollider") as MeshCollider;
@@ -64,7 +64,7 @@ public class SourceFactory
 		return obj;
 	}
 
-	private static Dictionary<Source.SourceType, string> CreateScriptTypenamesDisctionnary()
+	private static Dictionary<Source.SourceType, string> CreateScriptTypenamesDictionnary()
 	{
 		Dictionary<Source.SourceType, string> tmpDictionnary = new Dictionary<Source.SourceType, string>();
 
