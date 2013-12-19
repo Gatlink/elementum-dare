@@ -172,7 +172,7 @@ public class TerrainGenerator : MonoBehaviour
 				}
 				string key = _elementsMatrix[x,y];
 				Bloc.BlocType type = _stringToElementType[key];
-				Debug.Log(type.ToString());
+
 				Bloc bloc = BlocFactory.CreateBloc(type);
 				Map.InsertBloc(x, y, bloc);
 

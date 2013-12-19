@@ -38,7 +38,6 @@ public class SourceFactory
 
 	public static void RegisterSourceInfo(SourceInfo info)
 	{
-		Debug.Log ("registering " + info.type.ToString());
 		sourceInfoByType.Add(info.type, info);
 	}
 
