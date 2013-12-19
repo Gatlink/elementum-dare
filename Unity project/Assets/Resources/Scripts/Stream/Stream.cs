@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿ using UnityEngine;
 using System.Collections;
 
 public class Stream : MonoBehaviour
@@ -14,6 +14,8 @@ public class Stream : MonoBehaviour
 	// must be last of enum
 
 	public StreamType type { get; set;}
+	
+	private Bloc _bloc;
 
 	// Use this for initialization
 	void Start () {}

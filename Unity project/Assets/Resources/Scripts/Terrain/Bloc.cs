@@ -69,6 +69,7 @@ public class Bloc : MonoBehaviour
 		public bool IsElectrified {get; set;}
 		public bool HasWindBlowing {get; set;}
 
+		///////////////////////////////////////////////////// ACCESSORS & HELPERS
 		public Stream.StreamType CurrentType
 		{
 			get
@@ -126,7 +127,8 @@ public class Bloc : MonoBehaviour
 
 	public BlocIndex indexInMap {get; private set;}
 
-	private Source _source;
+	private Source _source = null;
+	private Stream _stream = null;
 	private Unit _unit = null;
 
 	public bool HoldASource()
@@ -184,5 +186,49 @@ public class Bloc : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void Update() {}
+	void Update() 
+	{
+		Stream.StreamType currentType = Elements.CurrentType;
+		if(currentType != Stream.StreamType.None)
+		{
+			if(_stream == null || (_stream != null && _stream.type != currentType))
+			{
+				if(_stream != null)
+					Object.DestroyImmediate(_stream.gameObject); //TODO change for a smoother transition
+
+				_stream = StreamFactory.CreateStream(currentType);
+				_stream.gameObject.transform.position = Map.IndexToPosition(indexInMap.x, indexInMap.y, indexInMap.z + 1);
+			}
+		}
+		else
+		{
+			if(_stream != null)
+				Object.DestroyImmediate(_stream.gameObject); //TODO change for a smoother transition
+
+			_stream = null;
+		}
+
+		if(_stream != null)
+		{
+			const int maxVal = 48;
+
+			//Update stream visual according to bloc value
+			float uniformScale = Elements[currentType] * (1.0f / maxVal);
+			_stream.gameObject.transform.localScale.Set(1.0f, uniformScale, 1.0f);
+
+			//Check if a unit is in the stream
+			if(HostAUnit())
+			{
+				//Should it be damaged ?
+				if(currentType == Stream.StreamType.Lava)
+				{
+					//Apply Lava damages
+				}
+				else if(currentType == Stream.StreamType.Water && Elements.IsElectrified )
+				{
+					//Apply Electricity damages
+				}
+			}
+		}
+	}
 }
