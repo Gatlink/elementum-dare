@@ -60,7 +60,7 @@ public class MoveToObject : MonoBehaviour {
 				transform.position = Vector3.MoveTowards(transform.position, vDest, MoveSpeed * Time.deltaTime);
 		}
 		// Climb down
-		else if (!Physics.Raycast(collider.bounds.center + Vector3.down * (collider.bounds.size.y/2), Vector3.down, 1f))
+		else if (!Physics.Raycast(collider.bounds.center, Vector3.down, 0.1f + collider.bounds.size.y/2.0f))
 			transform.position = Vector3.MoveTowards(transform.position, transform.position + Vector3.down, MoveSpeed * Time.deltaTime);
 		// End of the road
 		else
@@ -78,7 +78,7 @@ public class MoveToObject : MonoBehaviour {
 
 		// Compute the ray to check for collision in front of the unit
 		_relOriginForwardRay = collider.bounds.center - transform.position;
-		_relOriginForwardRay.y = _relOriginForwardRay.y - collider.bounds.size.y/2 - 5;
+		_relOriginForwardRay.y = _relOriginForwardRay.y - collider.bounds.size.y/2 - 4.9f;
 	}
 
 	private Vector3 getMoveDirection()
