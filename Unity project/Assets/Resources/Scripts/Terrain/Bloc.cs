@@ -213,8 +213,8 @@ public class Bloc : MonoBehaviour
 			const int maxVal = 48;
 
 			//Update stream visual according to bloc value
-			float uniformScale = Elements[currentType] * (1.0f / maxVal);
-			_stream.gameObject.transform.localScale.Set(1.0f, uniformScale, 1.0f);
+			float delta = (Elements[currentType] * (1.0f / maxVal)) - _stream.gameObject.transform.localScale.y;
+			_stream.gameObject.transform.localScale += new Vector3(0, delta, 0);
 
 			//Check if a unit is in the stream
 			if(HostAUnit())
