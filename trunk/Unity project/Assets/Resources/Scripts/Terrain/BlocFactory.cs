@@ -20,7 +20,6 @@ public class BlocFactory
 
 		GameObject blocObj = CreateObjectFromBlocInfo(bloc);
 		blocObj.tag = "Bloc";
-		blocObj.layer = LayerMask.NameToLayer("Terrain");
 		
 		if(!blocObj)
 		{
