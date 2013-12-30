@@ -219,9 +219,4 @@ public class TerrainGenerator : MonoBehaviour
 			&& SourceFactory.IsReady()
 			&& StreamFactory.IsReady();
 	}
-
-	private static void WaitForFactories( System.Object state, bool timedOut)
-	{
-
-	}
 }

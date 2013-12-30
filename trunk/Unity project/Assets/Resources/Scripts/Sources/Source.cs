@@ -47,6 +47,8 @@ public abstract class Source : MonoBehaviour
 
 		_generate = source.generate;
 		_duration = source.duration;
+
+		_animTime = -1.0f;
 	}
 
 	public abstract void RunSource();
@@ -55,16 +57,7 @@ public abstract class Source : MonoBehaviour
 	{
 		--_duration;
 
-		if(_duration == 0)
-		{
-			//Debug.Log ("Dead " + ToString());
-
-			//TODO remove source from game
-
-			return true;
-		}
-
-		return false;
+		return _duration <= 0;
 	}
 
 	public static SourceType GetRandomSourceType()
@@ -84,70 +77,28 @@ public abstract class Source : MonoBehaviour
 	{
 		return gameObject.name;
 	}
-}
 
-
-class SourceBlocRefDelegate
-{
-	Bloc _refBloc;
-	Stream.StreamType checkType;
-	
-	public SourceBlocRefDelegate( Stream.StreamType type, Bloc refBloc = null )
-	{	
-		checkType = type;
-		_refBloc = refBloc;	
-	}
-	
-	public bool BlocIsHigher(Bloc bloc)
+	private const float TOTAL_ANIM_TIME = 1.5f;
+	private float _animTime = -1.0f;
+	public void RemoveSelf()
 	{
-		if(_refBloc == null)
-			return true;
-
-		return Bloc.IsHigher(bloc, _refBloc);  
+		_animTime = TOTAL_ANIM_TIME; //trigger death animation
 	}
-	
-	public bool BlocHasMoreOfStream(Bloc bloc)
+
+	void Update()
 	{
-		if(_refBloc == null)
-			return false;
+		if(_animTime <= 0.0f)
+			return;
 
-		return !Bloc.IsLower(bloc, _refBloc) && (bloc.Elements[checkType] > _refBloc.Elements[checkType]);
-	}
-}
+		float dt = Time.deltaTime;
+		float trans = (BlocFactory.GetBlocSize().y / TOTAL_ANIM_TIME) * dt;
 
-public struct StreamAscSorter : IComparer<Bloc>
-{
-	private Stream.StreamType checkType;
+		transform.Translate(-Vector3.up * trans);
+		_animTime -= dt;
 
-	public StreamAscSorter(Stream.StreamType type)
-	{ checkType = type; }
-
-	public int Compare(Bloc left, Bloc right)
-	{
-		if(left.Elements[checkType] < right.Elements[checkType])
-			return 1; //right goes after left
-		else if (left.Elements[checkType] > right.Elements[checkType])
-			return -1; //left goes after right
-		else
-			return 0; //equal
-	}
-}
-
-
-public struct StreamDescSorter : IComparer<Bloc>
-{
-	private Stream.StreamType checkType;
-	
-	public StreamDescSorter(Stream.StreamType type)
-	{ checkType = type; }
-
-	public int Compare(Bloc left, Bloc right)
-	{
-		if(left.Elements[checkType] > right.Elements[checkType])
-			return 1; //right goes after left
-		else if (left.Elements[checkType] < right.Elements[checkType])
-			return -1; //left goes after right
-		else
-			return 0; //equal
+		if(_animTime <= 0.0f)
+		{
+			Object.DestroyImmediate(gameObject);
+		}
 	}
 }

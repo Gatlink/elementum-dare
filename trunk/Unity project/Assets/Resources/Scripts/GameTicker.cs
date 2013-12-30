@@ -35,6 +35,13 @@ public class GameTicker
 
 	public static void EndPhase()
 	{
+		//Update sources
+		SourceManager.Instance().UpdateSources();
+
+		//Update streams
+		StreamManager.Instance().UpdateStreams();
+
+		//Update registered listeners
 		GameTickerEvent gte = new GameTickerEvent(_turn, _phase);
 
 		foreach(PhaseEventListener l in _phaseListeners)
@@ -55,6 +62,10 @@ public class GameTicker
 
 	public static void StartNewPhase()
 	{
+		//Remove 'dead' sources
+		SourceManager.Instance().CleanDeadSources();
+
+		//Update registered listeners
 		GameTickerEvent gte = new GameTickerEvent(_turn, _phase);
 		
 		foreach(PhaseEventListener l in _phaseListeners)

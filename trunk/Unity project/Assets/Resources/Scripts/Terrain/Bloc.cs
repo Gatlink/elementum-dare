@@ -194,16 +194,16 @@ public class Bloc : MonoBehaviour
 			if(_stream == null || (_stream != null && _stream.type != currentType))
 			{
 				if(_stream != null)
-					Object.DestroyImmediate(_stream.gameObject); //TODO change for a smoother transition
+					StreamManager.Instance().RemoveStream(ref _stream);
 
-				_stream = StreamFactory.CreateStream(currentType);
+				_stream = StreamManager.Instance().CreateStream(currentType, this);
 				_stream.gameObject.transform.position = Map.IndexToPosition(indexInMap.x, indexInMap.y, indexInMap.z + 1);
 			}
 		}
 		else
 		{
 			if(_stream != null)
-				Object.DestroyImmediate(_stream.gameObject); //TODO change for a smoother transition
+				StreamManager.Instance().RemoveStream(ref _stream);
 
 			_stream = null;
 		}
@@ -229,6 +229,46 @@ public class Bloc : MonoBehaviour
 					//Apply Electricity damages
 				}
 			}
+		}
+	}
+
+	public struct SortByStreamVolume : IComparer<Bloc>
+	{
+		private Stream.StreamType _checkType;
+		private bool _desc;
+		
+		public SortByStreamVolume(Stream.StreamType type, bool desc)
+		{ 
+			_checkType = type;
+			_desc = desc;
+		}
+
+		public int Compare(Bloc left, Bloc right)
+		{
+			if(_desc)
+				return CompareDesc(left, right);
+			else
+				return CompareAsc(left, right);
+		}
+
+		public int CompareAsc(Bloc left, Bloc right)
+		{
+			if(left.Elements[_checkType] < right.Elements[_checkType])
+				return 1; //right goes after left
+			else if (left.Elements[_checkType] > right.Elements[_checkType])
+				return -1; //left goes after right
+			else
+				return 0; //equal
+		}
+
+		public int CompareDesc(Bloc left, Bloc right)
+		{
+			if(left.Elements[_checkType] > right.Elements[_checkType])
+				return 1; //right goes after left
+			else if (left.Elements[_checkType] < right.Elements[_checkType])
+				return -1; //left goes after right
+			else
+				return 0; //equal
 		}
 	}
 }
