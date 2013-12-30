@@ -3,13 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class WaterSource : Source
-{
-	// Use this for initialization
-	void Start() {}
-	
-	// Update is called once per frame
-	void Update() {}
-	
+{	
 	public override void RunSource()
 	{
 		if(_bloc == null)
@@ -21,10 +15,10 @@ public class WaterSource : Source
 		//put everything on self bloc
 		_bloc.Elements.Water += _generate;
 		
-		List<Bloc> update = new List<Bloc>();
-		update.Add(_bloc);
+		//List<Bloc> update = new List<Bloc>();
+		//update.Add(_bloc);
 		
-		/*List<Bloc> processedList = */MakeSpread(ref update);
+		/*List<Bloc> processedList = *///MakeSpread(ref update);
 		
 		// KEEP FOR TWEAKING?
 		// Reprocess all first-pass processed blocs for safety
@@ -33,7 +27,7 @@ public class WaterSource : Source
 		//processedList.Sort(new BlocRefDelegate(null));
 		//MakeSpread(ref processedList);
 	}
-	
+/*	
 	private List<Bloc> DiscardInvalidNeighbors(Bloc refBloc, ref List<Bloc> neighbors, ref List<Bloc> seen)
 	{
 		List<Bloc> list = new List<Bloc>(neighbors.Except(seen));
@@ -108,5 +102,6 @@ public class WaterSource : Source
 		
 		return MakeSpread(ref nextRound, processed);
 	}
+*/
 }
 

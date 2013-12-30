@@ -4,12 +4,6 @@ using System.Linq;
 
 public class SandSource : Source
 {
-	// Use this for initialization
-	void Start() {}
-	
-	// Update is called once per frame
-	void Update() {}
-	
 	public override void RunSource()
 	{
 		if(_bloc == null)
@@ -21,10 +15,10 @@ public class SandSource : Source
 		//put everything on self bloc
 		_bloc.Elements.Sand += _generate;
 		
-		List<Bloc> update = new List<Bloc>();
-		update.Add(_bloc);
+		//List<Bloc> update = new List<Bloc>();
+		//update.Add(_bloc);
 		
-		/*List<Bloc> processedList = */MakeSpread(ref update);
+		/*List<Bloc> processedList = *///MakeSpread(ref update);
 		
 		// KEEP FOR TWEAKING?
 		// Reprocess all first-pass processed blocs for safety
@@ -33,7 +27,7 @@ public class SandSource : Source
 		//processedList.Sort(new BlocRefDelegate(null));
 		//MakeSpread(ref processedList);
 	}
-	
+/*
 	private List<Bloc> DiscardInvalidNeighbors(Bloc refBloc, ref List<Bloc> neighbors, ref List<Bloc> seen)
 	{
 		List<Bloc> list = new List<Bloc>(neighbors.Except(seen));
@@ -108,4 +102,5 @@ public class SandSource : Source
 		
 		return MakeSpread(ref nextRound, processed);
 	}
+*/
 }
