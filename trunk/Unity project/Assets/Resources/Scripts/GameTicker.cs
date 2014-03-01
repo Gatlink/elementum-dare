@@ -1,36 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
-public struct GameTickerEvent
+public static class GameTicker
 {
-	public GameTickerEvent(int t, int p)
-	{
-		turn = t;
-		phase = p;
-	}
-
-	public int turn {get; set;}
-	public int phase {get; set;}
-}
-
-public class GameTicker
-{
-	private static int _turn = 0;
 	private static int _phase = 0;
-
+	private static int _nextUnitIdx = 0;
 	private static List<PhaseEventListener> _phaseListeners = new List<PhaseEventListener>();
-	private static List<TurnEventListener> _turnListeners = new List<TurnEventListener>();
 
 	public static void RegisterListener(PhaseEventListener listener)
 	{
 		if(!_phaseListeners.Contains(listener))
 			_phaseListeners.Add(listener);
-	}
-
-	public static void RegisterListener(TurnEventListener listener)
-	{
-		if(!_turnListeners.Contains(listener))
-			_turnListeners.Add(listener);
 	}
 
 	public static void EndPhase()
@@ -40,23 +21,9 @@ public class GameTicker
 
 		//Update streams
 		StreamManager.Instance().UpdateStreams();
-
-		//Update registered listeners
-		GameTickerEvent gte = new GameTickerEvent(_turn, _phase);
-
 		foreach(PhaseEventListener l in _phaseListeners)
 		{
-			l.onEndPhase(gte);
-		}
-	}
-
-	public static void EndTurn()
-	{
-		GameTickerEvent gte = new GameTickerEvent(_turn, _phase);
-		
-		foreach(TurnEventListener l in _turnListeners)
-		{
-			l.onEndTurn(gte);
+			l.onEndPhase(_phase);
 		}
 	}
 
@@ -64,35 +31,29 @@ public class GameTicker
 	{
 		//Remove 'dead' sources
 		SourceManager.Instance().CleanDeadSources();
-
-		//Update registered listeners
-		GameTickerEvent gte = new GameTickerEvent(_turn, _phase);
-		
 		foreach(PhaseEventListener l in _phaseListeners)
 		{
-			l.onStartNewPhase(gte);
+			l.onStartNewPhase(_phase);
 		}
+		Selector.Selected = GetNextUnit().collider;
 	}
 
-	public static void StartNewTurn()
+	private static Unit GetNextUnit()
 	{
-		GameTickerEvent gte = new GameTickerEvent(_turn, _phase);
-		
-		foreach(TurnEventListener l in _turnListeners)
+		Unit[] units = Unit.Units.ToArray();
+
+		Unit nextUnit = units[_nextUnitIdx];
+		do
 		{
-			l.onStartNewTurn(gte);
-		}
+			_nextUnitIdx = (_nextUnitIdx + 1) % units.Length;
+		} while (nextUnit.Team == units[_nextUnitIdx].Team);
+		
+		return nextUnit;
 	}
 }
 
 public interface PhaseEventListener
 {
-	void onEndPhase(GameTickerEvent e);
-	void onStartNewPhase(GameTickerEvent e);
-}
-
-public interface TurnEventListener
-{
-	void onEndTurn(GameTickerEvent e);
-	void onStartNewTurn(GameTickerEvent e);
+	void onEndPhase(int _phase);
+	void onStartNewPhase(int _phase);
 }

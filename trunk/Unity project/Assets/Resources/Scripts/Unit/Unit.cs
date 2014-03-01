@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Unit : MonoBehaviour {
 	public enum ETeam
@@ -7,6 +8,8 @@ public class Unit : MonoBehaviour {
 		Totem,
 		Monster
 	}
+
+	public static List<Unit> Units = new List<Unit>();
 
 	public ETeam Team = ETeam.Totem;
 	public int Hitpoints= 2;

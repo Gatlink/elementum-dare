@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -30,7 +30,8 @@ public class TerrainGenerator : MonoBehaviour
 			Debug.Log("Factories not ready. A reference object may be missing or is not registering properly unsing Awake()");
 		}
 
-		FillMap();		
+		FillMap();
+		GameTicker.StartNewPhase();
 	}
 	
 	// Update is called once per frame
@@ -181,6 +182,7 @@ public class TerrainGenerator : MonoBehaviour
 					Unit unit = UnitFactory.CreateUnit(_stringToTeams[key], Bloc.BlocType.Ice, Source.SourceType.Electricity);
 					unit.MoveToBloc(bloc);
 					unit.FaceYourOpponent();
+					Unit.Units.Add(unit);
 				}
 			}
 		}
