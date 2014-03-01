@@ -5,7 +5,7 @@ public class Unit : MonoBehaviour {
 	public enum ETeam
 	{
 		Totem,
-		Monstre
+		Monster
 	}
 
 	public ETeam Team = ETeam.Totem;
@@ -50,7 +50,7 @@ public class Unit : MonoBehaviour {
 
 	public void FaceYourOpponent()
 	{
-		if (Team == ETeam.Monstre)
+		if (Team == ETeam.Monster)
 		{
 			GetComponent<Selectable>().OutlineColor = Color.red;
 			transform.Rotate(transform.up, 180);

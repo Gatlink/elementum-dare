@@ -178,7 +178,7 @@ public class TerrainGenerator : MonoBehaviour
 
 				if (_stringToTeams.ContainsKey(key))
 				{
-					Unit unit = UnitFactory.CreateUnit(_stringToTeams[key], "Glace", "Lave");
+					Unit unit = UnitFactory.CreateUnit(_stringToTeams[key], Bloc.BlocType.Ice, Source.SourceType.Electricity);
 					unit.MoveToBloc(bloc);
 					unit.FaceYourOpponent();
 				}
@@ -208,7 +208,7 @@ public class TerrainGenerator : MonoBehaviour
 		var dict = new Dictionary<string, Unit.ETeam>();
 
 		dict.Add("1", Unit.ETeam.Totem);
-		dict.Add("2", Unit.ETeam.Monstre);
+		dict.Add("2", Unit.ETeam.Monster);
 
 		return dict;
 	}
