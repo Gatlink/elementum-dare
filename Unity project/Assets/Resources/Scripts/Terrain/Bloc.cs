@@ -243,6 +243,12 @@ public class Bloc : MonoBehaviour
 	public bool IsConductor()
 	{	return (_type == Bloc.BlocType.Metal) || IsFlooded;	}
 
+	public new string ToString()
+	{
+		string msg = string.Format("BLOC: {0}\nElectrified -> {1}\nWind blowing -> {2}\n{3}", Type, IsElectrified, HasWindBlowing, Streams.ToString());
+		return msg;
+	}
+
 	public struct SortByStreamVolume : IComparer<Bloc>
 	{
 		private Stream.StreamType _checkType;

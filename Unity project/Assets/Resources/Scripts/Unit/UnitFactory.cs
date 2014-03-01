@@ -53,8 +53,11 @@ public static class UnitFactory
 	{
 		var dict = new Dictionary<Unit.ETeam, int>();
 
-		dict.Add(Unit.ETeam.Monster, 1);
-		dict.Add(Unit.ETeam.Totem, 1);
+		Unit.ETeam[] tmp = (Unit.ETeam[])System.Enum.GetValues(typeof(Unit.ETeam));
+		foreach (Unit.ETeam team in tmp )
+		{
+			dict.Add(team, 1);
+		}
 
 		return dict;
 	}
