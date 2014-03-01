@@ -33,7 +33,7 @@ public class SourceManager : IManager<Source>
 		{
 			foreach(Source corpse in markedForDeletion)
 			{
-				corpse.RemoveSelf();
+				corpse.Die();
 				UnregisterElement(corpse);
 			}
 		}

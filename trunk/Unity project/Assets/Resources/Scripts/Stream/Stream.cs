@@ -35,7 +35,7 @@ public class Stream : MonoBehaviour
 	public int GetVolume()
 	{
 		if(_bloc)
-			return _bloc.Elements[type];
+			return _bloc.Streams[type];
 		else
 			return -1;
 	}
@@ -52,7 +52,7 @@ public class Stream : MonoBehaviour
 
 		//Debug.Log( GetAltitude().ToString() + "-" + GetVolume().ToString());
 
-		if(_bloc.Elements[type] <= 1)
+		if(_bloc.Streams[type] <= 1)
 			return;
 		
 		List<Bloc> surroundings = Map.FetchNeighbors2D(_bloc.indexInMap, 1);
@@ -64,7 +64,7 @@ public class Stream : MonoBehaviour
 			return;
 		
 		int maxNbOfNeighbors = 4;
-		int oneShare = (int) Mathf.Floor((float) _bloc.Elements[type] / (float)(maxNbOfNeighbors + 1));
+		int oneShare = (int) Mathf.Floor((float) _bloc.Streams[type] / (float)(maxNbOfNeighbors + 1));
 		//int amountToShare = (int) Mathf.Floor((float) denominator * ((float) bloc.Elements.Lava / 5.0f));
 		int amountToShare = neighborsNb * oneShare;
 		amountToShare += (maxNbOfNeighbors - neighborsNb) * (int) Mathf.Floor(oneShare * 0.5f);
@@ -83,8 +83,8 @@ public class Stream : MonoBehaviour
 		{
 			int share = Bloc.IsLower(neighbor, _bloc) ? 3 : 1 ;
 			int amountMoved = (int) Mathf.Round(amountToShare * ((float)share / (float)denominator));
-			neighbor.Elements.Lava += amountMoved;
-			_bloc.Elements[type] -= amountMoved;
+			neighbor.Streams.Lava += amountMoved;
+			_bloc.Streams[type] -= amountMoved;
 			
 			//Debug.Log (amountMoved + " from " + bloc.name + " to " + neighbor.name);
 		}
@@ -94,7 +94,7 @@ public class Stream : MonoBehaviour
 	{
 		List<Bloc> list = new List<Bloc>(neighbors);
 		list.RemoveAll(x => Bloc.IsHigher(x, refBloc)); //TODO debordement
-		list.RemoveAll(x => !Bloc.IsLower(x, refBloc) && (x.Elements[type] > refBloc.Elements[type]));
+		list.RemoveAll(x => !Bloc.IsLower(x, refBloc) && (x.Streams[type] > refBloc.Streams[type]));
 		return list;
 	}
 }

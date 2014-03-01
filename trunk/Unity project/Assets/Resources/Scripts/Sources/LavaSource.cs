@@ -13,7 +13,7 @@ public class LavaSource : Source
 		}
 
 		//put everything on self bloc
-		_bloc.Elements.Lava += _generate;
+		_bloc.Streams.Lava += _generate;
 
 		//List<Bloc> update = new List<Bloc>();
 		//update.Add(_bloc);
@@ -27,6 +27,8 @@ public class LavaSource : Source
 		//processedList.Sort(new BlocRefDelegate(null));
 		//MakeSpread(ref processedList);
 	}
+	
+	public override void KillSource(){}
 
 /*
 	private List<Bloc> DiscardInvalidNeighbors(Bloc refBloc, ref List<Bloc> neighbors, ref List<Bloc> seen)

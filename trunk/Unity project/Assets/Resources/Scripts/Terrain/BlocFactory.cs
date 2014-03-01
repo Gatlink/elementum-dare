@@ -50,9 +50,10 @@ public class BlocFactory
 		MeshCollider hitBox = obj.AddComponent("MeshCollider") as MeshCollider;
 		hitBox.transform.parent = obj.transform;
 		
-		//Add proper stream script
+		//Add proper bloc script
 		obj.AddComponent("Selectable");
-		obj.AddComponent("Bloc");
+		Bloc b = obj.AddComponent("Bloc") as Bloc;
+		b.Type = bloc.type;
 		
 		return obj;
 	}
