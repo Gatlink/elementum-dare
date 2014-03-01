@@ -23,9 +23,6 @@ public class InputUnit : MonoBehaviour
 		}
 
 		// SELECTION
-		if (!Input.GetMouseButtonDown(0))
-			return;
-
 		Vector3 mousePos = Input.mousePosition;
 
 		RaycastHit hit = new RaycastHit();
@@ -38,9 +35,14 @@ public class InputUnit : MonoBehaviour
 //		}
 		if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Terrain")))
 		{
-			MoveToObject script = Selector.Selected.GetComponent<MoveToObject>();
-			script.Target = hit.collider.transform;
-			script.enabled = true;
+			if (Input.GetMouseButtonDown(0))
+			{
+				MoveToObject script = Selector.Selected.GetComponent<MoveToObject>();
+				script.Target = hit.collider.transform;
+				script.enabled = true;
+			}
+			else if (Input.GetKeyDown(KeyCode.LeftControl))
+				Debug.Log(hit.collider.GetComponent<Bloc>().ToString());
 		}
 	}
 }
