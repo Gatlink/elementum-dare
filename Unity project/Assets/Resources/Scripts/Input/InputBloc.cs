@@ -49,7 +49,7 @@ public class InputBloc : MonoBehaviour
 	void Quit()
 	{
 		_handledBloc = null;
-		GetComponent<InputDetector>().enabled = true;
+		GetComponent<InputUnit>().enabled = true;
 		enabled = false;
 	}
 }
