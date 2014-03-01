@@ -45,7 +45,7 @@ public class InputSource : MonoBehaviour
 	void Quit()
 	{
 		_handledSource = null;
-		GetComponent<InputDetector>().enabled = true;
+		GetComponent<InputUnit>().enabled = true;
 		enabled = false;
 	}
 }
