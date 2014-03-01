@@ -37,9 +37,8 @@ public class InputUnit : MonoBehaviour
 		{
 			if (Input.GetMouseButtonDown(0))
 			{
-				MoveToObject script = Selector.Selected.GetComponent<MoveToObject>();
-				script.Target = hit.collider.transform;
-				script.enabled = true;
+				Unit unit = Selector.Selected.GetComponent<Unit>();
+				unit.Target = hit.collider.transform;
 			}
 			else if (Input.GetKeyDown(KeyCode.LeftControl))
 				Debug.Log(hit.collider.GetComponent<Bloc>().ToString());

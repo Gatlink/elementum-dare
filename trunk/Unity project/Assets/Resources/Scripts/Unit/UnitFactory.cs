@@ -35,9 +35,6 @@ public static class UnitFactory
 		rigidbody.isKinematic = true;
 		rigidbody.useGravity = false;
 
-		// MOVETOOBJECT
-		obj.AddComponent<MoveToObject>();
-
 		// SELECTABLE
 		obj.AddComponent<Selectable>();
 
