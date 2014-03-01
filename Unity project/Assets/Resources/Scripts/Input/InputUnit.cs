@@ -9,11 +9,6 @@ public class InputUnit : MonoBehaviour
 		GetComponent<NextState>().enabled = true;
 	}
 
-	void Start()
-	{
-		enabled = false;
-	}
-
 	void Update ()
 	{
 		// KEYS
@@ -25,7 +20,6 @@ public class InputUnit : MonoBehaviour
 		{
 			GameTicker.EndPhase();
 			GameTicker.StartNewPhase();
-			Leave<InputUnitSelect>();
 		}
 
 		// SELECTION
@@ -37,20 +31,16 @@ public class InputUnit : MonoBehaviour
 		RaycastHit hit = new RaycastHit();
 		Ray ray = Camera.main.ScreenPointToRay(mousePos);
 
-		if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Units")))
-		{
-			if (hit.collider != Selector.Selected)
-				Selector.Selected =  hit.collider;
-			else
-				Leave<InputUnitSelect>();
-		}
-		else if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Terrain")))
+//		if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Units")))
+//		{
+//			if (hit.collider != Selector.Selected)
+//				Selector.Selected =  hit.collider;
+//		}
+		if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Terrain")))
 		{
 			MoveToObject script = Selector.Selected.GetComponent<MoveToObject>();
 			script.Target = hit.collider.transform;
 			script.enabled = true;
 		}
-		else
-			Leave<InputUnitSelect>();
 	}
 }

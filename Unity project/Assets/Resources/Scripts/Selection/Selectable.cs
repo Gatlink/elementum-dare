@@ -25,7 +25,7 @@ public class Selectable : MonoBehaviour {
 		}
 	}
 
-	void Start()
+	void Awake()
 	{
 		_selectedShader = Shader.Find("Toon/Basic Outline");
 		OutlineWidth = Mathf.Clamp(OutlineWidth, .002f, .03f);
