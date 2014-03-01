@@ -11,63 +11,38 @@ public class Bloc : MonoBehaviour
 		Ice,
 		Metal,
 		Plant, 
-		Upgraded_Plant
+		UpgradedPlant
 	};
 	public static int NB_OF_TYPES = (int)BlocType.Upgraded_Plant;
 	// must be last of enum
 
-	public class ElementsState
+	public class StreamsState
 	{
 		private Dictionary<Stream.StreamType, int> _state;
 
 		///////////////////////////////////////////////////// WATER
-		public bool IsFlooded
-		{
-			get
-			{ return _state[Stream.StreamType.Water] > 0; }
-		}
 		public int Water
 		{
-			get
-			{ return _state[Stream.StreamType.Water]; }
-
-			set 
-			{ _state[Stream.StreamType.Water] = value; }
+			get{ return _state[Stream.StreamType.Water]; }
+			set{ _state[Stream.StreamType.Water] = value; }
 		}
 
 		///////////////////////////////////////////////////// SAND
-		public bool IsQuickSanded
-		{
-			get
-			{ return _state[Stream.StreamType.Sand] > 0; }
-		}
 		public int Sand
 		{
-			get
-			{ return _state[Stream.StreamType.Sand]; }
-			
-			set 
-			{ _state[Stream.StreamType.Sand] = value; }
+			get{ return _state[Stream.StreamType.Sand]; }
+			set{ _state[Stream.StreamType.Sand] = value; }
 		}
 
 		///////////////////////////////////////////////////// LAVA
-		public bool IsUnderLava
-		{
-			get
-			{ return _state[Stream.StreamType.Lava] > 0; }
-		}
 		public int Lava
 		{
-			get
-			{ return _state[Stream.StreamType.Lava]; }
-			
-			set 
-			{  _state[Stream.StreamType.Lava] = value; }
+			get{ return _state[Stream.StreamType.Lava]; }
+			set{  _state[Stream.StreamType.Lava] = value; }
 		}
 
 		///////////////////////////////////////////////////// ELEC & WIND
-		public bool IsElectrified {get; set;}
-		public bool HasWindBlowing {get; set;}
+
 
 		///////////////////////////////////////////////////// ACCESSORS & HELPERS
 		public Stream.StreamType CurrentType
@@ -92,14 +67,11 @@ public class Bloc : MonoBehaviour
 
 		public int this[Stream.StreamType type]
 		{
-			get
-			{ return _state[type]; }
-
-			set
-			{ _state[type] = value; }
+			get{ return _state[type]; }
+			set{ _state[type] = value; }
 		}
 
-		public ElementsState()
+		public StreamsState()
 		{
 			_state = new Dictionary<Stream.StreamType, int>();
 
@@ -121,9 +93,15 @@ public class Bloc : MonoBehaviour
 		}
 	}
 
-	private ElementsState _elements;
+	private StreamsState _streamsState;
+	public StreamsState Streams { get{ return _streamsState; } }
 
-	public ElementsState Elements { get{ return _elements; } }
+	private BlocType _type;
+	public BlocType Type 
+	{ 
+		get{ return _type; }
+		set{ _type = value; }
+	}
 
 	public BlocIndex indexInMap {get; private set;}
 
@@ -132,24 +110,16 @@ public class Bloc : MonoBehaviour
 	private Unit _unit = null;
 
 	public bool HoldASource()
-	{
-		return _source != null;
-	}
+	{	return _source != null;	}
 	
 	public void ReceiveSource(Source source)
-	{
-		_source = source;
-	}
+	{	_source = source;	}
 
 	public bool HostAUnit()
-	{
-		return _unit != null;
-	}
+	{	return _unit != null;	}
 
 	public bool WelcomeUnit(Unit unit)
-	{
-		return _unit = unit;
-	}
+	{	return _unit = unit;	}
 
 	public void InsertedAt(BlocIndex pos)
 	{
@@ -175,20 +145,16 @@ public class Bloc : MonoBehaviour
 	}
 
 	public static bool IsHigher(Bloc a, Bloc b)
-	{
-		return (a.indexInMap.z > b.indexInMap.z );
-	}
+	{	return (a.indexInMap.z > b.indexInMap.z );	}
 
 	// Use this for initialization
 	void Start()
-	{
-		_elements = new ElementsState();
-	}
+	{	_streamsState = new StreamsState();	}
 	
 	// Update is called once per frame
 	void Update() 
 	{
-		Stream.StreamType currentType = Elements.CurrentType;
+		Stream.StreamType currentType = Streams.CurrentType;
 		if(currentType != Stream.StreamType.None)
 		{
 			if(_stream == null || (_stream != null && _stream.type != currentType))
@@ -213,7 +179,7 @@ public class Bloc : MonoBehaviour
 			const int maxVal = 48;
 
 			//Update stream visual according to bloc value
-			float delta = (Elements[currentType] * (1.0f / maxVal)) - _stream.gameObject.transform.localScale.y;
+			float delta = (Streams[currentType] * (1.0f / maxVal)) - _stream.gameObject.transform.localScale.y;
 			_stream.gameObject.transform.localScale += new Vector3(0, delta, 0);
 
 			//Check if a unit is in the stream
@@ -224,13 +190,58 @@ public class Bloc : MonoBehaviour
 				{
 					//Apply Lava damages
 				}
-				else if(currentType == Stream.StreamType.Water && Elements.IsElectrified )
+				else if(currentType == Stream.StreamType.Water && IsElectrified )
 				{
 					//Apply Electricity damages
 				}
 			}
 		}
 	}
+
+	public bool IsFlooded
+	{
+		get{ return _streamsState[Stream.StreamType.Water] > 0; }
+	}
+
+	public bool IsQuickSanded
+	{
+		get{ return _streamsState[Stream.StreamType.Sand] > 0; }
+	}
+
+	public bool IsUnderLava
+	{
+		get{ return _streamsState[Stream.StreamType.Lava] > 0; }
+	}
+
+	private bool _isElectrified;
+	public bool IsElectrified 
+	{
+		get{ return _isElectrified;	} 
+		set
+		{
+			Selectable select = gameObject.GetComponent<Selectable>();
+
+			if(select)
+			{
+				select.OutlineColor = Color.cyan;
+				select.IsSelected = value;
+			}
+			_isElectrified = value;
+		}
+	}
+
+	private bool _windBlows;
+	public bool HasWindBlowing
+	{
+		get{ return _windBlows;	} 
+		set
+		{
+			_windBlows = value;
+		}
+	}
+
+	public bool IsConductor()
+	{	return (_type == Bloc.BlocType.Metal) || IsFlooded;	}
 
 	public struct SortByStreamVolume : IComparer<Bloc>
 	{
@@ -253,9 +264,9 @@ public class Bloc : MonoBehaviour
 
 		public int CompareAsc(Bloc left, Bloc right)
 		{
-			if(left.Elements[_checkType] < right.Elements[_checkType])
+			if(left.Streams[_checkType] < right.Streams[_checkType])
 				return 1; //right goes after left
-			else if (left.Elements[_checkType] > right.Elements[_checkType])
+			else if (left.Streams[_checkType] > right.Streams[_checkType])
 				return -1; //left goes after right
 			else
 				return 0; //equal
@@ -263,9 +274,9 @@ public class Bloc : MonoBehaviour
 
 		public int CompareDesc(Bloc left, Bloc right)
 		{
-			if(left.Elements[_checkType] > right.Elements[_checkType])
+			if(left.Streams[_checkType] > right.Streams[_checkType])
 				return 1; //right goes after left
-			else if (left.Elements[_checkType] < right.Elements[_checkType])
+			else if (left.Streams[_checkType] < right.Streams[_checkType])
 				return -1; //left goes after right
 			else
 				return 0; //equal

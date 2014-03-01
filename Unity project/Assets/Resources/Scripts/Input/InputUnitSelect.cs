@@ -29,6 +29,6 @@ public class InputUnitSelect : MonoBehaviour
 			enabled = false;
 		}
 		else if (DebugMode && Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Terrain")))
-			Debug.Log(hit.collider.GetComponent<Bloc>().Elements.ToString());
+			Debug.Log(hit.collider.GetComponent<Bloc>().Streams.ToString());
 	}
 }

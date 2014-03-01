@@ -52,6 +52,7 @@ public abstract class Source : MonoBehaviour
 	}
 
 	public abstract void RunSource();
+	public abstract void KillSource();
 
 	public bool UpdateSourceState()
 	{
@@ -80,8 +81,9 @@ public abstract class Source : MonoBehaviour
 
 	private const float TOTAL_ANIM_TIME = 1.5f;
 	private float _animTime = -1.0f;
-	public void RemoveSelf()
+	public void Die()
 	{
+		KillSource();
 		_animTime = TOTAL_ANIM_TIME; //trigger death animation
 	}
 
