@@ -29,10 +29,6 @@ public class InputUnitSelect : MonoBehaviour
 			enabled = false;
 		}
 		else if (DebugMode && Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Terrain")))
-		{
-			Selector.Selected = hit.collider;
-			gameObject.GetComponent<InputDebug>().enabled = true;
-			enabled = false;
-		}
+			Debug.Log(hit.collider.GetComponent<Bloc>().Elements.ToString());
 	}
 }
