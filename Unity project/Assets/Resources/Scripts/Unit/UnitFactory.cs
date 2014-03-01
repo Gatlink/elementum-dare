@@ -23,7 +23,7 @@ public static class UnitFactory
 		string materialPath = string.Format ("Mesh/Materials/{0}_{1}", team, sourceType);
 		MeshRenderer renderer = obj.AddComponent<MeshRenderer>();
 		renderer.material = Resources.Load<Material>(materialPath);
-		string texturePath = string.Format("Texture/Units/{0}/{0}_{1}_DFF", team, sourceType);
+		string texturePath = string.Format("Texture/Units/{0}/{0}_{1}", team, sourceType);
 		renderer.material.mainTexture = Resources.Load<Texture>(texturePath);
 
 		// BOX COLLIDER
@@ -53,7 +53,7 @@ public static class UnitFactory
 	{
 		var dict = new Dictionary<Unit.ETeam, int>();
 
-		dict.Add(Unit.ETeam.Monstre, 1);
+		dict.Add(Unit.ETeam.Monster, 1);
 		dict.Add(Unit.ETeam.Totem, 1);
 
 		return dict;
