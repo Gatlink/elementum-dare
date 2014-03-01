@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 public class Bloc : MonoBehaviour 
@@ -247,6 +248,13 @@ public class Bloc : MonoBehaviour
 	{
 		string msg = string.Format("BLOC: {0}\nElectrified -> {1}\nWind blowing -> {2}\n{3}", Type, IsElectrified, HasWindBlowing, Streams.ToString());
 		return msg;
+	}
+
+	public int FlatDistance(Bloc other)
+	{
+		BlocIndex othIdx = other.indexInMap;
+		var distance = Math.Abs(othIdx.x - indexInMap.x) + Math.Abs(othIdx.y - indexInMap.y);
+		return distance;
 	}
 
 	public struct SortByStreamVolume : IComparer<Bloc>

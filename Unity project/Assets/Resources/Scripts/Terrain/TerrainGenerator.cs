@@ -183,6 +183,7 @@ public class TerrainGenerator : MonoBehaviour
 					unit.MoveToBloc(bloc);
 					unit.FaceYourOpponent();
 					Unit.Units.Add(unit);
+					GameTicker.RegisterListener(unit);
 				}
 			}
 		}

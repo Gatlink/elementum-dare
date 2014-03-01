@@ -54,6 +54,6 @@ public static class GameTicker
 
 public interface PhaseEventListener
 {
-	void onEndPhase(int _phase);
-	void onStartNewPhase(int _phase);
+	void onEndPhase(int phase);
+	void onStartNewPhase(int phase);
 }

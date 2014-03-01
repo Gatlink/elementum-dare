@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Unit : MonoBehaviour {
+public class Unit : MonoBehaviour, PhaseEventListener {
 	public enum ETeam
 	{
 		Totem,
@@ -23,6 +23,7 @@ public class Unit : MonoBehaviour {
 	private Transform _target = null;
 	private Vector3 _relOriginForwardRay;
 	private Bloc _bloc;
+	private int _currentMoves;
 
 	public Transform Target
 	{
@@ -88,7 +89,7 @@ public class Unit : MonoBehaviour {
 
 	
 	void Move() {
-		if(!TargetIsAccessible())
+		if(!TargetIsAccessible() || CurrentBloc == null)
 		{
 			Target = null;
 			return;
@@ -96,13 +97,6 @@ public class Unit : MonoBehaviour {
 		
 		Vector3 vDest = Target.transform.position;
 		vDest.y = transform.position.y;
-		
-		Unit unit = gameObject.GetComponent<Unit>();
-		if(unit == null || unit.CurrentBloc == null)
-		{
-			Target = null;
-			return;
-		}
 		
 		// Face the destination
 		if (transform.rotation != _rotateTo)
@@ -126,7 +120,8 @@ public class Unit : MonoBehaviour {
 		else
 		{
 			Bloc dest = Target.gameObject.GetComponent<Bloc>();
-			unit.MoveToBloc(dest);
+			_currentMoves = _currentMoves - dest.FlatDistance(_bloc);
+			MoveToBloc(dest);
 			Target = null;
 		}
 	}
@@ -155,7 +150,14 @@ public class Unit : MonoBehaviour {
 		
 		if(bloc == null)
 			return false;
-		
-		return bloc.IsReachable();
+
+		return bloc.IsReachable() && bloc.FlatDistance(_bloc) <= _currentMoves;
+	}
+
+	public void onEndPhase(int phase) {}
+	public void onStartNewPhase(int phase)
+	{
+		if (_currentMoves < Moves)
+			_currentMoves = Moves;
 	}
 }
