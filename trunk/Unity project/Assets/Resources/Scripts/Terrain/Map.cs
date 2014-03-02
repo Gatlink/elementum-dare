@@ -201,6 +201,51 @@ public class Map
 		return FetchNeighbors2D(bloc.indexInMap, range, includeStartBloc);
 	}
 
+	public static List<Bloc> FetchNeighborsIf(BlocIndex index, int range, System.Func<Bloc, bool> _func, bool volumetricSearch = false, bool includeStartBloc = false)
+	{
+		List<Bloc> list = new List<Bloc>();
+		
+		int minX = Mathf.Max(0, index.x - range);
+		int maxX = Mathf.Min(_width-1, index.x + range);
+		int minY = Mathf.Max(0, index.y - range);
+		int maxY = Mathf.Min(_length-1, index.y + range);
+		int minZ = index.z;
+		int maxZ = index.z;
+		
+		if(volumetricSearch)
+		{
+			minZ = Mathf.Max(0, index.z - range);
+			maxZ = index.z + range;
+		}
+		
+		for(int x = minX; x <= maxX; ++x)
+		{
+			for(int y = minY; y <= maxY; ++y)
+			{
+				for(int z = minZ; z <= maxZ; ++z)
+				{					
+					Bloc bloc = GetBlocAt(x, y, z);
+					
+					if(bloc == null)
+						continue;
+					
+					if(bloc.indexInMap == index && !includeStartBloc) //discard starting bloc
+						continue;
+
+					if(_func(bloc))
+						list.Add(bloc);
+				}
+			}
+		}
+		
+		return list;
+	}
+	
+	public static List<Bloc> FetchNeighborsIf(Bloc bloc, int range, System.Func<Bloc, bool> _func , bool volumetricSearch = false, bool includeStartBloc = false)
+	{
+		return FetchNeighborsIf(bloc.indexInMap, range, _func, volumetricSearch, includeStartBloc);
+	}
+
 	public static Bloc GetBlocAt(int x, int y, int z = -1)
 	{
 		int top = _internalMap[x,y].Count-1;

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class ElectricitySource : Source
 {
 	private List<Bloc> _electrified = new List<Bloc>();
+	System.Func<Bloc, bool> checkConductivity = (bloc) => { return bloc.IsConductor(); };
 
 	public override void RunSource()
 	{
@@ -16,27 +17,21 @@ public class ElectricitySource : Source
 
 		ShutDownPower();
 
-		List<Bloc> neighbors =  Map.FetchNeighbors(_bloc, 1, true, true);
+		List<Bloc> neighbors =  Map.FetchNeighborsIf(_bloc, 1, checkConductivity, true, true);
 		foreach(Bloc bloc in neighbors)
 		{
-			if(bloc.IsConductor())
-				_electrified.Add(bloc);
-		}
-
-		//Be sure all direct conducting neighbors are electrified
-		foreach(Bloc bloc in _electrified)
-		{
 			bloc.IsElectrified = true;
+			_electrified.Add(bloc);
 		}
 
-		//Then look for conducting neighbors not electrified
+		//Look for conducting neighbors not electrified
 		for(int i = 0; i <  _electrified.Count; ++i)
 		{
 			Bloc bloc = _electrified[i];
-			List<Bloc> surroundings =  Map.FetchNeighbors(bloc, 1, true, false);
+			List<Bloc> surroundings =  Map.FetchNeighborsIf(bloc, 1, checkConductivity, true, false);
 			foreach(Bloc neighbor in surroundings)
 			{
-				if(neighbor.IsConductor() && !neighbor.IsElectrified)
+				if(!neighbor.IsElectrified)
 				{
 					neighbor.IsElectrified = true;
 					_electrified.Add(neighbor);
