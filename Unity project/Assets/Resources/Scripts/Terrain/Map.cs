@@ -37,6 +37,11 @@ public struct BlocIndex
 	{
 		return 1;
 	}
+
+	public new string ToString()
+	{
+		return string.Format ("({0}, {1}, {2})", x, y, z);
+	}
 }
 
 public class Map 
@@ -136,11 +141,11 @@ public class Map
 			{
 				for(int z = minZ; z <= maxZ; ++z)
 				{
-					if(x != index.x && y != index.y)
-						continue;
+					/*if(x != index.x && y != index.y) //discard corners
+						continue;*/
 
-					Bloc bloc = GetBlocAt(x, y, index.z);
-					
+					Bloc bloc = GetBlocAt(x, y, z);
+
 					if(bloc == null)
 						continue;
 
@@ -193,7 +198,7 @@ public class Map
 
 	public static List<Bloc> FetchNeighbors2D(Bloc bloc, int range, bool includeStartBloc = false)
 	{
-		return FetchNeighbors(bloc.indexInMap, range, includeStartBloc);
+		return FetchNeighbors2D(bloc.indexInMap, range, includeStartBloc);
 	}
 
 	public static Bloc GetBlocAt(int x, int y, int z = -1)
