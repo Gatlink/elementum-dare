@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,7 +8,13 @@ public class ElectricitySource : Source
 
 	public override void RunSource()
 	{
-		_electrified.Clear();
+		if(_bloc == null)
+		{
+			Debug.LogError ("Updating a source affected to no bloc.");
+			return;
+		}
+
+		ShutDownPower();
 
 		List<Bloc> neighbors =  Map.FetchNeighbors(_bloc, 1, true, true);
 		foreach(Bloc bloc in neighbors)
@@ -24,8 +30,9 @@ public class ElectricitySource : Source
 		}
 
 		//Then look for conducting neighbors not electrified
-		foreach(Bloc bloc in _electrified)
+		for(int i = 0; i <  _electrified.Count; ++i)
 		{
+			Bloc bloc = _electrified[i];
 			List<Bloc> surroundings =  Map.FetchNeighbors(bloc, 1, true, false);
 			foreach(Bloc neighbor in surroundings)
 			{
@@ -40,6 +47,11 @@ public class ElectricitySource : Source
 	}
 
 	public override void KillSource()
+	{
+		ShutDownPower();
+	}
+
+	private void ShutDownPower()
 	{
 		foreach(Bloc bloc in _electrified)
 		{

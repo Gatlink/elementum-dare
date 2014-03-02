@@ -246,7 +246,12 @@ public class Bloc : MonoBehaviour
 
 	public new string ToString()
 	{
-		string msg = string.Format("BLOC: {0}\nElectrified -> {1}\nWind blowing -> {2}\n{3}", Type, IsElectrified, HasWindBlowing, Streams.ToString());
+		string blocIdentifier = gameObject.name.ToUpper() + ":";
+		string blocCoords = "COORDS: " + indexInMap.ToString();
+		string blocType = "TYPE: " + Type.ToString();
+		string blocState = string.Format("STATE:\nElec: {0}\nWind: {1}", IsElectrified, HasWindBlowing);
+		string blocStreams = Streams.ToString();
+		string msg = string.Format ("{0}\n{1}\n{2}\n{3}\n{4}\n", blocIdentifier, blocCoords, blocType, blocState, blocStreams);
 		return msg;
 	}
 

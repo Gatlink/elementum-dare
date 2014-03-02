@@ -6,6 +6,12 @@ public class WindSource : Source
 {	
 	public override void RunSource() 
 	{
+		if(_bloc == null)
+		{
+			Debug.LogError ("Updating a source affected to no bloc.");
+			return;
+		}
+
 		List<Bloc> surroundings =  Map.FetchNeighbors(_bloc, 1, true);
 		
 		foreach(Bloc bloc in surroundings)

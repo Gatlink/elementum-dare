@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 public class SourceManager : IManager<Source>
 {
+	private List<Source> _markedForDeletion = new List<Source>();
+
 	public Source SpawnSource(Source.SourceType type)
 	{
 		Source source = SourceFactory.CreateSource(type);
-		
 		RegisterElement(source);
-
 		return source;
 	}
 
@@ -19,23 +19,22 @@ public class SourceManager : IManager<Source>
 			source.RunSource();
 		}
 	}
-	
-	public void CleanDeadSources()
+
+	public void FlagDeadSources()
 	{
-		List<Source> markedForDeletion = new List<Source>();
 		foreach(Source source in _items)
 		{
 			if(source.UpdateSourceState())
-				markedForDeletion.Add(source);
+				_markedForDeletion.Add(source);
 		}
+	}
 
-		if(markedForDeletion.Count > 0)
+	public void RemoveDeadSources()
+	{
+		foreach(Source corpse in _markedForDeletion)
 		{
-			foreach(Source corpse in markedForDeletion)
-			{
-				corpse.Die();
-				UnregisterElement(corpse);
-			}
+			corpse.Die();
+			UnregisterElement(corpse);
 		}
 	}
 	
@@ -47,5 +46,5 @@ public class SourceManager : IManager<Source>
 		return _instance;
 	}
 	
-	private SourceManager()	{}
+	private SourceManager(){}
 }

@@ -16,6 +16,9 @@ public static class GameTicker
 
 	public static void EndPhase()
 	{
+		//Actually removes the falgged sources
+		SourceManager.Instance().RemoveDeadSources();
+
 		//Update sources
 		SourceManager.Instance().UpdateSources();
 
@@ -30,7 +33,7 @@ public static class GameTicker
 	public static void StartNewPhase()
 	{
 		//Remove 'dead' sources
-		SourceManager.Instance().CleanDeadSources();
+		SourceManager.Instance().FlagDeadSources();
 		foreach(PhaseEventListener l in _phaseListeners)
 		{
 			l.onStartNewPhase(_phase);
