@@ -47,5 +47,8 @@ public class InputSource : MonoBehaviour
 		_handledSource = null;
 		GetComponent<InputUnit>().enabled = true;
 		enabled = false;
+		Unit unit = Selector.Selected.GetComponent<Unit>();
+		if (unit != null)
+			unit.UpdateAccessibleBlocs();
 	}
 }

@@ -22,23 +22,18 @@ public class InputUnit : MonoBehaviour
 			GameTicker.StartNewPhase();
 		}
 
-		// SELECTION
+		// MOVEMENT
 		Vector3 mousePos = Input.mousePosition;
 
 		RaycastHit hit = new RaycastHit();
 		Ray ray = Camera.main.ScreenPointToRay(mousePos);
 
-//		if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Units")))
-//		{
-//			if (hit.collider != Selector.Selected)
-//				Selector.Selected =  hit.collider;
-//		}
 		if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << LayerMask.NameToLayer("Terrain")))
 		{
 			if (Input.GetMouseButtonDown(0))
 			{
 				Unit unit = Selector.Selected.GetComponent<Unit>();
-				unit.Target = hit.collider.transform;
+				unit.Target = hit.collider.GetComponent<Bloc>();
 			}
 			else if (Input.GetKeyDown(KeyCode.LeftControl))
 				Debug.Log(hit.collider.GetComponent<Bloc>().ToString());
