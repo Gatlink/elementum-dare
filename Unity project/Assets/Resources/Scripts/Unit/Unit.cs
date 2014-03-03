@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Unit : MonoBehaviour, PhaseEventListener {
 	public enum ETeam
@@ -20,12 +22,12 @@ public class Unit : MonoBehaviour, PhaseEventListener {
 	public float RotateSpeed = 400;
 	
 	private Quaternion _rotateTo;
-	private Transform _target = null;
+	private Bloc _target = null;
 	private Vector3 _relOriginForwardRay;
 	private Bloc _bloc;
 	private int _currentMoves;
 
-	public Transform Target
+	public Bloc Target
 	{
 		get
 		{
@@ -54,6 +56,28 @@ public class Unit : MonoBehaviour, PhaseEventListener {
 		}
 	}
 
+	private IEnumerable<Bloc> _accessibleBlocs;
+	private IEnumerable<Bloc> AccessibleBlocs
+	{
+		get { return _accessibleBlocs; }
+		set
+		{
+			if (_accessibleBlocs != null)
+			{
+				foreach (Bloc bloc in _accessibleBlocs)
+					bloc.gameObject.renderer.material.color = Color.white;
+			}
+
+			_accessibleBlocs = value;
+
+			if (_accessibleBlocs != null)
+			{
+				foreach (Bloc bloc in _accessibleBlocs)
+					bloc.gameObject.renderer.material.color = Color.red;
+			}
+		}
+	}
+
 	void Start ()
 	{
 		ResetMovement();
@@ -61,8 +85,21 @@ public class Unit : MonoBehaviour, PhaseEventListener {
 
 	void Update ()
 	{
-		if (Target != null)
+		if (Selector.Selected == collider)
+		{
+			if (_accessibleBlocs == null)
+				UpdateAccessibleBlocs();
+		}
+
+		if (Target != null
+		    && _accessibleBlocs != null
+		    && _accessibleBlocs.Contains(Target))
 			Move();
+	}
+
+	public void UpdateAccessibleBlocs()
+	{
+		AccessibleBlocs = GetAccessibleBlocs(_bloc, _currentMoves);
 	}
 
 	public void MoveToBloc(Bloc bloc)
@@ -89,12 +126,6 @@ public class Unit : MonoBehaviour, PhaseEventListener {
 
 	
 	void Move() {
-		if(!TargetIsAccessible() || CurrentBloc == null)
-		{
-			Target = null;
-			return;
-		}
-		
 		Vector3 vDest = Target.transform.position;
 		vDest.y = transform.position.y;
 		
@@ -119,10 +150,10 @@ public class Unit : MonoBehaviour, PhaseEventListener {
 		// End of the road
 		else
 		{
-			Bloc dest = Target.gameObject.GetComponent<Bloc>();
-			_currentMoves = _currentMoves - dest.FlatDistance(_bloc);
-			MoveToBloc(dest);
+			_currentMoves = _currentMoves - Target.FlatDistance(_bloc);
+			MoveToBloc(Target);
 			Target = null;
+			AccessibleBlocs = null;
 		}
 	}
 	
@@ -142,19 +173,40 @@ public class Unit : MonoBehaviour, PhaseEventListener {
 		direction.y = 0;
 		return direction.normalized;
 	}
-	
-	private bool TargetIsAccessible()
-	{
-		//Assume Target is a Bloc
-		Bloc bloc = Target.GetComponent<Bloc>();
-		
-		if(bloc == null)
-			return false;
 
-		return bloc.IsReachable() && bloc.FlatDistance(_bloc) <= _currentMoves;
+	private IEnumerable<Bloc> GetAccessibleBlocs(Bloc start, int distance)
+	{
+		if (distance <= 0)
+			return null;
+
+		List<Bloc> blocs = Map.FetchNeighbors2D(start, 1);
+		List<Bloc> neighbours = new List<Bloc>();
+		for (int i = 0; i < blocs.Count; ++i)
+		{
+			if (Math.Abs(blocs[i].indexInMap.z - start.indexInMap.z) > 1
+			    || !blocs[i].IsReachable())
+			{
+				blocs.RemoveAt(i);
+				i = i - 1; // compensate for the deletion of an entry
+				continue;
+			}
+
+			IEnumerable<Bloc> directNeighbours = GetAccessibleBlocs(blocs[i], distance - 1);
+			if (directNeighbours != null)
+				neighbours.AddRange(directNeighbours);
+		}
+
+		blocs.AddRange(neighbours);
+
+		return new HashSet<Bloc>(blocs);
 	}
 
-	public void onEndPhase(int phase) {}
+	public void onEndPhase(int phase)
+	{
+		AccessibleBlocs = null;
+		Target = null;
+	}
+
 	public void onStartNewPhase(int phase)
 	{
 		if (_currentMoves < Moves)

@@ -44,7 +44,7 @@ public struct BlocIndex
 	}
 }
 
-public class Map 
+public static class Map 
 {
 	private static List<Bloc>[,] _internalMap;
 

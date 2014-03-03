@@ -51,5 +51,8 @@ public class InputBloc : MonoBehaviour
 		_handledBloc = null;
 		GetComponent<InputUnit>().enabled = true;
 		enabled = false;
+		Unit unit = Selector.Selected.GetComponent<Unit>();
+		if (unit != null)
+			unit.UpdateAccessibleBlocs();
 	}
 }
