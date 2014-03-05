@@ -17,7 +17,7 @@ public class InputBloc : MonoBehaviour
 		{
 			Unit unit = Selector.Selected.gameObject.GetComponent<Unit>();
 			bloc = unit.CurrentBloc;
-			_handledBloc = BlocFactory.CreateBloc(unit.BlocType);
+			_handledBloc = unit.CreateBloc();
 		}
 		else
 		{

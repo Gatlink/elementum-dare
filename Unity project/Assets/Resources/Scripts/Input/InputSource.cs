@@ -17,7 +17,7 @@ public class InputSource : MonoBehaviour
 		{
 			Unit unit = Selector.Selected.gameObject.GetComponent<Unit>();
 			bloc = unit.CurrentBloc;
-			_handledSource = SourceManager.Instance().SpawnSource(unit.SourceType);
+			_handledSource = unit.CreateSource();
 		}
 		else
 		{
