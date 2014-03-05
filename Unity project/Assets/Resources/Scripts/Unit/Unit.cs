@@ -21,25 +21,8 @@ public class Unit : MonoBehaviour, PhaseEventListener {
 	public float MoveSpeed = 150;
 	public float RotateSpeed = 400;
 	
-	private Quaternion _rotateTo;
-	private Bloc _target = null;
-	private Vector3 _relOriginForwardRay;
 	private Bloc _bloc;
 	private int _currentMoves;
-
-	public Bloc Target
-	{
-		get
-		{
-			return _target;
-		}
-		
-		set
-		{
-			_target = value;
-			ResetMovement();
-		}
-	}
 
 	public Bloc CurrentBloc
 	{
@@ -53,6 +36,36 @@ public class Unit : MonoBehaviour, PhaseEventListener {
 
 			if (_bloc != null)
 				_bloc.WelcomeUnit(this);
+		}
+	}
+
+	// Path finding
+	private Quaternion _rotateTo;
+	private Vector3 _relOriginForwardRay;
+	private Dictionary<Bloc, Bloc> _paths = new Dictionary<Bloc, Bloc>();
+	private List<Bloc> _currentPath = new List<Bloc>();
+	public Bloc Target
+	{
+		get
+		{
+			return _currentPath.FirstOrDefault();
+		}
+		
+		set
+		{
+			if (!value || (_accessibleBlocs != null && !_accessibleBlocs.Contains(value)))
+			{
+				_currentPath.Clear();
+				return;
+			}
+
+			Bloc bloc = value;
+			while (bloc != _bloc)
+			{
+				_currentPath.Insert(0, bloc);
+				bloc = _paths[bloc];
+			}
+			ResetMovement();
 		}
 	}
 
@@ -78,11 +91,6 @@ public class Unit : MonoBehaviour, PhaseEventListener {
 		}
 	}
 
-	void Start ()
-	{
-		ResetMovement();
-	}
-
 	void Update ()
 	{
 		if (Selector.Selected == collider)
@@ -91,9 +99,7 @@ public class Unit : MonoBehaviour, PhaseEventListener {
 				UpdateAccessibleBlocs();
 		}
 
-		if (Target != null
-		    && _accessibleBlocs != null
-		    && _accessibleBlocs.Contains(Target))
+		if (Target != null)
 			Move();
 	}
 
@@ -125,7 +131,7 @@ public class Unit : MonoBehaviour, PhaseEventListener {
 	}
 
 	
-	void Move() {
+	private void Move() {
 		Vector3 vDest = Target.transform.position;
 		vDest.y = transform.position.y;
 		
@@ -152,14 +158,15 @@ public class Unit : MonoBehaviour, PhaseEventListener {
 		{
 			_currentMoves = _currentMoves - Target.FlatDistance(_bloc);
 			MoveToBloc(Target);
-			Target = null;
+			_currentPath.Remove(Target);
 			AccessibleBlocs = null;
+			ResetMovement();
 		}
 	}
 	
 	public void ResetMovement()
 	{
-		Vector3 moveDir = getMoveDirection();
+		Vector3 moveDir = GetMoveDirection();
 		_rotateTo = Quaternion.LookRotation(moveDir);
 		
 		// Compute the ray to check for collision in front of the unit
@@ -167,7 +174,7 @@ public class Unit : MonoBehaviour, PhaseEventListener {
 		_relOriginForwardRay.y = _relOriginForwardRay.y - collider.bounds.size.y/2 - 4.9f;
 	}
 	
-	private Vector3 getMoveDirection()
+	private Vector3 GetMoveDirection()
 	{
 		Vector3 direction = (Target ? Target.transform.position : Vector3.zero) - transform.position;
 		direction.y = 0;
@@ -191,12 +198,17 @@ public class Unit : MonoBehaviour, PhaseEventListener {
 				continue;
 			}
 
+			_paths[blocs[i]] = start;
+
 			IEnumerable<Bloc> directNeighbours = GetAccessibleBlocs(blocs[i], distance - 1);
 			if (directNeighbours != null)
 				neighbours.AddRange(directNeighbours);
 		}
 
-		blocs.AddRange(neighbours);
+		neighbours.ForEach(delegate (Bloc bloc) {
+			if (!blocs.Contains(bloc))
+				blocs.Add(bloc);
+		});
 
 		return new HashSet<Bloc>(blocs);
 	}
