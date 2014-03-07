@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -177,7 +177,13 @@ public class Bloc : MonoBehaviour
 	{	return (a.indexInMap.z > b.indexInMap.z );	}
 
 	// Use this for initialization
-	void Start(){}
+	void Start()
+	{
+		_gui = (GameObject) UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefab/BlocGUI"));
+		_gui.name = name + "GUI";
+		_gui.transform.position = transform.position;
+		_gui.SetActive(false);
+	}
 	
 	// Update is called once per frame
 	void Update() 
@@ -320,4 +326,21 @@ public class Bloc : MonoBehaviour
 		else
 			return null;
 	}
+
+#region GUI
+
+	private GameObject _gui;
+
+	public void Highlight(Color color)
+	{
+		_gui.SetActive(true);
+		_gui.renderer.material.color = color;
+	}
+
+	public void RemoveHighlight()
+	{
+		_gui.SetActive(false);
+	}
+	
+#endregion
 }

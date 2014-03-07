@@ -6,11 +6,15 @@ public class InputUnit : MonoBehaviour
 	private void Leave<NextState>() where NextState : MonoBehaviour
 	{
 		enabled = false;
+		Selector.Selected.GetComponent<Unit>().Accessor.Clear();
+		Selector.Selected.GetComponent<Unit>().enabled = false;
 		GetComponent<NextState>().enabled = true;
 	}
 
 	void Update ()
 	{
+		Selector.Selected.GetComponent<Unit>().enabled = true;
+
 		// KEYS
 		if(Input.GetKeyDown(KeyCode.Space))
 			Leave<InputSource>();
