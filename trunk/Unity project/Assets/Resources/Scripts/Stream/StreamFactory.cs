@@ -55,7 +55,13 @@ public class StreamFactory
 		hitBox.transform.parent = streamObj.transform;
 		
 		//Add proper stream script
-		Stream script = streamObj.AddComponent("Stream") as Stream;
+		string streamScript = "FluidStream";
+		if(stream.type == Stream.StreamType.Electricity)
+			streamScript = "ElectricityStream";
+		else if (stream.type == Stream.StreamType.Wind)
+			streamScript = "WindStream";
+
+		Stream script = streamObj.AddComponent(streamScript) as Stream;
 		script.type = stream.type;
 		
 		return streamObj;

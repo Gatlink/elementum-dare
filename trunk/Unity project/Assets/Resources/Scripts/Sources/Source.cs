@@ -16,8 +16,8 @@ public abstract class Source : MonoBehaviour
 
 	protected SourceType _type;
 
-	protected int _generate;
-	protected int _duration;
+	protected ushort _generate;
+	protected ushort _duration;
 
 	protected Bloc _bloc;
 	public Bloc Bloc
@@ -93,7 +93,7 @@ public abstract class Source : MonoBehaviour
 			return;
 
 		float dt = Time.deltaTime;
-		float trans = (BlocFactory.GetBlocSize().y / TOTAL_ANIM_TIME) * dt;
+		float trans = (Bloc.GetBlocSize().y / TOTAL_ANIM_TIME) * dt;
 
 		transform.Translate(-Vector3.up * trans);
 		_animTime -= dt;

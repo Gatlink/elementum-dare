@@ -6,8 +6,9 @@ public class StreamManager : IManager<Stream>
 	public Stream CreateStream(Stream.StreamType type, Bloc onBloc)
 	{
 		Stream stream = StreamFactory.CreateStream(type);
-			
-		RegisterElement(stream);
+
+		if(!(type == Stream.StreamType.Wind || type == Stream.StreamType.Electricity))
+			RegisterElement(stream);
 
 		stream.PlaceOnBloc(onBloc);
 
@@ -16,7 +17,8 @@ public class StreamManager : IManager<Stream>
 
 	public void RemoveStream(ref Stream stream)
 	{
-		UnregisterElement(stream);
+		if(!(stream.type == Stream.StreamType.Wind || stream.type == Stream.StreamType.Electricity))
+			UnregisterElement(stream);
 
 		Object.DestroyImmediate(stream.gameObject); //TODO change for a smoother transition
 	}
@@ -52,7 +54,7 @@ public class StreamManager : IManager<Stream>
 		System.Array.Sort<Stream>(orderedStreams, mark, count, new StreamVolumeComparer());
 
 		foreach(Stream s in orderedStreams)
-			s.Flow();
+			s.UpdateStream();
 	}
 	
 	//Singleton
