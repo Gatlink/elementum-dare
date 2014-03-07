@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Bloc : MonoBehaviour 
 {
@@ -17,26 +18,27 @@ public class Bloc : MonoBehaviour
 	public static int NB_OF_TYPES = (int)BlocType.UpgradedPlant;
 	// must be last of enum
 
+#region StreamState
 	public class StreamsState
 	{
-		private Dictionary<Stream.StreamType, int> _state;
+		private Dictionary<Stream.StreamType, ushort> _state;
 
 		///////////////////////////////////////////////////// WATER
-		public int Water
+		public ushort Water
 		{
 			get{ return _state[Stream.StreamType.Water]; }
 			set{ _state[Stream.StreamType.Water] = value; }
 		}
 
 		///////////////////////////////////////////////////// SAND
-		public int Sand
+		public ushort Sand
 		{
 			get{ return _state[Stream.StreamType.Sand]; }
 			set{ _state[Stream.StreamType.Sand] = value; }
 		}
 
 		///////////////////////////////////////////////////// LAVA
-		public int Lava
+		public ushort Lava
 		{
 			get{ return _state[Stream.StreamType.Lava]; }
 			set{  _state[Stream.StreamType.Lava] = value; }
@@ -46,27 +48,25 @@ public class Bloc : MonoBehaviour
 
 
 		///////////////////////////////////////////////////// ACCESSORS & HELPERS
-		public Stream.StreamType CurrentType
+		public List<Stream.StreamType> CurrentTypes
 		{
 			get
 			{
-				Stream.StreamType t = Stream.StreamType.None;
-				int val = 0;
+				List<Stream.StreamType> list = new List<Stream.StreamType>();
 
-				foreach(KeyValuePair<Stream.StreamType, int> pair in _state)
+				foreach(KeyValuePair<Stream.StreamType, ushort> pair in _state)
 				{
-					if(pair.Value > val)
+					if(pair.Value > 0)
 					{
-						t = pair.Key;
-						val = pair.Value;
+						list.Add(pair.Key);
 					}
 				}
 
-				return t;
+				return list;
 			}
 		}
 
-		public int this[Stream.StreamType type]
+		public ushort this[Stream.StreamType type]
 		{
 			get{ return _state[type]; }
 			set{ _state[type] = value; }
@@ -74,18 +74,20 @@ public class Bloc : MonoBehaviour
 
 		public StreamsState()
 		{
-			_state = new Dictionary<Stream.StreamType, int>();
+			_state = new Dictionary<Stream.StreamType, ushort>();
 
 			_state.Add(Stream.StreamType.Sand, 0);
 			_state.Add(Stream.StreamType.Lava, 0);
 			_state.Add(Stream.StreamType.Water, 0);
+			_state.Add(Stream.StreamType.Electricity, 0);
+			_state.Add(Stream.StreamType.Wind, 0);
 		}
 
 		public new string ToString()
 		{
 			string msg = "ELEMENTS:\n";
 
-			foreach(KeyValuePair<Stream.StreamType, int> pair in _state)
+			foreach(KeyValuePair<Stream.StreamType, ushort> pair in _state)
 			{
 				msg += pair.Key.ToString() + " -> " + pair.Value.ToString() + "\n";
 			}
@@ -94,8 +96,36 @@ public class Bloc : MonoBehaviour
 		}
 	}
 
-	private StreamsState _streamsState;
+	private StreamsState _streamsState = new StreamsState();
 	public StreamsState Streams { get{ return _streamsState; } }
+
+	public bool IsFlooded
+	{
+		get{ return _streamsState[Stream.StreamType.Water] > 0; }
+	}
+	
+	public bool IsQuickSanded
+	{
+		get{ return _streamsState[Stream.StreamType.Sand] > 0; }
+	}
+	
+	public bool IsUnderLava
+	{
+		get{ return _streamsState[Stream.StreamType.Lava] > 0; }
+	}
+	
+	public bool IsElectrified 
+	{
+		get{ return _streamsState[Stream.StreamType.Electricity] > 0; } 
+		set{ _streamsState[Stream.StreamType.Electricity] = (_type == BlocType.Metal || IsFlooded) && value ? (ushort)1 : (ushort)0; }
+	}
+
+	public bool HasWindBlowing
+	{
+		get{ return _streamsState[Stream.StreamType.Wind] > 0; } 
+		set{ _streamsState[Stream.StreamType.Wind] = value ? (ushort)1 : (ushort)0; }
+	}
+#endregion
 
 	private BlocType _type;
 	public BlocType Type 
@@ -106,21 +136,21 @@ public class Bloc : MonoBehaviour
 
 	public BlocIndex indexInMap {get; private set;}
 
-	private Source _source = null;
-	private Stream _stream = null;
-	private Unit _unit = null;
+	private Source _sourceObject = null;
+	private Dictionary<Stream.StreamType, Stream> _streamObjects = new Dictionary<Stream.StreamType, Stream>();
+	private Unit _unitObject = null;
 
 	public bool HoldASource()
-	{	return _source != null;	}
+	{	return _sourceObject != null;	}
 	
 	public void ReceiveSource(Source source)
-	{	_source = source;	}
+	{	_sourceObject = source;	}
 
 	public bool HostAUnit()
-	{	return _unit != null;	}
+	{	return _unitObject != null;	}
 
 	public bool WelcomeUnit(Unit unit)
-	{	return _unit = unit;	}
+	{	return _unitObject = unit;	}
 
 	public void InsertedAt(BlocIndex pos)
 	{
@@ -130,13 +160,11 @@ public class Bloc : MonoBehaviour
 		gameObject.transform.parent = Map.GetMapRefTransform();
 	}
 
-	public bool IsReachable() //TODO déterminer si on passe un Vec3 ou un BlocIndex
+	public bool IsReachable()
 	{
 		if(HoldASource() || HostAUnit())
 			return false;
 
-		//TODO déterminer si on lui passe le bloc de départ (potentiellement à 2 blocs d'écart, ou juste le bloc adjacent)
-		//TODO déterminer si "à portée" (diff hauteur)
 		return true;
 	}
 
@@ -149,95 +177,68 @@ public class Bloc : MonoBehaviour
 	{	return (a.indexInMap.z > b.indexInMap.z );	}
 
 	// Use this for initialization
-	void Start()
-	{	_streamsState = new StreamsState();	}
+	void Start(){}
 	
 	// Update is called once per frame
 	void Update() 
 	{
-		Stream.StreamType currentType = Streams.CurrentType;
-		if(currentType != Stream.StreamType.None)
-		{
-			if(_stream == null || (_stream != null && _stream.type != currentType))
-			{
-				if(_stream != null)
-					StreamManager.Instance().RemoveStream(ref _stream);
+		//TODO stream interaction
+		UpdateStreamsState();
+		UpdateStreamsVisuals();
+	}
 
-				_stream = StreamManager.Instance().CreateStream(currentType, this);
-				_stream.gameObject.transform.position = Map.IndexToPosition(indexInMap.x, indexInMap.y, indexInMap.z + 1);
+	void UpdateStreamsState()
+	{
+		List<Stream.StreamType> currentTypes = Streams.CurrentTypes;
+		if(currentTypes.Count > 0)
+		{
+			//Remove all the streams that aren't supposed to still be there
+			List<Stream.StreamType> disposableStreams = new List<Stream.StreamType>();
+			foreach(KeyValuePair<Stream.StreamType, Stream> p in _streamObjects)
+			{
+				if(!currentTypes.Contains(p.Key))
+				{
+					Stream tmp = p.Value;
+					StreamManager.Instance().RemoveStream(ref tmp);
+					disposableStreams.Add(p.Key);
+				}
+			}
+
+			//Remove the corresponding entries in the dictionary
+			foreach(Stream.StreamType key in disposableStreams)
+			{
+				_streamObjects.Remove(key);
+			}
+
+			//Create the missing streams
+			Vector3 streamPos = Map.IndexToPosition(indexInMap.x, indexInMap.y, indexInMap.z + 1);
+			foreach(Stream.StreamType key in currentTypes)
+			{
+				if(!_streamObjects.ContainsKey(key))
+				{
+					Stream tmpStream = StreamManager.Instance().CreateStream(key, this);
+					tmpStream.gameObject.transform.position = streamPos;
+					_streamObjects.Add(key, tmpStream);
+				}
 			}
 		}
 		else
 		{
-			if(_stream != null)
-				StreamManager.Instance().RemoveStream(ref _stream);
-
-			_stream = null;
-		}
-
-		if(_stream != null)
-		{
-			const int maxVal = 48;
-
-			//Update stream visual according to bloc value
-			float delta = (Streams[currentType] * (1.0f / maxVal)) - _stream.gameObject.transform.localScale.y;
-			_stream.gameObject.transform.localScale += new Vector3(0, delta, 0);
-
-			//Check if a unit is in the stream
-			if(HostAUnit())
+			//Remove all the streams
+			foreach(KeyValuePair<Stream.StreamType, Stream> p in _streamObjects)
 			{
-				//Should it be damaged ?
-				if(currentType == Stream.StreamType.Lava)
-				{
-					//Apply Lava damages
-				}
-				else if(currentType == Stream.StreamType.Water && IsElectrified )
-				{
-					//Apply Electricity damages
-				}
+				Stream tmp = p.Value;
+				StreamManager.Instance().RemoveStream(ref tmp);
 			}
+			_streamObjects.Clear();
 		}
 	}
 
-	public bool IsFlooded
+	void UpdateStreamsVisuals()
 	{
-		get{ return _streamsState[Stream.StreamType.Water] > 0; }
-	}
-
-	public bool IsQuickSanded
-	{
-		get{ return _streamsState[Stream.StreamType.Sand] > 0; }
-	}
-
-	public bool IsUnderLava
-	{
-		get{ return _streamsState[Stream.StreamType.Lava] > 0; }
-	}
-
-	private bool _isElectrified;
-	public bool IsElectrified 
-	{
-		get{ return _isElectrified;	} 
-		set
+		foreach(var p in _streamObjects)
 		{
-			Selectable select = gameObject.GetComponent<Selectable>();
-
-			if(select)
-			{
-				select.OutlineColor = Color.cyan;
-				select.IsSelected = value;
-			}
-			_isElectrified = value;
-		}
-	}
-
-	private bool _windBlows;
-	public bool HasWindBlowing
-	{
-		get{ return _windBlows;	} 
-		set
-		{
-			_windBlows = value;
+			p.Value.UpdateStreamVisual();
 		}
 	}
 
@@ -300,5 +301,23 @@ public class Bloc : MonoBehaviour
 			else
 				return 0; //equal
 		}
+	}
+	
+	public static Vector3 GetBlocSizeByType(Bloc.BlocType type = Bloc.BlocType.TerrainBloc)
+	{
+		return BlocFactory.GetBlocSizeByType(type);
+	}
+
+	public Vector3 GetBlocSize()
+	{
+		return BlocFactory.GetBlocSizeByType(_type);
+	}
+
+	public Stream GetStreamOfType(Stream.StreamType type)
+	{
+		if(_streamObjects.ContainsKey(type))
+			return _streamObjects[type];
+		else
+			return null;
 	}
 }

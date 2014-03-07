@@ -57,10 +57,15 @@ public class BlocFactory
 		
 		return obj;
 	}
-
-	public static Vector3 GetBlocSize(Bloc.BlocType type = Bloc.BlocType.TerrainBloc)
+	
+	public static Vector3 GetBlocSizeByType(Bloc.BlocType type)
 	{
 		return blocInfoByType[type].mesh.bounds.size;
+	}
+
+	public static Vector3 GetBlocSize()
+	{
+		return blocInfoByType[Bloc.BlocType.TerrainBloc].mesh.bounds.size;
 	}
 
 	public static bool IsReady()
