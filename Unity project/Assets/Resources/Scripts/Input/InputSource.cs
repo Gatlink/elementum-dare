@@ -1,54 +1,69 @@
 ﻿using UnityEngine;
+using System.Linq;
 using System.Collections;
 
 public class InputSource : MonoBehaviour
 {
-	private Source _handledSource = null;
+	public int Range = 1;
 
-	void Start() { enabled = false; }
+	private Source _handledSource = null;
+	private Unit _unit = null;
+	private BlocAccessor _accessor = new BlocAccessor(Color.green);
+
+	void Awake()
+	{
+		enabled = false;
+	}
+
+	void OnEnable()
+	{
+		_unit = Selector.Selected.GetComponent<Unit>();
+		_accessor.Update(_unit.CurrentBloc, Range);
+
+		if (_accessor.AccessibleBlocs.Count() == 0)
+			Quit();
+
+		_handledSource = _unit.CreateSource();
+		_handledSource.Bloc = _accessor.AccessibleBlocs.First();
+	}
 
 	void Update()
 	{
-		if (!Selector.HasTargetSelected("Unit"))
+		if (Input.GetKeyDown(KeyCode.Escape))
+		{
+			_handledSource.Bloc.ReceiveSource(null);
+			GameObject.Destroy(_handledSource.gameObject);
+			Quit();
 			return;
+		}
 
 		Bloc bloc = null;
-		if (_handledSource == null)
-		{
-			Unit unit = Selector.Selected.gameObject.GetComponent<Unit>();
-			bloc = unit.CurrentBloc;
-			_handledSource = unit.CreateSource();
-		}
-		else
-		{
-			RaycastHit hit = new RaycastHit();
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-			int layerMask = 1 << LayerMask.NameToLayer("Terrain");
-			
-			if(Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
-				bloc = hit.collider.gameObject.GetComponent<Bloc>();
-		}
-		
+
+		RaycastHit hit = new RaycastHit();
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		int layerMask = 1 << LayerMask.NameToLayer("Terrain");
+		if(Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+			bloc = hit.collider.gameObject.GetComponent<Bloc>();
+
+		if (bloc == null
+		    || _accessor.AccessibleBlocs == null
+		    || !_accessor.AccessibleBlocs.Contains(bloc))
+			return;
+
 		if (_handledSource.Bloc != bloc)
 			_handledSource.Bloc = bloc;
 
 		if (Input.GetMouseButtonDown(0))
 			Quit();
-		else if (Input.GetKeyDown(KeyCode.Escape))
-		{
-			bloc.ReceiveSource(null);
-			GameObject.Destroy(_handledSource.gameObject);
-			Quit();
-		}
 	}
 
 	void Quit()
 	{
+		_accessor.Clear();
 		_handledSource = null;
-		GetComponent<InputUnit>().enabled = true;
+		_unit.UpdateAccessibleBlocs();
+		_unit = null;
 		enabled = false;
-		Unit unit = Selector.Selected.GetComponent<Unit>();
-		if (unit != null)
-			unit.UpdateAccessibleBlocs();
+		GetComponent<InputUnit>().enabled = true;
 	}
 }

@@ -43,12 +43,11 @@ public class Unit : MonoBehaviour, PhaseEventListener
 
 	public float MoveSpeed = 150;
 	public float RotateSpeed = 400;
+	public BlocAccessor Accessor = new BlocAccessor(Color.red);
 
 	private Quaternion _rotateTo;
 	private Vector3 _relOriginForwardRay;
-	private Dictionary<Bloc, Bloc> _paths = new Dictionary<Bloc, Bloc>();
 	private List<Bloc> _currentPath = new List<Bloc>();
-	private IEnumerable<Bloc> _accessibleBlocs;
 
 	#endregion
 
@@ -63,40 +62,15 @@ public class Unit : MonoBehaviour, PhaseEventListener
 		
 		set
 		{
-			if (!value || _moves == 0 || (_accessibleBlocs != null && !_accessibleBlocs.Contains(value)))
+			if (!value || _moves == 0
+			    || (Accessor.AccessibleBlocs != null && !Accessor.AccessibleBlocs.Contains(value)))
 			{
 				_currentPath.Clear();
 				return;
 			}
 
-			Bloc bloc = value;
-			while (bloc != _bloc)
-			{
-				_currentPath.Insert(0, bloc);
-				bloc = _paths[bloc];
-			}
+			_currentPath = Accessor.GetPath(_bloc, value);
 			ResetMovement();
-		}
-	}
-	
-	private IEnumerable<Bloc> AccessibleBlocs
-	{
-		get { return _accessibleBlocs; }
-		set
-		{
-			if (_accessibleBlocs != null)
-			{
-				foreach (Bloc bloc in _accessibleBlocs)
-					bloc.gameObject.renderer.material.color = Color.white;
-			}
-
-			_accessibleBlocs = value;
-
-			if (_accessibleBlocs != null)
-			{
-				foreach (Bloc bloc in _accessibleBlocs)
-					bloc.gameObject.renderer.material.color = Color.red;
-			}
 		}
 	}
 
@@ -165,14 +139,9 @@ public class Unit : MonoBehaviour, PhaseEventListener
 			_moves = _moves - Target.FlatDistance(_bloc);
 			MoveToBloc(Target);
 			_currentPath.Remove(Target);
-			AccessibleBlocs = null;
+			Accessor.Clear();
 			ResetMovement();
 		}
-	}
-	
-	public void UpdateAccessibleBlocs()
-	{
-		AccessibleBlocs = GetAccessibleBlocs(_bloc, _moves);
 	}
 
 	public void ResetMovement()
@@ -191,37 +160,10 @@ public class Unit : MonoBehaviour, PhaseEventListener
 		direction.y = 0;
 		return direction.normalized;
 	}
-	
-	private IEnumerable<Bloc> GetAccessibleBlocs(Bloc start, int distance)
+
+	public void UpdateAccessibleBlocs()
 	{
-		if (distance <= 0)
-			return null;
-		
-		List<Bloc> blocs = Map.FetchNeighbors2D(start, 1);
-		List<Bloc> neighbours = new List<Bloc>();
-		for (int i = 0; i < blocs.Count; ++i)
-		{
-			if (Math.Abs(blocs[i].indexInMap.z - start.indexInMap.z) > 1
-			    || !blocs[i].IsReachable())
-			{
-				blocs.RemoveAt(i);
-				i = i - 1; // compensate for the deletion of an entry
-				continue;
-			}
-			
-			_paths[blocs[i]] = start;
-			
-			IEnumerable<Bloc> directNeighbours = GetAccessibleBlocs(blocs[i], distance - 1);
-			if (directNeighbours != null)
-				neighbours.AddRange(directNeighbours);
-		}
-		
-		neighbours.ForEach(delegate (Bloc bloc) {
-			if (!blocs.Contains(bloc))
-				blocs.Add(bloc);
-		});
-		
-		return new HashSet<Bloc>(blocs);
+		Accessor.Update(_bloc, _moves);
 	}
 
 	#endregion
@@ -234,7 +176,7 @@ public class Unit : MonoBehaviour, PhaseEventListener
 	{
 		if (Selector.Selected == collider)
 		{
-			if (_accessibleBlocs == null)
+			if (Accessor.AccessibleBlocs == null)
 				UpdateAccessibleBlocs();
 		}
 
@@ -262,7 +204,7 @@ public class Unit : MonoBehaviour, PhaseEventListener
 
 	public void onEndPhase(int phase)
 	{
-		AccessibleBlocs = null;
+		Accessor.Clear();
 		Target = null;
 	}
 
@@ -270,8 +212,8 @@ public class Unit : MonoBehaviour, PhaseEventListener
 	{
 		_moves = MovesMax;
 
-//		if (_bloc.IsUnderLava || _bloc.IsElectrified || _bloc.Type == Bloc.BlocType.UpgradedPlant)
-//			_hitPoints -= 1;
+		if (_bloc.IsUnderLava || _bloc.IsElectrified || _bloc.Type == Bloc.BlocType.UpgradedPlant)
+			_hitPoints -= 1;
 
 //		if (_hitPoints <= 0)
 //		{
