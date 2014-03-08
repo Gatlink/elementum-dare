@@ -17,8 +17,9 @@ public class ElectricityStream : Stream
 		}
 
 		//Update stream to surround the bloc
-		Vector3 delta = new Vector3(_bloc.transform.localScale.x * bias.x, (_bloc.transform.localScale.y * bias.y) + height, _bloc.transform.localScale.z * bias.z);
-		gameObject.transform.localScale = delta;//(_bloc.GetBlocSize() + bias);
+		Vector3 blocScale = _bloc.transform.localScale;
+		Vector3 streamScale = new Vector3(blocScale.x * bias.x, (blocScale.y * bias.y) + height, blocScale.z * bias.z);
+		gameObject.transform.localScale = streamScale;//(_bloc.GetBlocSize() + bias);
 		gameObject.transform.position = _bloc.transform.position;
 	}
 }
