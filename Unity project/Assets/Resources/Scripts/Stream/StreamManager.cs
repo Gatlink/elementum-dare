@@ -15,7 +15,7 @@ public class StreamManager : IManager<Stream>
 		return stream;
 	}
 
-	public void RemoveStream(ref Stream stream)
+	public void RemoveStream(Stream stream)
 	{
 		if(!(stream.type == Stream.StreamType.Wind || stream.type == Stream.StreamType.Electricity))
 			UnregisterElement(stream);
