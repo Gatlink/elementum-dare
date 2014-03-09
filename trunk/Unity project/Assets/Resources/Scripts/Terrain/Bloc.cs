@@ -19,6 +19,7 @@ public class Bloc : MonoBehaviour
 	// must be last of enum
 
 #region StreamState
+
 	public class StreamsState
 	{
 		private Dictionary<Stream.StreamType, ushort> _state;
@@ -125,6 +126,7 @@ public class Bloc : MonoBehaviour
 		get{ return _streamsState[Stream.StreamType.Wind] > 0; } 
 		set{ _streamsState[Stream.StreamType.Wind] = value ? (ushort)1 : (ushort)0; }
 	}
+
 #endregion
 
 	private BlocType _type;
@@ -205,7 +207,7 @@ public class Bloc : MonoBehaviour
 				if(!currentTypes.Contains(p.Key))
 				{
 					Stream tmp = p.Value;
-					StreamManager.Instance().RemoveStream(ref tmp);
+					StreamManager.Instance().RemoveStream(tmp);
 					disposableStreams.Add(p.Key);
 				}
 			}
@@ -234,7 +236,7 @@ public class Bloc : MonoBehaviour
 			foreach(KeyValuePair<Stream.StreamType, Stream> p in _streamObjects)
 			{
 				Stream tmp = p.Value;
-				StreamManager.Instance().RemoveStream(ref tmp);
+				StreamManager.Instance().RemoveStream(tmp);
 			}
 			_streamObjects.Clear();
 		}
@@ -325,6 +327,23 @@ public class Bloc : MonoBehaviour
 			return _streamObjects[type];
 		else
 			return null;
+	}
+
+	public void ClearStreams()
+	{
+		foreach (var streamKey in _streamObjects.Keys)
+			if (streamKey != Stream.StreamType.Electricity)
+				StreamManager.Instance().RemoveStream(_streamObjects[streamKey]);
+
+		foreach (var streamType in (Stream.StreamType[])Enum.GetValues(typeof(Stream.StreamType)))
+			if (streamType != Stream.StreamType.Electricity)
+				_streamsState[streamType] = 0;
+
+		if (!IsConductor() && _streamObjects.ContainsKey(Stream.StreamType.Electricity))
+		{
+			_streamsState[Stream.StreamType.Electricity] = 0;
+			StreamManager.Instance().RemoveStream(_streamObjects[Stream.StreamType.Electricity]);
+		}
 	}
 
 #region GUI

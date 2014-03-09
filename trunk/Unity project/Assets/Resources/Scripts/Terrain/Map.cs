@@ -81,6 +81,10 @@ public static class Map
 	{
 		if(bloc != null)
 		{
+			Bloc prevBloc = GetBlocAt(x, y);
+			if (prevBloc != null)
+				prevBloc.ClearStreams();
+
 			int z = _internalMap[x,y].Count;
 
 			bloc.InsertedAt(new BlocIndex(x,y,z));
