@@ -5,8 +5,14 @@ using System.Linq;
 public static class GameTicker
 {
 	private static int _phase = 0;
-	private static int _nextUnitIdx = 0;
+	private static int _nextTotemIdx = 0;
+	private static int _nextMonsterIdx = 0;
 	private static List<PhaseEventListener> _phaseListeners = new List<PhaseEventListener>();
+
+	public static bool GameEnded
+	{
+		get { return Unit.Monsters.Count() == 0 || Unit.Totems.Count() == 0; }
+	}
 
 	public static void RegisterListener(PhaseEventListener listener)
 	{
@@ -14,15 +20,21 @@ public static class GameTicker
 			_phaseListeners.Add(listener);
 	}
 
+	public static void UnregisterListener(PhaseEventListener listener)
+	{
+		if (_phaseListeners.Contains(listener))
+			_phaseListeners.Remove(listener);
+	}
+
 	public static void EndPhase()
 	{
-		//Actually removes the falgged sources
+		// Actually removes the falgged sources
 		SourceManager.Instance().RemoveDeadSources();
 
-		//Update sources
+		// Update sources
 		SourceManager.Instance().UpdateSources();
 
-		//Update streams
+		// Update streams
 		StreamManager.Instance().UpdateStreams();
 		foreach(PhaseEventListener l in _phaseListeners)
 		{
@@ -32,26 +44,34 @@ public static class GameTicker
 
 	public static void StartNewPhase()
 	{
-		//Remove 'dead' sources
+		Selector.Selected = GetNextUnit();
+
+		// Remove 'dead' sources
 		SourceManager.Instance().FlagDeadSources();
 		foreach(PhaseEventListener l in _phaseListeners)
 		{
 			l.onStartNewPhase(_phase);
 		}
-		Selector.Selected = GetNextUnit().collider;
+
+		// Remove dead bodies
+		Unit.CleanDeadUnits();
 	}
 
 	private static Unit GetNextUnit()
 	{
-		Unit[] units = Unit.Units.ToArray();
-
-		Unit nextUnit = units[_nextUnitIdx];
-		do
+		Unit unit;
+		if (Selector.Selected == null || Selector.Selected.Team == Unit.ETeam.Monster)
 		{
-			_nextUnitIdx = (_nextUnitIdx + 1) % units.Length;
-		} while (nextUnit.Team == units[_nextUnitIdx].Team);
-		
-		return nextUnit;
+			unit = Unit.Totems.ToArray()[_nextTotemIdx];
+			_nextTotemIdx = (_nextTotemIdx + 1) % Unit.Totems.Count ();
+		}
+		else
+		{
+			unit = Unit.Monsters.ToArray ()[_nextMonsterIdx];
+			_nextMonsterIdx = (_nextMonsterIdx + 1) % Unit.Monsters.Count ();
+		}
+
+		return unit;
 	}
 }
 

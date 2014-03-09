@@ -6,8 +6,30 @@ using System.Linq;
 
 public class Unit : MonoBehaviour, PhaseEventListener
 {
+
+#region Static
+
 	// All spawned units
 	public static List<Unit> Units = new List<Unit>();
+
+	public static IEnumerable<Unit> Monsters
+	{
+		get { return Units.Where(unit => unit.Team == ETeam.Monster); }
+	}
+
+	public static IEnumerable<Unit> Totems
+	{
+		get { return Units.Where(unit => unit.Team == ETeam.Totem); }
+	}
+
+	public static void CleanDeadUnits()
+	{
+		List<Unit> deads = Units.Where(unit => unit.IsDead).ToList();
+		foreach (Unit unit in deads)
+			unit.Die();
+	}
+
+#endregion
 
 #region  Teams
 
@@ -186,7 +208,12 @@ public class Unit : MonoBehaviour, PhaseEventListener
 
 #endregion
 
-#region Source/Bloc
+#region Gameplay
+
+	public bool IsDead
+	{
+		get { return _hitPoints <= 0; }
+	}
 
 	public Source CreateSource()
 	{
@@ -196,6 +223,16 @@ public class Unit : MonoBehaviour, PhaseEventListener
 	public Bloc CreateBloc()
 	{
 		return BlocFactory.CreateBloc(BlocType);
+	}
+
+	private void Die()
+	{
+		if (Selector.Selected == collider)
+			Selector.Selected = null;
+		GameTicker.UnregisterListener(this);
+		Units.Remove(this);
+		_bloc.WelcomeUnit(null);
+		Destroy(gameObject);
 	}
 
 #endregion
@@ -214,13 +251,6 @@ public class Unit : MonoBehaviour, PhaseEventListener
 
 		if (_bloc.IsUnderLava || _bloc.IsElectrified || _bloc.Type == Bloc.BlocType.UpgradedPlant)
 			_hitPoints -= 1;
-
-//		if (_hitPoints <= 0)
-//		{
-//			Units.Remove(this);
-//			_bloc.WelcomeUnit(null);
-//			GameObject.Destroy(this);
-//		}
 
 		// if (_bloc.HasWindBlowing)
 	}
