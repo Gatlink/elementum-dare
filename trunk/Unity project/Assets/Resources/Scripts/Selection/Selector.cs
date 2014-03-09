@@ -2,8 +2,8 @@
 using System.Collections;
 
 public static class Selector {
-	private static Collider _selected;
-	public static Collider Selected
+	private static Unit _selected;
+	public static Unit Selected
 	{
 		get { return _selected; }
 		set
@@ -11,7 +11,7 @@ public static class Selector {
 			if (_selected != null)
 				Selected.SendMessage("Unselect");
 
-			bool valueIsSelectable = (value != null) && (value.gameObject.GetComponent<Selectable>() != null);
+			bool valueIsSelectable = (value != null) && (value.GetComponent<Selectable>() != null);
 			_selected = valueIsSelectable? value : null;
 
 			if (_selected != null)
