@@ -196,7 +196,7 @@ public class Unit : MonoBehaviour, PhaseEventListener
 
 	void Update ()
 	{
-		if (Selector.Selected == collider)
+		if (Selector.Selected == this)
 		{
 			if (Accessor.AccessibleBlocs == null)
 				UpdateAccessibleBlocs();
