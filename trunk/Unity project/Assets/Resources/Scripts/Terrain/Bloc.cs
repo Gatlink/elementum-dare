@@ -158,8 +158,9 @@ public class Bloc : MonoBehaviour
 	{
 		indexInMap = pos;
 
-		gameObject.transform.position = Map.IndexToPosition(pos);
-		gameObject.transform.parent = Map.GetMapRefTransform();
+		transform.position = Map.IndexToPosition(pos);
+		transform.parent = Map.GetMapRefTransform();
+		_gui.transform.position = transform.position;
 	}
 
 	public bool IsReachable()
@@ -179,7 +180,7 @@ public class Bloc : MonoBehaviour
 	{	return (a.indexInMap.z > b.indexInMap.z );	}
 
 	// Use this for initialization
-	void Start()
+	void Awake()
 	{
 		_gui = (GameObject) UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefab/BlocGUI"));
 		_gui.name = name + "GUI";
