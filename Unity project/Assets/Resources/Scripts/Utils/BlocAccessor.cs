@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -39,6 +40,11 @@ public class BlocAccessor {
 	public void Update(Bloc start, int range)
 	{
 		AccessibleBlocs = GetAccessibleBlocs(start, range);
+	}
+
+	public void Update(Bloc start, int range, Bloc.BlocType type)
+	{
+		AccessibleBlocs = GetAccessibleBlocs(start, range).Where(bloc => bloc.Type == type);
 	}
 
 	public void Clear()

@@ -18,10 +18,16 @@ public class InputBloc : MonoBehaviour
 	void OnEnable()
 	{
 		_unit = Selector.Selected;
-		_accessor.Update(_unit.CurrentBloc, Range);
+		if (_unit.BlocType == Bloc.BlocType.Plant)
+			_accessor.Update(_unit.CurrentBloc, Range, Bloc.BlocType.Earth);
+		else
+			_accessor.Update(_unit.CurrentBloc, Range);
 		
 		if (_accessor.AccessibleBlocs.Count() == 0)
+		{
 			Quit();
+			return;
+		}
 		
 		_handledBloc = _unit.CreateBloc();
 		PlaceHandledBloc(_accessor.AccessibleBlocs.First());
