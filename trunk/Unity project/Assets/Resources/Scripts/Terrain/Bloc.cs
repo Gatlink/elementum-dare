@@ -22,24 +22,24 @@ public class Bloc : MonoBehaviour
 
 	public class StreamsState
 	{
-		private Dictionary<Stream.StreamType, ushort> _state;
+		private Dictionary<Stream.StreamType, int> _state;
 
 		///////////////////////////////////////////////////// WATER
-		public ushort Water
+		public int Water
 		{
 			get{ return _state[Stream.StreamType.Water]; }
 			set{ _state[Stream.StreamType.Water] = value; }
 		}
 
 		///////////////////////////////////////////////////// SAND
-		public ushort Sand
+		public int Sand
 		{
 			get{ return _state[Stream.StreamType.Sand]; }
 			set{ _state[Stream.StreamType.Sand] = value; }
 		}
 
 		///////////////////////////////////////////////////// LAVA
-		public ushort Lava
+		public int Lava
 		{
 			get{ return _state[Stream.StreamType.Lava]; }
 			set{  _state[Stream.StreamType.Lava] = value; }
@@ -55,7 +55,7 @@ public class Bloc : MonoBehaviour
 			{
 				List<Stream.StreamType> list = new List<Stream.StreamType>();
 
-				foreach(KeyValuePair<Stream.StreamType, ushort> pair in _state)
+				foreach(KeyValuePair<Stream.StreamType, int> pair in _state)
 				{
 					if(pair.Value > 0)
 					{
@@ -67,7 +67,7 @@ public class Bloc : MonoBehaviour
 			}
 		}
 
-		public ushort this[Stream.StreamType type]
+		public int this[Stream.StreamType type]
 		{
 			get{ return _state[type]; }
 			set{ _state[type] = value; }
@@ -75,7 +75,7 @@ public class Bloc : MonoBehaviour
 
 		public StreamsState()
 		{
-			_state = new Dictionary<Stream.StreamType, ushort>();
+			_state = new Dictionary<Stream.StreamType, int>();
 
 			_state.Add(Stream.StreamType.Sand, 0);
 			_state.Add(Stream.StreamType.Lava, 0);
@@ -88,7 +88,7 @@ public class Bloc : MonoBehaviour
 		{
 			string msg = "ELEMENTS:\n";
 
-			foreach(KeyValuePair<Stream.StreamType, ushort> pair in _state)
+			foreach(KeyValuePair<Stream.StreamType, int> pair in _state)
 			{
 				msg += pair.Key.ToString() + " -> " + pair.Value.ToString() + "\n";
 			}
@@ -118,13 +118,13 @@ public class Bloc : MonoBehaviour
 	public bool IsElectrified 
 	{
 		get{ return _streamsState[Stream.StreamType.Electricity] > 0; } 
-		set{ _streamsState[Stream.StreamType.Electricity] = (_type == BlocType.Metal || IsFlooded) && value ? (ushort)1 : (ushort)0; }
+		set{ _streamsState[Stream.StreamType.Electricity] = (_type == BlocType.Metal || IsFlooded) && value ? 1 : 0; }
 	}
 
 	public bool HasWindBlowing
 	{
 		get{ return _streamsState[Stream.StreamType.Wind] > 0; } 
-		set{ _streamsState[Stream.StreamType.Wind] = value ? (ushort)1 : (ushort)0; }
+		set{ _streamsState[Stream.StreamType.Wind] = value ? 1 : 0; }
 	}
 
 #endregion
@@ -193,7 +193,6 @@ public class Bloc : MonoBehaviour
 	{
 		//TODO stream interaction
 		UpdateStreamsState();
-		UpdateStreamsVisuals();
 	}
 
 	void UpdateStreamsState()
@@ -241,13 +240,11 @@ public class Bloc : MonoBehaviour
 			}
 			_streamObjects.Clear();
 		}
-	}
 
-	void UpdateStreamsVisuals()
-	{
-		foreach(var p in _streamObjects)
+		foreach(KeyValuePair<Stream.StreamType, Stream> p in _streamObjects)
 		{
-			p.Value.UpdateStreamVisual();
+			Stream stream = p.Value;
+			stream.UpdateStreamVisual();
 		}
 	}
 
