@@ -14,10 +14,10 @@ public abstract class Source : MonoBehaviour
 	public static int NB_OF_TYPES = (int)SourceType.Water;
 	// must be last of enum
 
-	protected SourceType _type;
+	public SourceType _type;
 
-	protected ushort _generate;
-	protected ushort _duration;
+	protected int _generate;
+	protected int _duration;
 
 	protected Bloc _bloc;
 	public Bloc Bloc

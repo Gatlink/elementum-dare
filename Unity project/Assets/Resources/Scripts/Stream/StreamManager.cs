@@ -54,7 +54,9 @@ public class StreamManager : IManager<Stream>
 		System.Array.Sort<Stream>(orderedStreams, mark, count, new StreamVolumeComparer());
 
 		foreach(Stream s in orderedStreams)
+		{
 			s.UpdateStream();
+		}
 	}
 	
 	//Singleton

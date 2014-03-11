@@ -42,7 +42,7 @@ public class FluidStream : Stream
 		foreach(Bloc neighbor in validNeighbors)
 		{
 			int share = Bloc.IsLower(neighbor, _bloc) ? 3 : 1 ;
-			ushort amountMoved = (ushort) Mathf.Round(amountToShare * ((float)share / (float)denominator));
+			int amountMoved = (int) Mathf.Round(amountToShare * ((float)share / (float)denominator));
 			neighbor.Streams.Lava += amountMoved;
 			_bloc.Streams[type] -= amountMoved;
 			
@@ -68,7 +68,8 @@ public class FluidStream : Stream
 		const int maxVal = 48;
 		
 		//Update stream visual according to bloc value
-		float delta = (GetVolume() * (1.0f / maxVal)) - gameObject.transform.localScale.y;
-		gameObject.transform.localScale += new Vector3(0, delta, 0);
+		float delta = (GetVolume() * (1.0f / maxVal));
+		Vector3 initialScale = gameObject.transform.localScale;
+		gameObject.transform.localScale = new Vector3(initialScale.x, delta, initialScale.z);
 	}
 }

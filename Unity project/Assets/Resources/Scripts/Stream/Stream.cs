@@ -17,14 +17,25 @@ public abstract class Stream : MonoBehaviour
 	// must be last of enum
 
 	public StreamType type { get; set;}
+
+	public static bool IsFluid( StreamType streamType)
+	{
+		return ( streamType == StreamType.Sand
+		        || streamType == StreamType.Water
+		        || streamType == StreamType.Lava
+		        );
+	}
+
+	public bool IsFluid()
+	{	return Stream.IsFluid(type);	}
 	
 	protected Bloc _bloc;
 
 	// Use this for initialization
-	void Start () {}
+	void Start() {}
 	
 	// Update is called once per frame
-	void Update () {}
+	public virtual void Update() {}
 
 	public int GetAltitude()
 	{
