@@ -44,8 +44,6 @@ public static class GameTicker
 
 	public static void StartNewPhase()
 	{
-		Selector.Selected = GetNextUnit();
-
 		// Remove 'dead' sources
 		SourceManager.Instance().FlagDeadSources();
 		foreach(PhaseEventListener l in _phaseListeners)
@@ -55,6 +53,8 @@ public static class GameTicker
 
 		// Remove dead bodies
 		Unit.CleanDeadUnits();
+
+		Selector.Selected = GetNextUnit();
 	}
 
 	private static Unit GetNextUnit()
@@ -62,13 +62,15 @@ public static class GameTicker
 		Unit unit;
 		if (Selector.Selected == null || Selector.Selected.Team == Unit.ETeam.Monster)
 		{
+			_nextTotemIdx %= Unit.Totems.Count();
 			unit = Unit.Totems.ToArray()[_nextTotemIdx];
-			_nextTotemIdx = (_nextTotemIdx + 1) % Unit.Totems.Count ();
+			_nextTotemIdx += 1;
 		}
 		else
 		{
+			_nextMonsterIdx %= Unit.Monsters.Count();
 			unit = Unit.Monsters.ToArray ()[_nextMonsterIdx];
-			_nextMonsterIdx = (_nextMonsterIdx + 1) % Unit.Monsters.Count ();
+			_nextMonsterIdx += 1;
 		}
 
 		return unit;

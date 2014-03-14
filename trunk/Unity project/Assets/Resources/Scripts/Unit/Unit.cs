@@ -29,6 +29,9 @@ public class Unit : MonoBehaviour, PhaseEventListener
 			unit.Die();
 	}
 
+	private static Material brokenMaterialTotem;
+	private static Material brokenMaterialMonster;
+
 #endregion
 
 #region  Teams
@@ -194,7 +197,13 @@ public class Unit : MonoBehaviour, PhaseEventListener
 
 #region Monobehaviour
 
-	void Update ()
+	void Awake()
+	{
+		if (brokenMaterialTotem == null)
+			brokenMaterialTotem = Resources.Load<Material>("Mesh/Materials/Totem_Broken");
+	}
+
+	void Update()
 	{
 		if (Selector.Selected == this)
 		{
@@ -250,7 +259,16 @@ public class Unit : MonoBehaviour, PhaseEventListener
 		_moves = MovesMax;
 
 		if (_bloc.IsUnderLava || _bloc.IsElectrified || _bloc.Type == Bloc.BlocType.UpgradedPlant)
+		{
 			_hitPoints -= 1;
+			if (renderer.materials.Count() <= 1)
+			{
+				Material[] materials = new Material[2];
+				materials[0] = renderer.material;
+				materials[1] = Team == ETeam.Totem ? brokenMaterialTotem : brokenMaterialMonster;
+				renderer.materials = materials;
+			}
+		}
 
 		// if (_bloc.HasWindBlowing)
 	}
