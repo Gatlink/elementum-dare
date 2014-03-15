@@ -18,116 +18,35 @@ public class Bloc : MonoBehaviour
 	public static int NB_OF_TYPES = (int)BlocType.UpgradedPlant;
 	// must be last of enum
 
-#region StreamState
-
-	public class StreamsState
-	{
-		private Dictionary<Stream.StreamType, int> _state;
-
-		///////////////////////////////////////////////////// WATER
-		public int Water
-		{
-			get{ return _state[Stream.StreamType.Water]; }
-			set{ _state[Stream.StreamType.Water] = value; }
-		}
-
-		///////////////////////////////////////////////////// SAND
-		public int Sand
-		{
-			get{ return _state[Stream.StreamType.Sand]; }
-			set{ _state[Stream.StreamType.Sand] = value; }
-		}
-
-		///////////////////////////////////////////////////// LAVA
-		public int Lava
-		{
-			get{ return _state[Stream.StreamType.Lava]; }
-			set{  _state[Stream.StreamType.Lava] = value; }
-		}
-
-		///////////////////////////////////////////////////// ELEC & WIND
-
-
-		///////////////////////////////////////////////////// ACCESSORS & HELPERS
-		public List<Stream.StreamType> CurrentTypes
-		{
-			get
-			{
-				List<Stream.StreamType> list = new List<Stream.StreamType>();
-
-				foreach(KeyValuePair<Stream.StreamType, int> pair in _state)
-				{
-					if(pair.Value > 0)
-					{
-						list.Add(pair.Key);
-					}
-				}
-
-				return list;
-			}
-		}
-
-		public int this[Stream.StreamType type]
-		{
-			get{ return _state[type]; }
-			set{ _state[type] = value; }
-		}
-
-		public StreamsState()
-		{
-			_state = new Dictionary<Stream.StreamType, int>();
-
-			_state.Add(Stream.StreamType.Sand, 0);
-			_state.Add(Stream.StreamType.Lava, 0);
-			_state.Add(Stream.StreamType.Water, 0);
-			_state.Add(Stream.StreamType.Electricity, 0);
-			_state.Add(Stream.StreamType.Wind, 0);
-		}
-
-		public new string ToString()
-		{
-			string msg = "ELEMENTS:\n";
-
-			foreach(KeyValuePair<Stream.StreamType, int> pair in _state)
-			{
-				msg += pair.Key.ToString() + " -> " + pair.Value.ToString() + "\n";
-			}
-
-			return msg;
-		}
-	}
-
 	private StreamsState _streamsState = new StreamsState();
 	public StreamsState Streams { get{ return _streamsState; } }
 
 	public bool IsFlooded
 	{
-		get{ return _streamsState[Stream.StreamType.Water] > 0; }
+		get{ return _streamsState[Stream.StreamType.Water].value > 0; }
 	}
 	
 	public bool IsQuickSanded
 	{
-		get{ return _streamsState[Stream.StreamType.Sand] > 0; }
+		get{ return _streamsState[Stream.StreamType.Sand].value > 0; }
 	}
 	
 	public bool IsUnderLava
 	{
-		get{ return _streamsState[Stream.StreamType.Lava] > 0; }
+		get{ return _streamsState[Stream.StreamType.Lava].value > 0; }
 	}
 	
 	public bool IsElectrified 
 	{
-		get{ return _streamsState[Stream.StreamType.Electricity] > 0; } 
-		set{ _streamsState[Stream.StreamType.Electricity] = (_type == BlocType.Metal || IsFlooded) && value ? 1 : 0; }
+		get{ return _streamsState[Stream.StreamType.Electricity].value > 0; } 
+		set{ _streamsState[Stream.StreamType.Electricity].value = (_type == BlocType.Metal || IsFlooded) && value ? 1 : 0; }
 	}
 
 	public bool HasWindBlowing
 	{
-		get{ return _streamsState[Stream.StreamType.Wind] > 0; } 
-		set{ _streamsState[Stream.StreamType.Wind] = value ? 1 : 0; }
+		get{ return _streamsState[Stream.StreamType.Wind].value > 0; } 
+		set{ _streamsState[Stream.StreamType.Wind].value = value ? 1 : 0; }
 	}
-
-#endregion
 
 	private BlocType _type;
 	public BlocType Type 
@@ -179,12 +98,16 @@ public class Bloc : MonoBehaviour
 	}
 
 	public static bool IsLower(Bloc a, Bloc b)
-	{
-		return (a.indexInMap.z < b.indexInMap.z );
-	}
+	{	return (a.indexInMap.z < b.indexInMap.z );	}
+
+	public bool IsLowerThan(Bloc other)
+	{	return (indexInMap.z < other.indexInMap.z );}
 
 	public static bool IsHigher(Bloc a, Bloc b)
 	{	return (a.indexInMap.z > b.indexInMap.z );	}
+
+	public bool IsHigherThan(Bloc other)
+	{	return (indexInMap.z > other.indexInMap.z );}
 
 	// Use this for initialization
 	void Awake()
@@ -212,18 +135,16 @@ public class Bloc : MonoBehaviour
 			foreach(KeyValuePair<Stream.StreamType, Stream> p in _streamObjects)
 			{
 				if(!currentTypes.Contains(p.Key))
-				{
-					Stream tmp = p.Value;
-					StreamManager.Instance().RemoveStream(tmp);
 					disposableStreams.Add(p.Key);
-				}
 			}
 
 			//Remove the corresponding entries in the dictionary
 			foreach(Stream.StreamType key in disposableStreams)
 			{
+				StreamManager.Instance().RemoveStream(_streamObjects[key]);
 				_streamObjects.Remove(key);
 			}
+			disposableStreams.Clear();
 
 			//Create the missing streams
 			Vector3 streamPos = Map.IndexToPosition(indexInMap.x, indexInMap.y, indexInMap.z + 1);
@@ -242,16 +163,14 @@ public class Bloc : MonoBehaviour
 			//Remove all the streams
 			foreach(KeyValuePair<Stream.StreamType, Stream> p in _streamObjects)
 			{
-				Stream tmp = p.Value;
-				StreamManager.Instance().RemoveStream(tmp);
+				StreamManager.Instance().RemoveStream(p.Value);
 			}
 			_streamObjects.Clear();
 		}
 
 		foreach(KeyValuePair<Stream.StreamType, Stream> p in _streamObjects)
 		{
-			Stream stream = p.Value;
-			stream.UpdateStreamVisual();
+			p.Value.UpdateStreamVisual();
 		}
 	}
 
@@ -297,9 +216,9 @@ public class Bloc : MonoBehaviour
 
 		public int CompareAsc(Bloc left, Bloc right)
 		{
-			if(left.Streams[_checkType] < right.Streams[_checkType])
+			if(left.Streams[_checkType].value < right.Streams[_checkType].value)
 				return 1; //right goes after left
-			else if (left.Streams[_checkType] > right.Streams[_checkType])
+			else if (left.Streams[_checkType].value > right.Streams[_checkType].value)
 				return -1; //left goes after right
 			else
 				return 0; //equal
@@ -307,9 +226,9 @@ public class Bloc : MonoBehaviour
 
 		public int CompareDesc(Bloc left, Bloc right)
 		{
-			if(left.Streams[_checkType] > right.Streams[_checkType])
+			if(left.Streams[_checkType].value > right.Streams[_checkType].value)
 				return 1; //right goes after left
-			else if (left.Streams[_checkType] < right.Streams[_checkType])
+			else if (left.Streams[_checkType].value < right.Streams[_checkType].value)
 				return -1; //left goes after right
 			else
 				return 0; //equal
@@ -337,7 +256,7 @@ public class Bloc : MonoBehaviour
 	public void ClearStreams()
 	{
 		var streamKeys = _streamObjects.Keys.ToList();
-		foreach (var streamKey in streamKeys)
+		foreach(var streamKey in streamKeys)
 		{
 			if (streamKey != Stream.StreamType.Electricity)
 			{
@@ -346,15 +265,15 @@ public class Bloc : MonoBehaviour
 			}
 		}
 
-		foreach (var streamType in (Stream.StreamType[])Enum.GetValues(typeof(Stream.StreamType)))
+		foreach(var streamType in (Stream.StreamType[])Enum.GetValues(typeof(Stream.StreamType)))
 		{
 			if (streamType != Stream.StreamType.Electricity)
-				_streamsState[streamType] = 0;
+				_streamsState[streamType].value = 0;
 		}
 
-		if (!IsConductor() && _streamObjects.ContainsKey(Stream.StreamType.Electricity))
+		if(!IsConductor() && _streamObjects.ContainsKey(Stream.StreamType.Electricity))
 		{
-			_streamsState[Stream.StreamType.Electricity] = 0;
+			_streamsState[Stream.StreamType.Electricity].value = 0;
 			StreamManager.Instance().RemoveStream(_streamObjects[Stream.StreamType.Electricity]);
 			_streamObjects.Remove(Stream.StreamType.Electricity);
 		}

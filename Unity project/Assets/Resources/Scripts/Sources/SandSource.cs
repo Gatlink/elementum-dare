@@ -13,7 +13,7 @@ public class SandSource : Source
 		}
 		
 		//put everything on self bloc
-		_bloc.Streams.Sand += _generate;
+		_bloc.Streams.Sand.value += _generate;
 	}
 
 	public override void KillSource(){}

@@ -13,7 +13,7 @@ public class WaterSource : Source
 		}
 		
 		//put everything on self bloc
-		_bloc.Streams.Water += _generate;
+		_bloc.Streams.Water.value += _generate;
 	}
 	
 	public override void KillSource(){}
