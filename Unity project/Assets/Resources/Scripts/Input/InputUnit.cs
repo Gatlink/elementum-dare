@@ -6,8 +6,11 @@ public class InputUnit : MonoBehaviour
 	private void Leave<NextState>() where NextState : MonoBehaviour
 	{
 		enabled = false;
-		Selector.Selected.Accessor.Clear();
-		Selector.Selected.enabled = false;
+		if (Selector.Selected != null)
+		{
+			Selector.Selected.Accessor.Clear();
+			Selector.Selected.enabled = false;
+		}
 		GetComponent<NextState>().enabled = true;
 	}
 
