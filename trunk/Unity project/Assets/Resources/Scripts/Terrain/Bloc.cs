@@ -133,7 +133,14 @@ public class Bloc : MonoBehaviour
 	public BlocType Type 
 	{ 
 		get{ return _type; }
-		set{ _type = value; }
+		set
+		{
+			if (value != _type)
+			{
+				_type = value;
+				renderer.material = Resources.Load<Material>(string.Format("Mesh/Materials/Bloc_{0}", value));
+			}
+		}
 	}
 
 	public BlocIndex indexInMap {get; private set;}
@@ -329,18 +336,27 @@ public class Bloc : MonoBehaviour
 
 	public void ClearStreams()
 	{
-		foreach (var streamKey in _streamObjects.Keys)
+		var streamKeys = _streamObjects.Keys.ToList();
+		foreach (var streamKey in streamKeys)
+		{
 			if (streamKey != Stream.StreamType.Electricity)
+			{
 				StreamManager.Instance().RemoveStream(_streamObjects[streamKey]);
+				_streamObjects.Remove(streamKey);
+			}
+		}
 
 		foreach (var streamType in (Stream.StreamType[])Enum.GetValues(typeof(Stream.StreamType)))
+		{
 			if (streamType != Stream.StreamType.Electricity)
 				_streamsState[streamType] = 0;
+		}
 
 		if (!IsConductor() && _streamObjects.ContainsKey(Stream.StreamType.Electricity))
 		{
 			_streamsState[Stream.StreamType.Electricity] = 0;
 			StreamManager.Instance().RemoveStream(_streamObjects[Stream.StreamType.Electricity]);
+			_streamObjects.Remove(Stream.StreamType.Electricity);
 		}
 	}
 

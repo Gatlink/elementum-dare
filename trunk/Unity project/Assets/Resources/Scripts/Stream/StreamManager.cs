@@ -20,7 +20,7 @@ public class StreamManager : IManager<Stream>
 		if(!(stream.Type == Stream.StreamType.Wind || stream.Type == Stream.StreamType.Electricity))
 			UnregisterElement(stream);
 
-		Object.DestroyImmediate(stream.gameObject); //TODO change for a smoother transition
+		Object.Destroy(stream.gameObject); //TODO change for a smoother transition
 	}
 	
 	public void UpdateStreams()
