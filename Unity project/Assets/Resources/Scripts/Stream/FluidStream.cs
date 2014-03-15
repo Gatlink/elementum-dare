@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,7 @@ public class FluidStream : Stream
 
 		//Debug.Log( GetAltitude().ToString() + "-" + GetVolume().ToString());
 
-		if(_bloc.Streams[_type] <= 1)
+		if(_bloc.Streams[_type] <= _treshold)
 			return;
 		
 		List<Bloc> surroundings = Map.FetchNeighbors2D(_bloc.indexInMap, 1);
@@ -46,7 +46,7 @@ public class FluidStream : Stream
 		{
 			int share = Bloc.IsLower(neighbor, _bloc) ? 3 : 1 ;
 			int amountMoved = (int) Mathf.Round(amountToShare * ((float)share / (float)denominator));
-			neighbor.Streams.Lava += amountMoved;
+			neighbor.Streams[_type] += amountMoved;
 			_bloc.Streams[_type] -= amountMoved;
 			
 			//Debug.Log (amountMoved + " from " + bloc.name + " to " + neighbor.name);
@@ -58,7 +58,7 @@ public class FluidStream : Stream
 		List<Bloc> list = new List<Bloc>(neighbors);
 		list.RemoveAll(x => Bloc.IsHigher(x, refBloc)); //TODO debordement
 		list.RemoveAll(x => !Bloc.IsLower(x, refBloc) && (x.Streams[_type] > refBloc.Streams[_type]));
-		return list;
+		return list; 
 	}
 
 	public override void UpdateStream()
