@@ -15,11 +15,59 @@ public class FluidStream : Stream
 
 		//Debug.Log( GetAltitude().ToString() + "-" + GetVolume().ToString());
 
+		if(_bloc.Streams[_type].value <= _treshold)
+			return;
+		
+		List<Bloc> surroundings = Map.FetchNeighbors2D(_bloc.indexInMap, 1);
+		List<Bloc> flatNeighbors, slopeNeighbors;
+
+		if(DivideNeighbors(_bloc, surroundings, out flatNeighbors, out slopeNeighbors) == 0) //no valid neighbors
+			return; //TODO débordement
+		/*
+		float amountToRedist = _bloc.Streams[_type].value * _granularity;
+		float nbOfShares = flatNeighbors.Count * _flatFactor + slopeNeighbors.Count * _slopeFactor;
+		float oneShare = amountToRedist / nbOfShares;
+
+		//int amountToShare = (int) Mathf.Floor((float) denominator * ((float) bloc.Elements.Lava / 5.0f));
+		int amountToShare = neighborsNb * oneShare;
+		amountToShare += (maxNbOfNeighbors - neighborsNb) * (int) Mathf.Floor(oneShare * 0.5f);
+		//half a share for the invalid neighbors to be redistributed
+		
+		int denominator = neighborsNb;
+		foreach(Bloc neighbor in validNeighbors)
+		{
+			denominator += Bloc.IsLower(neighbor, _bloc) ? 2 : 0 ;
+		}
+		
+		if((amountToShare / denominator) < 1) //not enough to share
+			return;
+		
+		foreach(Bloc neighbor in validNeighbors)
+		{
+			int share = Bloc.IsLower(neighbor, _bloc) ? 3 : 1 ;
+			int amountMoved = (int) Mathf.Round(amountToShare * ((float)share / (float)denominator));
+			neighbor.Streams[_type] += amountMoved;
+			_bloc.Streams[_type] -= amountMoved;
+			
+			//Debug.Log (amountMoved + " from " + bloc.name + " to " + neighbor.name);
+		}*/
+	}
+
+	/*
+	private void Flow() 
+	{
+		if(!_bloc)
+		{
+			Debug.Log("Updating a fluid stream affected to no bloc.");
+			return;
+		}
+		
+		//Debug.Log( GetAltitude().ToString() + "-" + GetVolume().ToString());
+		
 		if(_bloc.Streams[_type] <= _treshold)
 			return;
 		
 		List<Bloc> surroundings = Map.FetchNeighbors2D(_bloc.indexInMap, 1);
-		
 		List<Bloc> validNeighbors = DiscardInvalidNeighbors(_bloc, ref surroundings);
 		
 		int neighborsNb = validNeighbors.Count;
@@ -52,13 +100,33 @@ public class FluidStream : Stream
 			//Debug.Log (amountMoved + " from " + bloc.name + " to " + neighbor.name);
 		}
 	}
+	*/
 	
-	private List<Bloc> DiscardInvalidNeighbors(Bloc refBloc, ref List<Bloc> neighbors)
+	private List<Bloc> DiscardInvalidNeighbors(Bloc refBloc, List<Bloc> neighbors)
 	{
 		List<Bloc> list = new List<Bloc>(neighbors);
-		list.RemoveAll(x => Bloc.IsHigher(x, refBloc)); //TODO debordement
-		list.RemoveAll(x => !Bloc.IsLower(x, refBloc) && (x.Streams[_type] > refBloc.Streams[_type]));
+		list.RemoveAll(x => Bloc.IsHigher(x, refBloc));
+		list.RemoveAll(x => !Bloc.IsLower(x, refBloc) && (x.Streams[_type].value > refBloc.Streams[_type].value));
 		return list; 
+	}
+
+	private int DivideNeighbors(Bloc refBloc, List<Bloc> neighbors, out List<Bloc> flat, out List<Bloc> slope)
+	{
+		flat = new List<Bloc>();
+		slope = new List<Bloc>();
+
+		foreach(Bloc b in neighbors)
+		{
+			bool invalid = b.IsHigherThan(refBloc) || (!b.IsLowerThan(refBloc) && (b.Streams[_type].value > refBloc.Streams[_type].value));
+			if(invalid)
+				continue;
+			else if(b.IsLowerThan(refBloc))
+				slope.Add(b);
+			else
+				flat.Add(b);
+		} 
+
+		return slope.Count + flat.Count;
 	}
 
 	public override void UpdateStream()

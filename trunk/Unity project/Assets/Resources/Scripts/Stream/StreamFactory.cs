@@ -10,7 +10,7 @@ public class StreamFactory
 	private static GameObject streamNode = new GameObject("Streams") ;
 	// Commodity, to assemble all streams under an object's hierarchy node in the editor
 
-	public static Stream CreateStream(Stream.StreamType type = Stream.StreamType.None)
+	public static Stream CreateStream(Stream.StreamType type)
 	{
 		StreamInfo stream = streamInfoByType[type];
 		

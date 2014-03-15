@@ -6,7 +6,6 @@ public abstract class Stream : MonoBehaviour
 {
 	public enum StreamType
 	{
-		None,
 		Sand,
 		Lava,
 		Water,
@@ -72,7 +71,7 @@ public abstract class Stream : MonoBehaviour
 	public int GetVolume()
 	{
 		if(_bloc)
-			return _bloc.Streams[_type];
+			return _bloc.Streams[_type].value;
 		else
 			return -1;
 	}

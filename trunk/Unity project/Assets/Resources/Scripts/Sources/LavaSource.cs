@@ -13,19 +13,19 @@ public class LavaSource : Source
 		}
 
 		//put everything on self bloc
-		_bloc.Streams.Lava += _generate;
+		_bloc.Streams.Lava.value += _generate; //TODO animate
 
-		//List<Bloc> update = new List<Bloc>();
+		/*List<Bloc> update = new List<Bloc>();
 		//update.Add(_bloc);
 
-		/*List<Bloc> processedList = *///MakeSpread(ref update);
+		//List<Bloc> processedList = MakeSpread(ref update);
 
 		// KEEP FOR TWEAKING?
 		// Reprocess all first-pass processed blocs for safety
 		// Process them the other way around to balance the streams on the edges
 
 		//processedList.Sort(new BlocRefDelegate(null));
-		//MakeSpread(ref processedList);
+		//MakeSpread(ref processedList);*/
 	}
 	
 	public override void KillSource(){}
