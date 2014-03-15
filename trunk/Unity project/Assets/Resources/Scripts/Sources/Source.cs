@@ -19,6 +19,9 @@ public abstract class Source : MonoBehaviour
 	protected int _generate;
 	protected int _duration;
 
+	private const float TOTAL_ANIM_TIME = 1.5f;
+	private float _animTime = -1.0f;
+
 	protected Bloc _bloc;
 	public Bloc Bloc
 	{
@@ -78,9 +81,7 @@ public abstract class Source : MonoBehaviour
 	{
 		return gameObject.name;
 	}
-
-	private const float TOTAL_ANIM_TIME = 1.5f;
-	private float _animTime = -1.0f;
+	
 	public void Die()
 	{
 		KillSource();

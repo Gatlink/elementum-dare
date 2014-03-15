@@ -17,7 +17,7 @@ public class StreamManager : IManager<Stream>
 
 	public void RemoveStream(Stream stream)
 	{
-		if(!(stream.type == Stream.StreamType.Wind || stream.type == Stream.StreamType.Electricity))
+		if(!(stream.Type == Stream.StreamType.Wind || stream.Type == Stream.StreamType.Electricity))
 			UnregisterElement(stream);
 
 		Object.DestroyImmediate(stream.gameObject); //TODO change for a smoother transition

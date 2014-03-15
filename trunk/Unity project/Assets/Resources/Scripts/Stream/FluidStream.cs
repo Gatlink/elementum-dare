@@ -8,11 +8,14 @@ public class FluidStream : Stream
 	private void Flow() 
 	{
 		if(!_bloc)
+		{
+			Debug.Log("Updating a fluid stream affected to no bloc.");
 			return;
-		
+		}
+
 		//Debug.Log( GetAltitude().ToString() + "-" + GetVolume().ToString());
-		
-		if(_bloc.Streams[type] <= 1)
+
+		if(_bloc.Streams[_type] <= 1)
 			return;
 		
 		List<Bloc> surroundings = Map.FetchNeighbors2D(_bloc.indexInMap, 1);
@@ -24,7 +27,7 @@ public class FluidStream : Stream
 			return;
 		
 		int maxNbOfNeighbors = 4;
-		int oneShare = (int) Mathf.Floor((float) _bloc.Streams[type] / (float)(maxNbOfNeighbors + 1));
+		int oneShare = (int) Mathf.Floor((float) _bloc.Streams[_type] / (float)(maxNbOfNeighbors + 1));
 		//int amountToShare = (int) Mathf.Floor((float) denominator * ((float) bloc.Elements.Lava / 5.0f));
 		int amountToShare = neighborsNb * oneShare;
 		amountToShare += (maxNbOfNeighbors - neighborsNb) * (int) Mathf.Floor(oneShare * 0.5f);
@@ -44,7 +47,7 @@ public class FluidStream : Stream
 			int share = Bloc.IsLower(neighbor, _bloc) ? 3 : 1 ;
 			int amountMoved = (int) Mathf.Round(amountToShare * ((float)share / (float)denominator));
 			neighbor.Streams.Lava += amountMoved;
-			_bloc.Streams[type] -= amountMoved;
+			_bloc.Streams[_type] -= amountMoved;
 			
 			//Debug.Log (amountMoved + " from " + bloc.name + " to " + neighbor.name);
 		}
@@ -54,7 +57,7 @@ public class FluidStream : Stream
 	{
 		List<Bloc> list = new List<Bloc>(neighbors);
 		list.RemoveAll(x => Bloc.IsHigher(x, refBloc)); //TODO debordement
-		list.RemoveAll(x => !Bloc.IsLower(x, refBloc) && (x.Streams[type] > refBloc.Streams[type]));
+		list.RemoveAll(x => !Bloc.IsLower(x, refBloc) && (x.Streams[_type] > refBloc.Streams[_type]));
 		return list;
 	}
 

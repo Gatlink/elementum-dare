@@ -16,7 +16,31 @@ public abstract class Stream : MonoBehaviour
 	public static int NB_OF_TYPES = (int)StreamType.Electricity;
 	// must be last of enum
 
-	public StreamType type { get; set;}
+	private const float TOTAL_ANIM_TIME = 1.5f;
+	private float _animTime = -1.0f;
+
+	protected float _granularity;
+	protected int _treshold;
+	protected int _erosion;
+	protected float _flatFactor;
+	protected float _slopeFactor;
+
+	protected StreamType _type;
+	public StreamType Type 
+	{ get {return _type;} }
+
+	public void Initialize(StreamInfo stream)
+	{
+		_type = stream.type;
+		
+		_granularity = stream.granularity;
+		_treshold = stream.treshold;
+		_erosion = stream.erosion;
+		_flatFactor = stream.flatFactor;
+		_slopeFactor = stream.slopeFactor;
+		
+		_animTime = -1.0f;
+	}
 
 	public static bool IsFluid( StreamType streamType)
 	{
@@ -27,7 +51,7 @@ public abstract class Stream : MonoBehaviour
 	}
 
 	public bool IsFluid()
-	{	return Stream.IsFluid(type);	}
+	{	return Stream.IsFluid(_type);	}
 	
 	protected Bloc _bloc;
 
@@ -48,7 +72,7 @@ public abstract class Stream : MonoBehaviour
 	public int GetVolume()
 	{
 		if(_bloc)
-			return _bloc.Streams[type];
+			return _bloc.Streams[_type];
 		else
 			return -1;
 	}
