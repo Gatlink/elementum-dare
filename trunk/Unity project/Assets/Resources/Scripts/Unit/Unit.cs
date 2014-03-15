@@ -53,11 +53,12 @@ public class Unit : MonoBehaviour, PhaseEventListener
 
 #region Attributes
 
+	public bool HasActed;
 	public ETeam Team = ETeam.Totem;
 	public Source.SourceType SourceType;
 	public Bloc.BlocType BlocType;
 
-	public int _hitPoints = HitPointsMax;
+	private int _hitPoints = HitPointsMax;
 	private int _moves;
 
 #endregion
@@ -257,6 +258,7 @@ public class Unit : MonoBehaviour, PhaseEventListener
 	public void onStartNewPhase(int phase)
 	{
 		_moves = MovesMax;
+		HasActed = false;
 
 		if (_bloc.IsUnderLava || _bloc.IsElectrified || _bloc.Type == Bloc.BlocType.UpgradedPlant)
 		{

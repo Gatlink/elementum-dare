@@ -24,9 +24,9 @@ public class InputUnit : MonoBehaviour
 		Selector.Selected.enabled = true;
 
 		// KEYS
-		if(Input.GetKeyDown(KeyCode.Space))
+		if(!Selector.Selected.HasActed && Input.GetKeyDown(KeyCode.Space))
 			Leave<InputSource>();
-		else if(Input.GetKeyDown(KeyCode.LeftAlt))
+		else if(!Selector.Selected.HasActed && Input.GetKeyDown(KeyCode.LeftAlt))
 			Leave<InputBloc>();
 		else if(Input.GetKeyDown(KeyCode.Return))
 		{

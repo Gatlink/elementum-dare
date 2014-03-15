@@ -58,6 +58,7 @@ public class InputBloc : MonoBehaviour
 
 		if (Input.GetMouseButtonDown(0))
 		{
+			_unit.HasActed = true;
 			Map.InsertBloc(bloc.indexInMap.x, bloc.indexInMap.y, _handledBloc);
 			Quit();
 		}

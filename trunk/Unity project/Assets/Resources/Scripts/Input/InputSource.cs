@@ -54,7 +54,10 @@ public class InputSource : MonoBehaviour
 			_handledSource.Bloc = bloc;
 
 		if (Input.GetMouseButtonDown(0))
+		{
+			_unit.HasActed = true;
 			Quit();
+		}
 	}
 
 	void Quit()
