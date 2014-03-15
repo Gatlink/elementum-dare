@@ -77,6 +77,10 @@ public class InputBloc : MonoBehaviour
 	private void PlaceHandledBloc(Bloc bloc)
 	{
 		BlocIndex index = bloc.indexInMap;
+
+		if (_unit.BlocType == Bloc.BlocType.Plant)
+			_handledBloc.Type = bloc.IsQuickSanded ? Bloc.BlocType.UpgradedPlant : Bloc.BlocType.Plant;
+
 		index.z += 1;
 		if (_handledBloc.indexInMap != index)
 			_handledBloc.transform.position = Map.IndexToPosition(index);
