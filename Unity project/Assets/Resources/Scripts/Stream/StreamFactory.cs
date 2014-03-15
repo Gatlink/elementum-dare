@@ -62,7 +62,7 @@ public class StreamFactory
 			streamScript = "WindStream";
 
 		Stream script = streamObj.AddComponent(streamScript) as Stream;
-		script.type = stream.type;
+		script.Initialize(stream);
 		
 		return streamObj;
 	}
