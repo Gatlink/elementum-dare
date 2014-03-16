@@ -15,7 +15,7 @@ public class FluidStream : Stream
 
 		//Debug.Log( GetAltitude().ToString() + "-" + GetVolume().ToString());
 
-		if(_bloc.Streams[_type].value <= _treshold)
+		if(GetVolume() <= _treshold)
 			return;
 		
 		List<Bloc> surroundings = Map.FetchNeighbors2D(_bloc.indexInMap, 1);
@@ -23,34 +23,24 @@ public class FluidStream : Stream
 
 		if(DivideNeighbors(_bloc, surroundings, out flatNeighbors, out slopeNeighbors) == 0) //no valid neighbors
 			return; //TODO débordement
-		/*
-		float amountToRedist = _bloc.Streams[_type].value * _granularity;
+
+		float amountToRedist = GetVolume() * _granularity;
 		float nbOfShares = flatNeighbors.Count * _flatFactor + slopeNeighbors.Count * _slopeFactor;
 		float oneShare = amountToRedist / nbOfShares;
 
-		//int amountToShare = (int) Mathf.Floor((float) denominator * ((float) bloc.Elements.Lava / 5.0f));
-		int amountToShare = neighborsNb * oneShare;
-		amountToShare += (maxNbOfNeighbors - neighborsNb) * (int) Mathf.Floor(oneShare * 0.5f);
-		//half a share for the invalid neighbors to be redistributed
-		
-		int denominator = neighborsNb;
-		foreach(Bloc neighbor in validNeighbors)
+		foreach(Bloc destBloc in flatNeighbors)
 		{
-			denominator += Bloc.IsLower(neighbor, _bloc) ? 2 : 0 ;
+			int amountMoved = Mathf.FloorToInt(oneShare * _flatFactor);
+			_bloc.Streams[_type].buffer -= amountMoved;
+			destBloc.Streams[_type].buffer += amountMoved;
 		}
-		
-		if((amountToShare / denominator) < 1) //not enough to share
-			return;
-		
-		foreach(Bloc neighbor in validNeighbors)
+
+		foreach(Bloc destBloc in slopeNeighbors)
 		{
-			int share = Bloc.IsLower(neighbor, _bloc) ? 3 : 1 ;
-			int amountMoved = (int) Mathf.Round(amountToShare * ((float)share / (float)denominator));
-			neighbor.Streams[_type] += amountMoved;
-			_bloc.Streams[_type] -= amountMoved;
-			
-			//Debug.Log (amountMoved + " from " + bloc.name + " to " + neighbor.name);
-		}*/
+			int amountMoved = Mathf.FloorToInt(oneShare * _slopeFactor);
+			_bloc.Streams[_type].buffer -= amountMoved;
+			destBloc.Streams[_type].buffer += amountMoved;
+		}
 	}
 
 	/*
