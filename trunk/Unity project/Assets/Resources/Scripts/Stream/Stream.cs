@@ -12,7 +12,7 @@ public abstract class Stream : MonoBehaviour
 		Wind,
 		Electricity
 	}
-	public static int NB_OF_TYPES = (int)StreamType.Electricity;
+	public static int NB_OF_TYPES = (int)StreamType.Electricity + 1;
 	// must be last of enum
 
 	private const float TOTAL_ANIM_TIME = 1.5f;

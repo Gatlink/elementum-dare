@@ -27,7 +27,7 @@ public class StreamManager : IManager<Stream>
 	{
 		if(_items.Count <= 0)
 			return;
-
+/*
 		Stream[] orderedStreams = _items.ToArray();
 
 		System.Array.Sort(orderedStreams, new StreamAltitudeComparer());
@@ -54,6 +54,11 @@ public class StreamManager : IManager<Stream>
 		System.Array.Sort<Stream>(orderedStreams, mark, count, new StreamVolumeComparer());
 
 		foreach(Stream s in orderedStreams)
+		{
+			s.UpdateStream();
+		}
+*/
+		foreach(Stream s in _items)
 		{
 			s.UpdateStream();
 		}
