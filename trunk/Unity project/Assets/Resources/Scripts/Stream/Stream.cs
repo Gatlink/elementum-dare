@@ -83,4 +83,10 @@ public abstract class Stream : MonoBehaviour
 
 	public abstract void UpdateStream();
 	public abstract void UpdateStreamVisual();
+
+	public void CommitStreamChange()
+	{
+		_bloc.Streams[_type].value += _bloc.Streams[_type].buffer;
+		_bloc.Streams[_type].buffer = 0;
+	}
 }

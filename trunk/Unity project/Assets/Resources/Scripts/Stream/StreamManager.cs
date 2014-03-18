@@ -58,9 +58,16 @@ public class StreamManager : IManager<Stream>
 			s.UpdateStream();
 		}
 */
+		//Simulate streams (all values go into buffers)
 		foreach(Stream s in _items)
 		{
 			s.UpdateStream();
+		}
+
+		 
+		foreach(Stream s in _items)
+		{
+			s.CommitStreamChange();
 		}
 	}
 	
