@@ -5,12 +5,12 @@ public class StreamFactory
 {
 	private static int streamID = 0;
 
-	private static Dictionary<Stream.StreamType, StreamInfo> streamInfoByType = new Dictionary<Stream.StreamType, StreamInfo>();
+	private static Dictionary<Source.SourceType, StreamInfo> streamInfoByType = new Dictionary<Source.SourceType, StreamInfo>();
 
 	private static GameObject streamNode = new GameObject("Streams") ;
 	// Commodity, to assemble all streams under an object's hierarchy node in the editor
 
-	public static Stream CreateStream(Stream.StreamType type)
+	public static Stream CreateStream(Source.SourceType type)
 	{
 		StreamInfo stream = streamInfoByType[type];
 		
@@ -56,9 +56,9 @@ public class StreamFactory
 		
 		//Add proper stream script
 		string streamScript = "FluidStream";
-		if(stream.type == Stream.StreamType.Electricity)
+		if(stream.type == Source.SourceType.Electricity)
 			streamScript = "ElectricityStream";
-		else if (stream.type == Stream.StreamType.Wind)
+		else if (stream.type == Source.SourceType.Wind)
 			streamScript = "WindStream";
 
 		Stream script = streamObj.AddComponent(streamScript) as Stream;
@@ -69,6 +69,6 @@ public class StreamFactory
 
 	public static bool IsReady()
 	{
-		return streamInfoByType.Count >= Stream.NB_OF_TYPES;
+		return streamInfoByType.Count >= Source.NB_OF_TYPES;
 	}
 }

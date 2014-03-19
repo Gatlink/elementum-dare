@@ -16,7 +16,7 @@ public class ElectricityStream : Stream
 		float height = 0;
 		if(_bloc.IsFlooded)
 		{
-			height = _bloc.GetStreamOfType(Stream.StreamType.Water).gameObject.transform.localScale.y;
+			height = _bloc.GetStreamOfType(Source.SourceType.Water).gameObject.transform.localScale.y;
 		}
 
 		//Update stream to surround the bloc

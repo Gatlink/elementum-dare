@@ -37,13 +37,22 @@ public class SourceManager : IManager<Source>
 			UnregisterElement(corpse);
 		}
 	}
-	
+
+	public List<Bloc> GetSourceBlocs()
+	{
+		List<Bloc> blocs = new List<Bloc>();
+		foreach(Source source in _items)
+		{
+			blocs.Add(source.Bloc);
+		}
+		return blocs;
+	}
+
 	//Singleton
-	private static SourceManager _instance = new SourceManager();
-	
+	private static SourceManager _instance = null;
 	public static SourceManager Instance()
 	{
-		return _instance;
+		return (_instance != null) ? _instance : _instance = new SourceManager();
 	}
 	
 	private SourceManager(){}

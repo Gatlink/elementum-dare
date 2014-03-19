@@ -35,7 +35,7 @@ public class LavaSource : Source
 	{
 		List<Bloc> list = new List<Bloc>(neighbors.Except(seen));
 
-		SourceBlocRefDelegate del = new SourceBlocRefDelegate(Stream.StreamType.Lava, refBloc);
+		SourceBlocRefDelegate del = new SourceBlocRefDelegate(Source.SourceType.Lava, refBloc);
 		list.RemoveAll(del.BlocIsHigher);
 		list.RemoveAll(del.BlocHasMoreOfStream);
 		return list;
@@ -101,7 +101,7 @@ public class LavaSource : Source
 			}
 		}
 
-		nextRound.Sort(new StreamDescSorter(Stream.StreamType.Lava));
+		nextRound.Sort(new StreamDescSorter(Source.SourceType.Lava));
 
 		return MakeSpread(ref nextRound, processed);
 	}

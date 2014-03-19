@@ -4,17 +4,6 @@ using System.Linq;
 
 public abstract class Stream : MonoBehaviour
 {
-	public enum StreamType
-	{
-		Sand,
-		Lava,
-		Water,
-		Wind,
-		Electricity
-	}
-	public static int NB_OF_TYPES = (int)StreamType.Electricity + 1;
-	// must be last of enum
-
 	private const float TOTAL_ANIM_TIME = 1.5f;
 	private float _animTime = -1.0f;
 
@@ -24,8 +13,8 @@ public abstract class Stream : MonoBehaviour
 	protected float _flatFactor;
 	protected float _slopeFactor;
 
-	protected StreamType _type;
-	public StreamType Type 
+	protected Source.SourceType _type;
+	public Source.SourceType Type 
 	{ get {return _type;} }
 
 	public void Initialize(StreamInfo stream)
@@ -41,11 +30,11 @@ public abstract class Stream : MonoBehaviour
 		_animTime = -1.0f;
 	}
 
-	public static bool IsFluid( StreamType streamType)
+	public static bool IsFluid( Source.SourceType streamType)
 	{
-		return ( streamType == StreamType.Sand
-		        || streamType == StreamType.Water
-		        || streamType == StreamType.Lava
+		return ( streamType == Source.SourceType.Sand
+		        || streamType == Source.SourceType.Water
+		        || streamType == Source.SourceType.Lava
 		        );
 	}
 

@@ -14,7 +14,11 @@ public abstract class Source : MonoBehaviour
 	public static int NB_OF_TYPES = (int)SourceType.Water;
 	// must be last of enum
 
-	public SourceType _type;
+	protected SourceType _type;
+	public SourceType Type
+	{
+		get { return _type; }
+	}
 
 	protected int _generate;
 	protected int _duration;
@@ -29,14 +33,14 @@ public abstract class Source : MonoBehaviour
 		set 
 		{
 			if (_bloc != null)
-				_bloc.ReceiveSource(null);
+				_bloc.Source = null;
 
 			if (value != null)
 			{
 				BlocIndex sourceIndex = value.indexInMap;
 				sourceIndex.z += 1;
 				transform.position = Map.IndexToPosition(sourceIndex);
-				value.ReceiveSource(this);
+				value.Source = this;
 				_bloc = value;
 			}
 			else

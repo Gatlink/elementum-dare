@@ -24,40 +24,40 @@ public class StreamsState
 		}
 	}
 
-	private Dictionary<Stream.StreamType, StreamValues> _state;
+	private Dictionary<Source.SourceType, StreamValues> _state;
 	
 	///////////////////////////////////////////////////// WATER
 	public StreamValues Water
 	{
-		get{ return _state[Stream.StreamType.Water]; }
-		set{ _state[Stream.StreamType.Water] = value; }
+		get{ return _state[Source.SourceType.Water]; }
+		set{ _state[Source.SourceType.Water] = value; }
 	}
 	
 	///////////////////////////////////////////////////// SAND
 	public StreamValues Sand
 	{
-		get{ return _state[Stream.StreamType.Sand]; }
-		set{ _state[Stream.StreamType.Sand] = value; }
+		get{ return _state[Source.SourceType.Sand]; }
+		set{ _state[Source.SourceType.Sand] = value; }
 	}
 	
 	///////////////////////////////////////////////////// LAVA
 	public StreamValues Lava
 	{
-		get{ return _state[Stream.StreamType.Lava]; }
-		set{  _state[Stream.StreamType.Lava] = value; }
+		get{ return _state[Source.SourceType.Lava]; }
+		set{  _state[Source.SourceType.Lava] = value; }
 	}
 	
 	///////////////////////////////////////////////////// ELEC & WIND
 	//irrelevant
 	
 	///////////////////////////////////////////////////// ACCESSORS & HELPERS
-	public List<Stream.StreamType> CurrentTypes
+	public List<Source.SourceType> CurrentTypes
 	{
 		get
 		{
-			List<Stream.StreamType> list = new List<Stream.StreamType>();
+			List<Source.SourceType> list = new List<Source.SourceType>();
 			
-			foreach(KeyValuePair<Stream.StreamType, StreamValues> pair in _state)
+			foreach(KeyValuePair<Source.SourceType, StreamValues> pair in _state)
 			{
 				if(pair.Value.value > 0)
 				{
@@ -69,7 +69,7 @@ public class StreamsState
 		}
 	}
 	
-	public StreamValues this[Stream.StreamType type]
+	public StreamValues this[Source.SourceType type]
 	{
 		get{ return _state[type]; }
 		set{ _state[type] = value; }
@@ -77,24 +77,29 @@ public class StreamsState
 	
 	public StreamsState()
 	{
-		_state = new Dictionary<Stream.StreamType, StreamValues>();
+		_state = new Dictionary<Source.SourceType, StreamValues>();
 		
-		_state.Add(Stream.StreamType.Sand, new StreamValues());
-		_state.Add(Stream.StreamType.Lava, new StreamValues());
-		_state.Add(Stream.StreamType.Water, new StreamValues());
-		_state.Add(Stream.StreamType.Electricity, new StreamValues());
-		_state.Add(Stream.StreamType.Wind, new StreamValues());
+		_state.Add(Source.SourceType.Sand, new StreamValues());
+		_state.Add(Source.SourceType.Lava, new StreamValues());
+		_state.Add(Source.SourceType.Water, new StreamValues());
+		_state.Add(Source.SourceType.Electricity, new StreamValues());
+		_state.Add(Source.SourceType.Wind, new StreamValues());
 	}
 	
 	public new string ToString()
 	{
 		string msg = "ELEMENTS:\n";
 		
-		foreach(KeyValuePair<Stream.StreamType, StreamValues> pair in _state)
+		foreach(KeyValuePair<Source.SourceType, StreamValues> pair in _state)
 		{
 			msg += pair.Key.ToString() + " -> " + pair.Value.ToString() + "\n";
 		}
 		
 		return msg;
+	}
+
+	public void Resolve(Source.SourceType type, bool animated)
+	{
+
 	}
 }

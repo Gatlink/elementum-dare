@@ -23,29 +23,29 @@ public class Bloc : MonoBehaviour
 
 	public bool IsFlooded
 	{
-		get{ return _streamsState[Stream.StreamType.Water].value > 0; }
+		get{ return _streamsState[Source.SourceType.Water].value > 0; }
 	}
 	
 	public bool IsQuickSanded
 	{
-		get{ return _streamsState[Stream.StreamType.Sand].value > 0; }
+		get{ return _streamsState[Source.SourceType.Sand].value > 0; }
 	}
 	
 	public bool IsUnderLava
 	{
-		get{ return _streamsState[Stream.StreamType.Lava].value > 0; }
+		get{ return _streamsState[Source.SourceType.Lava].value > 0; }
 	}
 	
 	public bool IsElectrified 
 	{
-		get{ return _streamsState[Stream.StreamType.Electricity].value > 0; } 
-		set{ _streamsState[Stream.StreamType.Electricity].value = (_type == BlocType.Metal || IsFlooded) && value ? 1 : 0; }
+		get{ return _streamsState[Source.SourceType.Electricity].value > 0; } 
+		set{ _streamsState[Source.SourceType.Electricity].value = (_type == BlocType.Metal || IsFlooded) && value ? 1 : 0; }
 	}
 
 	public bool HasWindBlowing
 	{
-		get{ return _streamsState[Stream.StreamType.Wind].value > 0; } 
-		set{ _streamsState[Stream.StreamType.Wind].value = value ? 1 : 0; }
+		get{ return _streamsState[Source.SourceType.Wind].value > 0; } 
+		set{ _streamsState[Source.SourceType.Wind].value = value ? 1 : 0; }
 	}
 
 	private BlocType _type;
@@ -65,14 +65,17 @@ public class Bloc : MonoBehaviour
 	public BlocIndex indexInMap {get; private set;}
 
 	private Source _sourceObject = null;
-	private Dictionary<Stream.StreamType, Stream> _streamObjects = new Dictionary<Stream.StreamType, Stream>();
+	public Source Source
+	{
+		get { return _sourceObject; }
+		set { _sourceObject = value;}
+	}
+
+	private Dictionary<Source.SourceType, Stream> _streamObjects = new Dictionary<Source.SourceType, Stream>();
 	private Unit _unitObject = null;
 
 	public bool HoldASource()
 	{	return _sourceObject != null;	}
-	
-	public void ReceiveSource(Source source)
-	{	_sourceObject = source;	}
 
 	public bool HostAUnit()
 	{	return _unitObject != null;	}
@@ -127,19 +130,19 @@ public class Bloc : MonoBehaviour
 
 	void UpdateStreamsState()
 	{
-		List<Stream.StreamType> currentTypes = Streams.CurrentTypes;
+		List<Source.SourceType> currentTypes = Streams.CurrentTypes;
 		if(currentTypes.Count > 0)
 		{
 			//Remove all the streams that aren't supposed to still be there
-			List<Stream.StreamType> disposableStreams = new List<Stream.StreamType>();
-			foreach(KeyValuePair<Stream.StreamType, Stream> p in _streamObjects)
+			List<Source.SourceType> disposableStreams = new List<Source.SourceType>();
+			foreach(KeyValuePair<Source.SourceType, Stream> p in _streamObjects)
 			{
 				if(!currentTypes.Contains(p.Key))
 					disposableStreams.Add(p.Key);
 			}
 
 			//Remove the corresponding entries in the dictionary
-			foreach(Stream.StreamType key in disposableStreams)
+			foreach(Source.SourceType key in disposableStreams)
 			{
 				StreamManager.Instance().RemoveStream(_streamObjects[key]);
 				_streamObjects.Remove(key);
@@ -148,7 +151,7 @@ public class Bloc : MonoBehaviour
 
 			//Create the missing streams
 			Vector3 streamPos = Map.IndexToPosition(indexInMap.x, indexInMap.y, indexInMap.z + 1);
-			foreach(Stream.StreamType key in currentTypes)
+			foreach(Source.SourceType key in currentTypes)
 			{
 				if(!_streamObjects.ContainsKey(key))
 				{
@@ -161,14 +164,14 @@ public class Bloc : MonoBehaviour
 		else
 		{
 			//Remove all the streams
-			foreach(KeyValuePair<Stream.StreamType, Stream> p in _streamObjects)
+			foreach(KeyValuePair<Source.SourceType, Stream> p in _streamObjects)
 			{
 				StreamManager.Instance().RemoveStream(p.Value);
 			}
 			_streamObjects.Clear();
 		}
 
-		foreach(KeyValuePair<Stream.StreamType, Stream> p in _streamObjects)
+		foreach(KeyValuePair<Source.SourceType, Stream> p in _streamObjects)
 		{
 			p.Value.UpdateStreamVisual();
 		}
@@ -195,12 +198,17 @@ public class Bloc : MonoBehaviour
 		return distance;
 	}
 
+	public bool IsTopMostBloc()
+	{
+		return Map.GetBlocAt(indexInMap.x, indexInMap.y) == this;
+	}
+
 	public struct SortByStreamVolume : IComparer<Bloc>
 	{
-		private Stream.StreamType _checkType;
+		private Source.SourceType _checkType;
 		private bool _desc;
 		
-		public SortByStreamVolume(Stream.StreamType type, bool desc)
+		public SortByStreamVolume(Source.SourceType type, bool desc)
 		{ 
 			_checkType = type;
 			_desc = desc;
@@ -245,7 +253,7 @@ public class Bloc : MonoBehaviour
 		return BlocFactory.GetBlocSizeByType(_type);
 	}
 
-	public Stream GetStreamOfType(Stream.StreamType type)
+	public Stream GetStreamOfType(Source.SourceType type)
 	{
 		if(_streamObjects.ContainsKey(type))
 			return _streamObjects[type];
@@ -258,24 +266,24 @@ public class Bloc : MonoBehaviour
 		var streamKeys = _streamObjects.Keys.ToList();
 		foreach(var streamKey in streamKeys)
 		{
-			if (streamKey != Stream.StreamType.Electricity)
+			if (streamKey != Source.SourceType.Electricity)
 			{
 				StreamManager.Instance().RemoveStream(_streamObjects[streamKey]);
 				_streamObjects.Remove(streamKey);
 			}
 		}
 
-		foreach(var streamType in (Stream.StreamType[])Enum.GetValues(typeof(Stream.StreamType)))
+		foreach(var streamType in (Source.SourceType[])Enum.GetValues(typeof(Source.SourceType)))
 		{
-			if (streamType != Stream.StreamType.Electricity)
+			if (streamType != Source.SourceType.Electricity)
 				_streamsState[streamType].value = 0;
 		}
 
-		if(!IsConductor() && _streamObjects.ContainsKey(Stream.StreamType.Electricity))
+		if(!IsConductor() && _streamObjects.ContainsKey(Source.SourceType.Electricity))
 		{
-			_streamsState[Stream.StreamType.Electricity].value = 0;
-			StreamManager.Instance().RemoveStream(_streamObjects[Stream.StreamType.Electricity]);
-			_streamObjects.Remove(Stream.StreamType.Electricity);
+			_streamsState[Source.SourceType.Electricity].value = 0;
+			StreamManager.Instance().RemoveStream(_streamObjects[Source.SourceType.Electricity]);
+			_streamObjects.Remove(Source.SourceType.Electricity);
 		}
 	}
 

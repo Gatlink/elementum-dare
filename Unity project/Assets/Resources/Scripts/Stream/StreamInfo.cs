@@ -3,7 +3,7 @@ using System.Collections;
 
 public class StreamInfo : MonoBehaviour {
 	
-	public Stream.StreamType type;
+	public Source.SourceType type;
 	public Mesh mesh;
 	public Material material;
 
