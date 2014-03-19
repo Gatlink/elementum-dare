@@ -151,26 +151,26 @@ public class StreamManager : IManager<Stream>
 
 		if(currentPass == null) //fetching the first pass
 		{
+			currentPass = new StreamSimulationPass();
+
 			List<Bloc> firstPassBlocs = SourceManager.Instance().GetSourceBlocs();
 			foreach(Bloc bloc in firstPassBlocs)
 			{
-				nextPass.Add(bloc.Source.Type, bloc);
+				currentPass.Add(bloc.Source.Type, bloc);
 			}
 		}
-		else //not the first pass, deduce the next one
+
+		foreach(KeyValuePair<Source.SourceType, HashSet<Bloc>> pass in currentPass)
 		{
-			foreach(KeyValuePair<Source.SourceType, HashSet<Bloc>> pass in currentPass)
+			foreach(Bloc bloc in pass.Value)
 			{
-				foreach(Bloc bloc in pass.Value)
-				{
-					List<Bloc> neighbors = Map.FetchNeighborsIf(bloc, 1, 
-					                                            (b) => !b.IsHigherThan(bloc) && b.IsTopMostBloc(),
-					                                            true, false); //TODO
-					nextPass.AddRange(pass.Key, neighbors);
-				}
-				
-				nextPass[pass.Key].ExceptWith(pass.Value);
+				List<Bloc> neighbors = Map.FetchNeighborsIf(bloc, 1, 
+				                                            (b) => !b.IsHigherThan(bloc) && b.IsTopMostBloc(),
+				                                            true, false); //TODO
+				nextPass.AddRange(pass.Key, neighbors);
 			}
+			
+			nextPass[pass.Key].ExceptWith(pass.Value);
 		}
 
 		return nextPass.Count > 0;
