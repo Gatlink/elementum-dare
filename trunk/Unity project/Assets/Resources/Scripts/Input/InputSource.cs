@@ -31,7 +31,7 @@ public class InputSource : MonoBehaviour
 	{
 		if (Input.GetKeyDown(KeyCode.Escape))
 		{
-			_handledSource.Bloc.ReceiveSource(null);
+			_handledSource.Bloc.Source = null;
 			GameObject.Destroy(_handledSource.gameObject);
 			Quit();
 			return;
