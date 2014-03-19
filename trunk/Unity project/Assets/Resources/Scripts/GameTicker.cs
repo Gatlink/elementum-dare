@@ -30,12 +30,11 @@ public static class GameTicker
 	{
 		// Actually removes the falgged sources
 		SourceManager.Instance().RemoveDeadSources();
-
 		// Update sources
 		SourceManager.Instance().UpdateSources();
-
 		// Update streams
 		StreamManager.Instance().UpdateStreams();
+
 		foreach(PhaseEventListener l in _phaseListeners)
 		{
 			l.onEndPhase(_phase);
