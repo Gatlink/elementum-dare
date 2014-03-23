@@ -75,7 +75,6 @@ public abstract class Stream : MonoBehaviour
 
 	public void CommitStreamChange()
 	{
-		_bloc.Streams[_type].value += _bloc.Streams[_type].buffer;
-		_bloc.Streams[_type].buffer = 0;
+		_bloc.Streams[_type].TransmitBuffer();
 	}
 }

@@ -8,9 +8,11 @@ public class StreamManager : IManager<Stream>
 		: IEnumerable<KeyValuePair<Source.SourceType, HashSet<Bloc>>>
 	{
 		private Dictionary<Source.SourceType, HashSet<Bloc>> _blocs;
+		private int _id;
 
-		public StreamSimulationPass() 
+		public StreamSimulationPass(StreamSimulationPass previousPass) 
 		{
+			_id = (previousPass != null) ? previousPass._id + 1 : 0;
 			_blocs = new Dictionary<Source.SourceType, HashSet<Bloc>>();
 		}
 
@@ -64,7 +66,20 @@ public class StreamManager : IManager<Stream>
 
 		public int Count
 		{
-			get { return _blocs.Count; }
+			get 
+			{
+				int sum = 0;
+				foreach(KeyValuePair<Source.SourceType, HashSet<Bloc>> pass in _blocs)
+				{
+					sum += pass.Value.Count;
+				}
+				return sum; 
+			}
+		}
+
+		public new string ToString()
+		{
+			return "Pass #" + _id + " (" + Count + ")";
 		}
 	}
 
@@ -132,10 +147,14 @@ public class StreamManager : IManager<Stream>
 		//Start stream animations and buffer validation
 		StreamSimulationPass currentPass = null;
 		StreamSimulationPass nextPass = null;
+		bool continueSimulation = true;
 
-		while(FetchNextPass(currentPass, out nextPass))
+		while(continueSimulation)
 		{
+			continueSimulation = FetchNextPass(ref currentPass, out nextPass);
+			Debug.Log ("Resolving " + currentPass.ToString());
 			currentPass.Resolve();
+			Debug.Log ("Next pass is " + nextPass.ToString());
 			currentPass = nextPass;
 			nextPass = null;
 		}
@@ -145,33 +164,34 @@ public class StreamManager : IManager<Stream>
 		}*/
 	}
 
-	private bool FetchNextPass(StreamSimulationPass currentPass, out StreamSimulationPass nextPass)
+	private bool FetchNextPass(ref StreamSimulationPass currentPass, out StreamSimulationPass nextPass)
 	{
-		nextPass = new StreamSimulationPass();
-
 		if(currentPass == null) //fetching the first pass
 		{
-			currentPass = new StreamSimulationPass();
-
+			currentPass = new StreamSimulationPass(null);
 			List<Bloc> firstPassBlocs = SourceManager.Instance().GetSourceBlocs();
 			foreach(Bloc bloc in firstPassBlocs)
 			{
 				currentPass.Add(bloc.Source.Type, bloc);
 			}
+			Debug.Log("Deduced first pass: " + currentPass.ToString());
 		}
+
+		nextPass = new StreamSimulationPass(currentPass);
 
 		foreach(KeyValuePair<Source.SourceType, HashSet<Bloc>> pass in currentPass)
 		{
 			foreach(Bloc bloc in pass.Value)
 			{
 				List<Bloc> neighbors = Map.FetchNeighborsIf(bloc, 1, 
-				                                            (b) => !b.IsHigherThan(bloc) && b.IsTopMostBloc(),
+			                                            (b) => !b.IsHigherThan(bloc) 
+				                                            && b.IsTopMostBloc() 
+				                                            && b.HasPendingStreamOfType(pass.Key),
 				                                            true, false); //TODO
 				nextPass.AddRange(pass.Key, neighbors);
 			}
-			
-			nextPass[pass.Key].ExceptWith(pass.Value);
 		}
+		Debug.Log("Fetched " + nextPass.ToString());
 
 		return nextPass.Count > 0;
 	}
