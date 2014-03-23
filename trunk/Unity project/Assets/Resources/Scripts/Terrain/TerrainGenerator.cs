@@ -16,12 +16,24 @@ public class TerrainGenerator : MonoBehaviour
 	private int _width;
 	private int _length;
 
+	private int _totemTeamMember = 0;
+	private int _monsterTeamMember = 0;
+	private int[] _totemBloc;
+	private int[] _totemSource;
+	private int[] _monsterBloc;
+	private int[] _monsterSource;
+
 	private static Dictionary<string, Bloc.BlocType> _stringToElementType = CreateElementsDictionary();
 	private static Dictionary<string, Unit.ETeam> _stringToTeams = CreateTeamsDictionary();
+	
+	private static Dictionary<int, Bloc.BlocType> _intToUnitBloc = CreateUnitBlocDictionary();
+	private static Dictionary<int, Source.SourceType> _intToUnitSource = CreateUnitSourceDictionary();
 
 	// Use this for initialization
 	void Start () 
 	{
+		GetUnitSelection ();
+
 		GenerateMatrixes();
 		ParameterMap();
 
@@ -37,6 +49,15 @@ public class TerrainGenerator : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{}
+
+	private void GetUnitSelection (){
+
+		//recupere les infos du script "Unit Selected.
+		_totemBloc = UnitSelected.totemBloc;
+		_totemSource = UnitSelected.totemSource;
+		_monsterBloc = UnitSelected.monsterBloc;
+		_monsterSource = UnitSelected.monsterSource;
+	}
 
 	private void GenerateMatrixes()
 	{
@@ -179,11 +200,22 @@ public class TerrainGenerator : MonoBehaviour
 
 				if (_stringToTeams.ContainsKey(key))
 				{
-					Unit unit = UnitFactory.CreateUnit(_stringToTeams[key], Bloc.BlocType.Ice, Source.SourceType.Electricity);
-					unit.MoveToBloc(bloc);
-					unit.FaceYourOpponent();
-					Unit.Units.Add(unit);
-					GameTicker.RegisterListener(unit);
+					if (key == "1"){
+						Unit unit = UnitFactory.CreateUnit(_stringToTeams[key], _intToUnitBloc[_totemBloc[_totemTeamMember]], _intToUnitSource[_totemSource[_totemTeamMember]]);
+						unit.MoveToBloc(bloc);
+						unit.FaceYourOpponent();
+						Unit.Units.Add(unit);
+						GameTicker.RegisterListener(unit);
+						++ _totemTeamMember;
+					}
+					else if (key == "2"){
+						Unit unit = UnitFactory.CreateUnit(_stringToTeams[key], _intToUnitBloc[_monsterBloc[_monsterTeamMember]], _intToUnitSource[_monsterSource[_monsterTeamMember]]);
+						unit.MoveToBloc(bloc);
+						unit.FaceYourOpponent();
+						Unit.Units.Add(unit);
+						GameTicker.RegisterListener(unit);
+						++ _monsterTeamMember;
+					}
 				}
 			}
 		}
@@ -214,6 +246,31 @@ public class TerrainGenerator : MonoBehaviour
 		dict.Add("2", Unit.ETeam.Monster);
 
 		return dict;
+	}
+
+	// hahaha j'ai aucune idée de ce que je fait mais je le fait quand meme !
+	private static Dictionary<int, Bloc.BlocType> CreateUnitBlocDictionary()
+	{
+		Dictionary<int, Bloc.BlocType> blocDict = new Dictionary<int, Bloc.BlocType>();
+		blocDict.Add (0, Bloc.BlocType.Earth);
+		blocDict.Add (1, Bloc.BlocType.Ice);
+		blocDict.Add (2, Bloc.BlocType.Metal);
+		blocDict.Add (3, Bloc.BlocType.Plant);
+		blocDict.Add (4, Bloc.BlocType.Rock);
+		
+		return blocDict;
+	}
+
+	private static Dictionary<int, Source.SourceType> CreateUnitSourceDictionary()
+	{
+		Dictionary<int, Source.SourceType> sourceDict = new Dictionary<int, Source.SourceType>();
+		sourceDict.Add (0, Source.SourceType.Electricity);
+		sourceDict.Add (1, Source.SourceType.Lava);
+		sourceDict.Add (2, Source.SourceType.Sand);
+		sourceDict.Add (3, Source.SourceType.Water);
+		sourceDict.Add (4, Source.SourceType.Wind);
+
+		return sourceDict;
 	}
 
 	private static bool FactoriesReady()
