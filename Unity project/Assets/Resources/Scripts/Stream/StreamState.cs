@@ -22,6 +22,12 @@ public class StreamsState
 			string msg = "v:" + value + " / b:" + buffer;
 			return msg;
 		}
+
+		public void TransmitBuffer()
+		{
+			value += buffer;
+			buffer = 0;
+		}
 	}
 
 	private Dictionary<Source.SourceType, StreamValues> _state;
@@ -100,6 +106,8 @@ public class StreamsState
 
 	public void Resolve(Source.SourceType type, bool animated)
 	{
-
+		//TODO resolve interactions with current stream type
+		//TODO animate
+		_state[type].TransmitBuffer(); 
 	}
 }

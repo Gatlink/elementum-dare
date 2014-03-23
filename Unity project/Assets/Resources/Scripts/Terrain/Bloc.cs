@@ -21,31 +21,37 @@ public class Bloc : MonoBehaviour
 	private StreamsState _streamsState = new StreamsState();
 	public StreamsState Streams { get{ return _streamsState; } }
 
+	public bool HasStreamOfType(Source.SourceType type)
+	{	return Streams[type].value > 0;	}
+
+	public bool HasPendingStreamOfType(Source.SourceType type)
+	{	return Streams[type].buffer > 0; }
+
 	public bool IsFlooded
 	{
-		get{ return _streamsState[Source.SourceType.Water].value > 0; }
+		get{ return HasStreamOfType(Source.SourceType.Water); }
 	}
 	
 	public bool IsQuickSanded
 	{
-		get{ return _streamsState[Source.SourceType.Sand].value > 0; }
+		get{ return HasStreamOfType(Source.SourceType.Sand); }
 	}
 	
 	public bool IsUnderLava
 	{
-		get{ return _streamsState[Source.SourceType.Lava].value > 0; }
+		get{ return HasStreamOfType(Source.SourceType.Lava); }
 	}
 	
 	public bool IsElectrified 
 	{
-		get{ return _streamsState[Source.SourceType.Electricity].value > 0; } 
-		set{ _streamsState[Source.SourceType.Electricity].value = (_type == BlocType.Metal || IsFlooded) && value ? 1 : 0; }
+		get{ return HasStreamOfType(Source.SourceType.Electricity); } 
+		set{ Streams[Source.SourceType.Electricity].value = (_type == BlocType.Metal || IsFlooded) && value ? 1 : 0; }
 	}
 
 	public bool HasWindBlowing
 	{
-		get{ return _streamsState[Source.SourceType.Wind].value > 0; } 
-		set{ _streamsState[Source.SourceType.Wind].value = value ? 1 : 0; }
+		get{ return HasStreamOfType(Source.SourceType.Wind); } 
+		set{ Streams[Source.SourceType.Wind].value = value ? 1 : 0; }
 	}
 
 	private BlocType _type;
