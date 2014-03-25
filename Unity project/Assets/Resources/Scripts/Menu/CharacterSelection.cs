@@ -11,15 +11,21 @@ public class CharacterSelection : MonoBehaviour {
 
 	private float _sw = Screen.width;
 	private float _sh = Screen.height;
+
 	public GUIContent [] iconBloc;
 	public GUIContent [] iconSource;
+	public BlocElement[] monsterPicture;
+	public BlocElement[] totemPicture;
+	public GUISkin mainMenuSkin;
+	public GUIStyle characterBox;
+	public GUIStyle arrowRight;
+	public GUIStyle arrowLeft;
+	public Texture deco01;
+
 	private int[] _monsterX = new int[] {0, 0, 0};
 	private int[] _monsterY = new int[] {0, 0, 0};
 	private int[] _totemX = new int[] {0, 0, 0};
 	private int[] _totemY = new int[] {0, 0, 0};
-	public BlocElement[] monsterPicture;
-	public BlocElement[] totemPicture;
-
 
 	void Awake () {
 		
@@ -37,6 +43,8 @@ public class CharacterSelection : MonoBehaviour {
 	}
 
 	void OnGUI () {
+
+		GUI.skin = mainMenuSkin;
 
 		//lance le jeu.
 		if (GUI.Button (new Rect(_sw / 2 - 40, _sh - 110, 80, 60),"GO!")){
@@ -61,20 +69,22 @@ public class CharacterSelection : MonoBehaviour {
 		 * ****************************/
 
 		//Choix du monstre 1
-		GUI.BeginGroup (new Rect (10, 10, 300, _sh / 3 - 10));
+		GUI.BeginGroup (new Rect (10, 10, 300, _sh));
 
-		GUI.Box (new Rect(0,0,300,_sh / 3),"");
+		GUI.Box (new Rect(0,0,300,_sh - 20),"",characterBox);
+		GUI.DrawTexture (new Rect (10, 35, 280, 230), deco01);
+		GUI.DrawTexture (new Rect (10, 190, 280, 230), deco01);
 
 		// choix de l'element pour les blocs
-		GUI.Box (new Rect (50, 20, 40, 40), iconBloc[_monsterX[0]]);
+		GUI.Box (new Rect (60, 20, 40, 40), iconBloc[_monsterX[0]]);
 
-		if(GUI.Button (new Rect(10,20,30,40),"<")){
+		if(GUI.Button (new Rect(15,20,40,40),"",arrowLeft)){
 			_monsterX[0] -= 1;
 			if (_monsterX[0] <= -1){
 				_monsterX[0] = 4;
 			}
 		}
-		if(GUI.Button (new Rect(100,20,30,40),">")){
+		if(GUI.Button (new Rect(105,20,40,40),"",arrowRight)){
 			_monsterX[0] += 1;
 			if (_monsterX[0] >= 5){
 				_monsterX[0] = 0;
@@ -82,22 +92,23 @@ public class CharacterSelection : MonoBehaviour {
 		}
 
 		//choix de l'element pour les sources
-		GUI.Box (new Rect (50, 100, 40, 40), iconSource[_monsterY[0]]);
+		GUI.Box (new Rect (60, 80, 40, 40), iconSource[_monsterY[0]]);
 
-		if(GUI.Button (new Rect(10,100,30,40),"<")){
+		if(GUI.Button (new Rect(15,80,40,40),"",arrowLeft)){
 			_monsterY[0] -= 1;
 			if (_monsterY[0] <= -1){
 				_monsterY[0] = 4;
 			}
 		}
-		if(GUI.Button (new Rect(100,100,30,40),">")){
+		if(GUI.Button (new Rect(105,80,40,40),"",arrowRight)){
 			_monsterY[0] += 1;
 			if (_monsterY[0] >= 5){
 				_monsterY[0] = 0;
 			}
 		}
 		//Affiche le monstre choisi.
-		GUI.Box (new Rect (160, 10, 130, 130), monsterPicture [_monsterX[0]].sourceElement [_monsterY[0]]);
+		GUI.Box (new Rect (170, 20, 110, 110), monsterPicture [_monsterX[0]].sourceElement [_monsterY[0]]);
+
 
 		GUI.EndGroup();
 
@@ -106,18 +117,18 @@ public class CharacterSelection : MonoBehaviour {
 		//Choix du monstre 2
 		GUI.BeginGroup (new Rect (10, _sh / 3 + 10, 300, _sh / 3 - 10));
 		
-		GUI.Box (new Rect(0,0,300,_sh / 3),"");
+		//GUI.Box (new Rect(0,0,300,_sh / 3),"");
 		
 		// choix de l'element pour les blocs
-		GUI.Box (new Rect (50, 20, 40, 40), iconBloc[_monsterX[1]]);
+		GUI.Box (new Rect (60, 20, 40, 40), iconBloc[_monsterX[1]]);
 		
-		if(GUI.Button (new Rect(10,20,30,40),"<")){
+		if(GUI.Button (new Rect(15,20,40,40),"",arrowLeft)){
 			_monsterX[1] -= 1;
 			if (_monsterX[1] <= -1){
 				_monsterX[1] = 4;
 			}
 		}
-		if(GUI.Button (new Rect(100,20,30,40),">")){
+		if(GUI.Button (new Rect(105,20,40,40),"",arrowRight)){
 			_monsterX[1] += 1;
 			if (_monsterX[1] >= 5){
 				_monsterX[1] = 0;
@@ -125,22 +136,22 @@ public class CharacterSelection : MonoBehaviour {
 		}
 		
 		//choix de l'element pour les sources
-		GUI.Box (new Rect (50, 100, 40, 40), iconSource[_monsterY[1]]);
+		GUI.Box (new Rect (60, 80, 40, 40), iconSource[_monsterY[1]]);
 		
-		if(GUI.Button (new Rect(10,100,30,40),"<")){
+		if(GUI.Button (new Rect(15,80,40,40),"",arrowLeft)){
 			_monsterY[1] -= 1;
 			if (_monsterY[1] <= -1){
 				_monsterY[1] = 4;
 			}
 		}
-		if(GUI.Button (new Rect(100,100,30,40),">")){
+		if(GUI.Button (new Rect(105,80,40,40),"",arrowRight)){
 			_monsterY[1] += 1;
 			if (_monsterY[1] >= 5){
 				_monsterY[1] = 0;
 			}
 		}
 		//Affiche le monstre choisi.
-		GUI.Box (new Rect (160, 10, 130, 130), monsterPicture [_monsterX[1]].sourceElement [_monsterY[1]]);
+		GUI.Box (new Rect (170, 10, 110, 110), monsterPicture [_monsterX[1]].sourceElement [_monsterY[1]]);
 		
 		GUI.EndGroup();
 
@@ -149,18 +160,18 @@ public class CharacterSelection : MonoBehaviour {
 		//Choix du monstre 3
 		GUI.BeginGroup (new Rect (10, _sh * 2 / 3 + 10, 300, _sh / 3 - 10));
 		
-		GUI.Box (new Rect(0,0,300,_sh / 3),"");
+		//GUI.Box (new Rect(0,0,300,_sh / 3),"");
 		
 		// choix de l'element pour les blocs
-		GUI.Box (new Rect (50, 20, 40, 40), iconBloc[_monsterX[2]]);
+		GUI.Box (new Rect (60, 20, 40, 40), iconBloc[_monsterX[2]]);
 		
-		if(GUI.Button (new Rect(10,20,30,40),"<")){
+		if(GUI.Button (new Rect(15,20,40,40),"",arrowLeft)){
 			_monsterX[2] -= 1;
 			if (_monsterX[2] <= -1){
 				_monsterX[2] = 4;
 			}
 		}
-		if(GUI.Button (new Rect(100,20,30,40),">")){
+		if(GUI.Button (new Rect(105,20,40,40),"",arrowRight)){
 			_monsterX[2] += 1;
 			if (_monsterX[2] >= 5){
 				_monsterX[2] = 0;
@@ -168,22 +179,22 @@ public class CharacterSelection : MonoBehaviour {
 		}
 		
 		//choix de l'element pour les sources
-		GUI.Box (new Rect (50, 100, 40, 40), iconSource[_monsterY[2]]);
+		GUI.Box (new Rect (60, 80, 40, 40), iconSource[_monsterY[2]]);
 		
-		if(GUI.Button (new Rect(10,100,30,40),"<")){
+		if(GUI.Button (new Rect(15,80,40,40),"",arrowLeft)){
 			_monsterY[2] -= 1;
 			if (_monsterY[2] <= -1){
 				_monsterY[2] = 4;
 			}
 		}
-		if(GUI.Button (new Rect(100,100,30,40),">")){
+		if(GUI.Button (new Rect(105,80,40,40),"",arrowRight)){
 			_monsterY[2] += 1;
 			if (_monsterY[2] >= 5){
 				_monsterY[2] = 0;
 			}
 		}
 		//Affiche le monstre choisi.
-		GUI.Box (new Rect (160, 10, 130, 130), monsterPicture [_monsterX[2]].sourceElement [_monsterY[2]]);
+		GUI.Box (new Rect (170, 10, 110, 110), monsterPicture [_monsterX[2]].sourceElement [_monsterY[2]]);
 		
 		GUI.EndGroup();
 
@@ -192,20 +203,22 @@ public class CharacterSelection : MonoBehaviour {
 		 * ****************************************************/
 
 		//Choix du Totem 1
-		GUI.BeginGroup (new Rect (_sw - 310, 10, 300, _sh / 3 - 10));
+		GUI.BeginGroup (new Rect (_sw - 310, 10, 300, _sh));
 		
-		GUI.Box (new Rect(0,0,300,_sh / 3),"");
+		GUI.Box (new Rect(0,0,300,_sh - 20),"", characterBox);
+		GUI.DrawTexture (new Rect (10, 35, 280, 230), deco01);
+		GUI.DrawTexture (new Rect (10, 190, 280, 230), deco01);
 		
 		// choix de l'element pour les blocs
-		GUI.Box (new Rect (210, 20, 40, 40), iconBloc[_totemX[0]]);
+		GUI.Box (new Rect (200, 20, 40, 40), iconBloc[_totemX[0]]);
 		
-		if(GUI.Button (new Rect(170,20,30,40),"<")){
+		if(GUI.Button (new Rect(155,20,40,40),"",arrowLeft)){
 			_totemX[0] -= 1;
 			if (_totemX[0] <= -1){
 				_totemX[0] = 4;
 			}
 		}
-		if(GUI.Button (new Rect(260,20,30,40),">")){
+		if(GUI.Button (new Rect(245,20,40,40),"",arrowRight)){
 			_totemX[0] += 1;
 			if (_totemX[0] >= 5){
 				_totemX[0] = 0;
@@ -213,22 +226,22 @@ public class CharacterSelection : MonoBehaviour {
 		}
 		
 		//choix de l'element pour les sources
-		GUI.Box (new Rect (210, 100, 40, 40), iconSource[_totemY[0]]);
+		GUI.Box (new Rect (200, 80, 40, 40), iconSource[_totemY[0]]);
 		
-		if(GUI.Button (new Rect(170,100,30,40),"<")){
+		if(GUI.Button (new Rect(155,80,40,40),"",arrowLeft)){
 			_totemY[0] -= 1;
 			if (_totemY[0] <= -1){
 				_totemY[0] = 4;
 			}
 		}
-		if(GUI.Button (new Rect(260,100,30,40),">")){
+		if(GUI.Button (new Rect(245,80,40,40),"",arrowRight)){
 			_totemY[0] += 1;
 			if (_totemY[0] >= 5){
 				_totemY[0] = 0;
 			}
 		}
-		//Affiche le monstre choisi.
-		GUI.Box (new Rect (10, 10, 130, 130), totemPicture [_totemX[0]].sourceElement [_totemY[0]]);
+		//Affiche le totem choisi.
+		GUI.Box (new Rect (20, 20, 110, 110), totemPicture [_totemX[0]].sourceElement [_totemY[0]]);
 		
 		GUI.EndGroup();
 
@@ -237,18 +250,18 @@ public class CharacterSelection : MonoBehaviour {
 		//Choix du Totem 2
 		GUI.BeginGroup (new Rect (_sw - 310, _sh / 3 + 10, 300, _sh / 3 - 10));
 		
-		GUI.Box (new Rect(0,0,300,_sh / 3),"");
+		//GUI.Box (new Rect(0,0,300,_sh),"");
 		
 		// choix de l'element pour les blocs
-		GUI.Box (new Rect (210, 20, 40, 40), iconBloc[_totemX[1]]);
+		GUI.Box (new Rect (200, 20, 40, 40), iconBloc[_totemX[1]]);
 		
-		if(GUI.Button (new Rect(170,20,30,40),"<")){
+		if(GUI.Button (new Rect(155,20,40,40),"",arrowLeft)){
 			_totemX[1] -= 1;
 			if (_totemX[1] <= -1){
 				_totemX[1] = 4;
 			}
 		}
-		if(GUI.Button (new Rect(260,20,30,40),">")){
+		if(GUI.Button (new Rect(245,20,40,40),"",arrowRight)){
 			_totemX[1] += 1;
 			if (_totemX[1] >= 5){
 				_totemX[1] = 0;
@@ -256,22 +269,22 @@ public class CharacterSelection : MonoBehaviour {
 		}
 		
 		//choix de l'element pour les sources
-		GUI.Box (new Rect (210, 100, 40, 40), iconSource[_totemY[1]]);
+		GUI.Box (new Rect (200, 80, 40, 40), iconSource[_totemY[1]]);
 		
-		if(GUI.Button (new Rect(170,100,30,40),"<")){
+		if(GUI.Button (new Rect(155,80,40,40),"",arrowLeft)){
 			_totemY[1] -= 1;
 			if (_totemY[1] <= -1){
 				_totemY[1] = 4;
 			}
 		}
-		if(GUI.Button (new Rect(260,100,30,40),">")){
+		if(GUI.Button (new Rect(245,80,40,40),"",arrowRight)){
 			_totemY[1] += 1;
 			if (_totemY[1] >= 5){
 				_totemY[1] = 0;
 			}
 		}
-		//Affiche le monstre choisi.
-		GUI.Box (new Rect (10, 10, 130, 130), totemPicture [_totemX[1]].sourceElement [_totemY[1]]);
+		//Affiche le totem choisi.
+		GUI.Box (new Rect (20, 10, 110, 110), totemPicture [_totemX[1]].sourceElement [_totemY[1]]);
 		
 		GUI.EndGroup();
 
@@ -280,18 +293,18 @@ public class CharacterSelection : MonoBehaviour {
 		//Choix du Totem 3
 		GUI.BeginGroup (new Rect (_sw - 310, _sh * 2 / 3 + 10, 300, _sh / 3 - 10));
 		
-		GUI.Box (new Rect(0,0,300,_sh / 3),"");
+		//GUI.Box (new Rect(0,0,300,_sh / 3),"");
 		
 		// choix de l'element pour les blocs
-		GUI.Box (new Rect (210, 20, 40, 40), iconBloc[_totemX[2]]);
+		GUI.Box (new Rect (200, 20, 40, 40), iconBloc[_totemX[2]]);
 		
-		if(GUI.Button (new Rect(170,20,30,40),"<")){
+		if(GUI.Button (new Rect(155,20,40,40),"",arrowLeft)){
 			_totemX[2] -= 1;
 			if (_totemX[2] <= -1){
 				_totemX[2] = 4;
 			}
 		}
-		if(GUI.Button (new Rect(260,20,30,40),">")){
+		if(GUI.Button (new Rect(245,20,40,40),"",arrowRight)){
 			_totemX[2] += 1;
 			if (_totemX[2] >= 5){
 				_totemX[2] = 0;
@@ -299,22 +312,22 @@ public class CharacterSelection : MonoBehaviour {
 		}
 		
 		//choix de l'element pour les sources
-		GUI.Box (new Rect (210, 100, 40, 40), iconSource[_totemY[2]]);
+		GUI.Box (new Rect (200, 80, 40, 40), iconSource[_totemY[2]]);
 		
-		if(GUI.Button (new Rect(170,100,30,40),"<")){
+		if(GUI.Button (new Rect(155,80,40,40),"",arrowLeft)){
 			_totemY[2] -= 1;
 			if (_totemY[2] <= -1){
 				_totemY[2] = 4;
 			}
 		}
-		if(GUI.Button (new Rect(260,100,30,40),">")){
+		if(GUI.Button (new Rect(245,80,40,40),"",arrowRight)){
 			_totemY[2] += 1;
 			if (_totemY[2] >= 5){
 				_totemY[2] = 0;
 			}
 		}
 		//Affiche le monstre choisi.
-		GUI.Box (new Rect (10, 10, 130, 130), totemPicture [_totemX[2]].sourceElement [_totemY[2]]);
+		GUI.Box (new Rect (20, 10, 110, 110), totemPicture [_totemX[2]].sourceElement [_totemY[2]]);
 		
 		GUI.EndGroup();
 	}
