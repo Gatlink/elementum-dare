@@ -47,7 +47,7 @@ public class CharacterSelection : MonoBehaviour {
 		GUI.skin = mainMenuSkin;
 
 		//lance le jeu.
-		if (GUI.Button (new Rect(_sw / 2 - 40, _sh - 110, 80, 60),"GO!")){
+		if (GUI.Button (new Rect(_sw / 2 - 40, _sh - 120, 80, 60),"GO!")){
 
 			//transfer les infos vers un script qui garde l'info pendant le changement de level.
 			UnitSelected.monsterBloc = _monsterX;
@@ -59,7 +59,7 @@ public class CharacterSelection : MonoBehaviour {
 			Application.LoadLevel("MainScene");
 		}
 		//retourne a l'écran titre.
-		if (GUI.Button (new Rect(_sw / 2 - 30, _sh - 30, 60, 20),"Back")){
+		if (GUI.Button (new Rect(_sw / 2 - 40, _sh - 50, 80, 40),"Back")){
 			gameObject.GetComponent<MainMenu>().enabled = true;
 			enabled = false;
 		}
@@ -73,7 +73,7 @@ public class CharacterSelection : MonoBehaviour {
 
 		GUI.Box (new Rect(0,0,300,_sh - 20),"",characterBox);
 		GUI.DrawTexture (new Rect (10, 35, 280, 230), deco01);
-		GUI.DrawTexture (new Rect (10, 190, 280, 230), deco01);
+		GUI.DrawTexture (new Rect (10, 185, 280, 230), deco01);
 
 		// choix de l'element pour les blocs
 		GUI.Box (new Rect (60, 20, 40, 40), iconBloc[_monsterX[0]]);
@@ -151,7 +151,7 @@ public class CharacterSelection : MonoBehaviour {
 			}
 		}
 		//Affiche le monstre choisi.
-		GUI.Box (new Rect (170, 10, 110, 110), monsterPicture [_monsterX[1]].sourceElement [_monsterY[1]]);
+		GUI.Box (new Rect (170, 15, 110, 110), monsterPicture [_monsterX[1]].sourceElement [_monsterY[1]]);
 		
 		GUI.EndGroup();
 
@@ -207,7 +207,7 @@ public class CharacterSelection : MonoBehaviour {
 		
 		GUI.Box (new Rect(0,0,300,_sh - 20),"", characterBox);
 		GUI.DrawTexture (new Rect (10, 35, 280, 230), deco01);
-		GUI.DrawTexture (new Rect (10, 190, 280, 230), deco01);
+		GUI.DrawTexture (new Rect (10, 185, 280, 230), deco01);
 		
 		// choix de l'element pour les blocs
 		GUI.Box (new Rect (200, 20, 40, 40), iconBloc[_totemX[0]]);
@@ -284,7 +284,7 @@ public class CharacterSelection : MonoBehaviour {
 			}
 		}
 		//Affiche le totem choisi.
-		GUI.Box (new Rect (20, 10, 110, 110), totemPicture [_totemX[1]].sourceElement [_totemY[1]]);
+		GUI.Box (new Rect (20, 15, 110, 110), totemPicture [_totemX[1]].sourceElement [_totemY[1]]);
 		
 		GUI.EndGroup();
 
