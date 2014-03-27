@@ -12,8 +12,13 @@ public class CharacterSelection : MonoBehaviour {
 	private float _sw = Screen.width;
 	private float _sh = Screen.height;
 
-	public GUIContent [] iconBloc;
-	public GUIContent [] iconSource;
+	private string[] _blocTooltips = {"Earth", "Ice","Metal", "Plant", "Rock"};
+	private string[] _sourceTooltips = {"Electricity", "Lava", "Sand", "Water", "Wind"};
+	public Texture[] textureBloc;
+	public Texture[] textureSource;
+	private GUIContent[] _iconBloc = new GUIContent[5];
+	private GUIContent[] _iconSource = new GUIContent[5];
+
 	public BlocElement[] monsterPicture;
 	public BlocElement[] totemPicture;
 	public GUISkin mainMenuSkin;
@@ -28,8 +33,15 @@ public class CharacterSelection : MonoBehaviour {
 	private int[] _totemY = new int[] {0, 0, 0};
 
 	void Awake () {
-		
+
+		for (int i = 0; i < 5; ++i) {
+			_iconBloc[i] = new GUIContent("", textureBloc[i], _blocTooltips[i]); 
+		}
+		for (int i = 0; i < 5; ++i) {
+			_iconSource[i] = new GUIContent("", textureSource[i], _sourceTooltips[i]); 
+		}
 		enabled = false;
+
 
 	}
 	// Use this for initialization
@@ -76,7 +88,9 @@ public class CharacterSelection : MonoBehaviour {
 		GUI.DrawTexture (new Rect (10, 185, 280, 230), deco01);
 
 		// choix de l'element pour les blocs
-		GUI.Box (new Rect (60, 20, 40, 40), iconBloc[_monsterX[0]]);
+		GUI.Box (new Rect (60, 20, 40, 40), _iconBloc[_monsterX[0]]);
+		GUI.Label (new Rect(60, 60, 40, 20), GUI.tooltip);
+		GUI.tooltip = null;
 
 		if(GUI.Button (new Rect(15,20,40,40),"",arrowLeft)){
 			_monsterX[0] -= 1;
@@ -92,7 +106,9 @@ public class CharacterSelection : MonoBehaviour {
 		}
 
 		//choix de l'element pour les sources
-		GUI.Box (new Rect (60, 80, 40, 40), iconSource[_monsterY[0]]);
+		GUI.Box (new Rect (60, 80, 40, 40), _iconSource[_monsterY[0]]);
+		GUI.Label (new Rect(60, 120, 60, 20), GUI.tooltip);
+		GUI.tooltip = null;
 
 		if(GUI.Button (new Rect(15,80,40,40),"",arrowLeft)){
 			_monsterY[0] -= 1;
@@ -120,7 +136,9 @@ public class CharacterSelection : MonoBehaviour {
 		//GUI.Box (new Rect(0,0,300,_sh / 3),"");
 		
 		// choix de l'element pour les blocs
-		GUI.Box (new Rect (60, 20, 40, 40), iconBloc[_monsterX[1]]);
+		GUI.Box (new Rect (60, 20, 40, 40), _iconBloc[_monsterX[1]]);
+		GUI.Label (new Rect(60, 60, 40, 20), GUI.tooltip);
+		GUI.tooltip = null;
 		
 		if(GUI.Button (new Rect(15,20,40,40),"",arrowLeft)){
 			_monsterX[1] -= 1;
@@ -136,7 +154,9 @@ public class CharacterSelection : MonoBehaviour {
 		}
 		
 		//choix de l'element pour les sources
-		GUI.Box (new Rect (60, 80, 40, 40), iconSource[_monsterY[1]]);
+		GUI.Box (new Rect (60, 80, 40, 40), _iconSource[_monsterY[1]]);
+		GUI.Label (new Rect(60, 120, 60, 20), GUI.tooltip);
+		GUI.tooltip = null;
 		
 		if(GUI.Button (new Rect(15,80,40,40),"",arrowLeft)){
 			_monsterY[1] -= 1;
@@ -163,7 +183,9 @@ public class CharacterSelection : MonoBehaviour {
 		//GUI.Box (new Rect(0,0,300,_sh / 3),"");
 		
 		// choix de l'element pour les blocs
-		GUI.Box (new Rect (60, 20, 40, 40), iconBloc[_monsterX[2]]);
+		GUI.Box (new Rect (60, 20, 40, 40), _iconBloc[_monsterX[2]]);
+		GUI.Label (new Rect(60, 60, 40, 20), GUI.tooltip);
+		GUI.tooltip = null;
 		
 		if(GUI.Button (new Rect(15,20,40,40),"",arrowLeft)){
 			_monsterX[2] -= 1;
@@ -179,7 +201,9 @@ public class CharacterSelection : MonoBehaviour {
 		}
 		
 		//choix de l'element pour les sources
-		GUI.Box (new Rect (60, 80, 40, 40), iconSource[_monsterY[2]]);
+		GUI.Box (new Rect (60, 80, 40, 40), _iconSource[_monsterY[2]]);
+		GUI.Label (new Rect(60, 120, 60, 20), GUI.tooltip);
+		GUI.tooltip = null;
 		
 		if(GUI.Button (new Rect(15,80,40,40),"",arrowLeft)){
 			_monsterY[2] -= 1;
@@ -210,7 +234,9 @@ public class CharacterSelection : MonoBehaviour {
 		GUI.DrawTexture (new Rect (10, 185, 280, 230), deco01);
 		
 		// choix de l'element pour les blocs
-		GUI.Box (new Rect (200, 20, 40, 40), iconBloc[_totemX[0]]);
+		GUI.Box (new Rect (200, 20, 40, 40), _iconBloc[_totemX[0]]);
+		GUI.Label (new Rect(200, 60, 40, 20), GUI.tooltip);
+		GUI.tooltip = null;
 		
 		if(GUI.Button (new Rect(155,20,40,40),"",arrowLeft)){
 			_totemX[0] -= 1;
@@ -226,7 +252,9 @@ public class CharacterSelection : MonoBehaviour {
 		}
 		
 		//choix de l'element pour les sources
-		GUI.Box (new Rect (200, 80, 40, 40), iconSource[_totemY[0]]);
+		GUI.Box (new Rect (200, 80, 40, 40), _iconSource[_totemY[0]]);
+		GUI.Label (new Rect(200, 120, 60, 20), GUI.tooltip);
+		GUI.tooltip = null;
 		
 		if(GUI.Button (new Rect(155,80,40,40),"",arrowLeft)){
 			_totemY[0] -= 1;
@@ -253,7 +281,9 @@ public class CharacterSelection : MonoBehaviour {
 		//GUI.Box (new Rect(0,0,300,_sh),"");
 		
 		// choix de l'element pour les blocs
-		GUI.Box (new Rect (200, 20, 40, 40), iconBloc[_totemX[1]]);
+		GUI.Box (new Rect (200, 20, 40, 40), _iconBloc[_totemX[1]]);
+		GUI.Label (new Rect(200, 60, 40, 20), GUI.tooltip);
+		GUI.tooltip = null;
 		
 		if(GUI.Button (new Rect(155,20,40,40),"",arrowLeft)){
 			_totemX[1] -= 1;
@@ -269,7 +299,9 @@ public class CharacterSelection : MonoBehaviour {
 		}
 		
 		//choix de l'element pour les sources
-		GUI.Box (new Rect (200, 80, 40, 40), iconSource[_totemY[1]]);
+		GUI.Box (new Rect (200, 80, 40, 40), _iconSource[_totemY[1]]);
+		GUI.Label (new Rect(200, 120, 60, 20), GUI.tooltip);
+		GUI.tooltip = null;
 		
 		if(GUI.Button (new Rect(155,80,40,40),"",arrowLeft)){
 			_totemY[1] -= 1;
@@ -296,7 +328,9 @@ public class CharacterSelection : MonoBehaviour {
 		//GUI.Box (new Rect(0,0,300,_sh / 3),"");
 		
 		// choix de l'element pour les blocs
-		GUI.Box (new Rect (200, 20, 40, 40), iconBloc[_totemX[2]]);
+		GUI.Box (new Rect (200, 20, 40, 40), _iconBloc[_totemX[2]]);
+		GUI.Label (new Rect(200, 60, 40, 20), GUI.tooltip);
+		GUI.tooltip = null;
 		
 		if(GUI.Button (new Rect(155,20,40,40),"",arrowLeft)){
 			_totemX[2] -= 1;
@@ -312,7 +346,9 @@ public class CharacterSelection : MonoBehaviour {
 		}
 		
 		//choix de l'element pour les sources
-		GUI.Box (new Rect (200, 80, 40, 40), iconSource[_totemY[2]]);
+		GUI.Box (new Rect (200, 80, 40, 40), _iconSource[_totemY[2]]);
+		GUI.Label (new Rect(200, 120, 60, 20), GUI.tooltip);
+		GUI.tooltip = null;
 		
 		if(GUI.Button (new Rect(155,80,40,40),"",arrowLeft)){
 			_totemY[2] -= 1;
