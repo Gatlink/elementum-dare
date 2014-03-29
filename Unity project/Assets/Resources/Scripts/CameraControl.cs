@@ -3,37 +3,61 @@ using System.Collections;
 
 public class CameraControl : MonoBehaviour
 {
-	public float MoveSpeed = 100;
-	public float RotationSpeed = 200;
+#if UNITY_EDITOR
+    public bool QWERTY;
+#endif
 
-	void Update ()
+    public float speed = 70.0f;
+
+    private Transform _target;
+    public Unit Target
+    {
+        set
+        {
+            if (value == null)
+            {
+                _target = null;
+            }
+            else
+            {
+                _target = value.transform;
+            }
+        }
+    }
+
+	private void Update ()
 	{
-		// TRANSLATION
-		if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
-			transform.position = Vector3.MoveTowards(transform.position, transform.position + transform.right, MoveSpeed * Time.deltaTime);
-		else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.Q))
-			transform.position = Vector3.MoveTowards(transform.position, transform.position - transform.right, MoveSpeed * Time.deltaTime);
-		else if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.Z))
-			transform.position = Vector3.MoveTowards(transform.position, transform.position - Vector3.Cross(Vector3.up, transform.right), MoveSpeed * Time.deltaTime);
-		else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
-			transform.position = Vector3.MoveTowards(transform.position, transform.position + Vector3.Cross(Vector3.up, transform.right), MoveSpeed * Time.deltaTime);
+        if (_target != null)
+        {
+            if (transform.position != _target.position)
+            {
+                var distance = Vector3.Distance(_target.position, transform.position);
+                var interpolation = 1 - Mathf.Exp(-distance * Time.deltaTime * 0.5f - 0.1f);
+                transform.position = Vector3.MoveTowards(transform.position, _target.position, interpolation * 10f);
+            }
+            else
+            {
+                Camera.main.transform.LookAt(_target.transform);
+                Target = null;
+            }
+        }
+        else
+        {
+            if ((QWERTY && Input.GetKey(KeyCode.Q)) || (!QWERTY && Input.GetKey(KeyCode.A)))
+                transform.Rotate(0f, Mathf.PI / 2f, 0f);
+            if (Input.GetKey(KeyCode.E))
+                transform.Rotate(0f, -Mathf.PI / 2f, 0f);
+            if ((QWERTY && Input.GetKey(KeyCode.A)) || (!QWERTY && Input.GetKey(KeyCode.Q)))
+                transform.position = transform.position + transform.right * Time.deltaTime * speed;
+            if (Input.GetKey(KeyCode.D))
+                transform.position = transform.position - transform.right * Time.deltaTime * speed;
+            if (Input.GetKey(KeyCode.S))
+                transform.position = transform.position + transform.forward * Time.deltaTime * speed;
+            if ((QWERTY && Input.GetKey(KeyCode.W)) || (!QWERTY && Input.GetKey(KeyCode.Z)))
+                transform.position = transform.position - transform.forward * Time.deltaTime * speed;
 
-		// ZOOM
-		if (Input.GetAxis("Mouse ScrollWheel") < 0) // back
-			Camera.main.fieldOfView = Mathf.Min(Camera.main.fieldOfView+2, 90);
-		if (Input.GetAxis("Mouse ScrollWheel") > 0) // forward
-			Camera.main.fieldOfView = Mathf.Max(Camera.main.fieldOfView-2, 10);
-
-		// ROTATION
-		if (Input.GetKey(KeyCode.E))
-			RotateAroundMapCenter(-RotationSpeed);
-	    else if (Input.GetKey(KeyCode.A))
-			RotateAroundMapCenter(RotationSpeed);
-	}
-
-	private void RotateAroundMapCenter(float angle)
-	{
-		Vector3 lookAt = Map.Get2DMapCenter();
-		transform.RotateAround(lookAt, Vector3.up, Time.deltaTime * angle);
+            if (Input.GetKeyDown(KeyCode.Tab))
+                Target = Selector.Selected;
+        }
 	}
 }

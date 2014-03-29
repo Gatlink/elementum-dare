@@ -21,6 +21,9 @@ public class InputUnit : MonoBehaviour
 			Leave<InputEnd>();
 		}
 
+        if (!Selector.Selected)
+            return;
+
 		Selector.Selected.enabled = true;
 
 		// KEYS
