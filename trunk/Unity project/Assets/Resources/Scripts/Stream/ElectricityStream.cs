@@ -27,6 +27,8 @@ public class ElectricityStream : Stream
 		gameObject.transform.Translate( new Vector3(0.0f, height * 0.5f, 0.0f) );
 	}
 
+	public override void Erode(){}
+
 	public override void Update()
 	{
 		if(_animTimer <= 0.0f)

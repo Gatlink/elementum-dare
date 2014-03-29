@@ -8,4 +8,6 @@ public class Windscript : Stream
 	
 	public override void UpdateStreamVisual()
 	{	}
+
+	public override void Erode(){}
 }

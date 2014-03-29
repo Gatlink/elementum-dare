@@ -6,28 +6,64 @@ public class StreamsState
 	public class StreamValues
 	{
 		public StreamValues()
-		{ value = 0; buffer = 0; }
+		{ _value = 0; _buffer = 0; }
 
 		public StreamValues(int val)
-		{ value = val; buffer = 0; }
+		{ _value = val; _buffer = 0; }
 
 		public StreamValues(int val, int buf)
-		{ value = val; buffer = buf; }
+		{ _value = val; _buffer = buf; }
 
-		public int value;
-		public int buffer;
+		private int _value;
+		public int Value
+		{ 
+			get {return _value;}
+		}
+
+		private int _buffer;
+		public int Buffer
+		{
+			get { return _buffer; }
+			set 
+			{
+				_buffer = value;
+				_hasChanged = true;
+			}
+		}
+
+		private bool _hasChanged;
+		public bool HasChanged
+		{
+			get { return _hasChanged; }
+		}
 
 		public new string ToString()
 		{
-			string msg = "v:" + value + " / b:" + buffer;
+			string msg = "v:" + _value + " / b:" + _buffer;
 			return msg;
 		}
 
 		public void TransmitBuffer()
 		{
-			value += buffer;
-			buffer = 0;
+			_value += _buffer;
+			_buffer = 0;
+			_hasChanged = false;
 		}
+
+		public void Generate( int val )
+		{	_value += val;	}
+
+		public void Erode( int val )
+		{ 	_value -= val;	}
+
+		public void Reset()
+		{
+			_value = 0;
+			_buffer = 0;
+		}
+
+		public void Trigger(bool state)
+		{	_value = state ? 1 : 0;	}
 	}
 
 	private Dictionary<Source.SourceType, StreamValues> _state;
@@ -65,7 +101,7 @@ public class StreamsState
 			
 			foreach(KeyValuePair<Source.SourceType, StreamValues> pair in _state)
 			{
-				if(pair.Value.value > 0)
+				if(pair.Value.Value > 0)
 				{
 					list.Add(pair.Key);
 				}
@@ -109,5 +145,18 @@ public class StreamsState
 		//TODO resolve interactions with current stream type
 		//TODO animate
 		_state[type].TransmitBuffer(); 
+	}
+
+	public bool HasChanged
+	{
+		get
+		{
+			foreach(KeyValuePair<Source.SourceType, StreamValues> pair in _state)
+			{
+				if(pair.Value.HasChanged)
+					return true;
+			}
+			return false;
+		}
 	}
 }
