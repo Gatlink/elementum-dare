@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,7 +13,7 @@ public class WaterSource : Source
 		}
 		
 		//put everything on self bloc
-		_bloc.Streams.Water.value += _generate;
+		_bloc.Streams.Water.Generate( _generate);
 	}
 	
 	public override void KillSource(){}

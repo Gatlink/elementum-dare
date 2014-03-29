@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class StreamManager : IManager<Stream>
 {
@@ -90,7 +91,7 @@ public class StreamManager : IManager<Stream>
 		if(!(type == Source.SourceType.Wind || type == Source.SourceType.Electricity))
 			RegisterElement(stream);
 
-		stream.PlaceOnBloc(onBloc);
+		stream.Bloc = onBloc;
 
 		return stream;
 	}
@@ -144,10 +145,18 @@ public class StreamManager : IManager<Stream>
 			s.UpdateStream();
 		}
 
+		Debug.Log("STARTING RESOLUTION");
+
+		Debug.Log("Fetching eroding streams");
+		//Retrieve and store all the blocs of streams that haven't changed this pass
+		List<Bloc> toErode = GetStreamBlocs( (stream) => !stream.Bloc.HasPendingStreamChanges() );
+
 		//Start stream animations and buffer validation
 		StreamSimulationPass currentPass = null;
 		StreamSimulationPass nextPass = null;
 		bool continueSimulation = true;
+
+		Debug.Log("Resolving streams around sources");
 
 		while(continueSimulation)
 		{
@@ -158,6 +167,20 @@ public class StreamManager : IManager<Stream>
 			currentPass = nextPass;
 			nextPass = null;
 		}
+
+		Debug.Log("Fetching streams without sources");
+		//Retrieve all the blocs of streams that have changed this pass but haven't been resolved yet (no source around)
+		List<Bloc> noSourceStreams = GetStreamBlocs( (stream) => stream.Bloc.HasPendingStreamChanges() );
+		//Sort them by buffer order (the one that transmitted the most is first)
+		noSourceStreams.Sort(); //TODO
+
+		Debug.Log("Resolving streams without sources");
+		//TODO
+
+		Debug.Log("Resolving streams erosion");
+		//TODO
+
+		Debug.Log("END OF RESOLUTION");
 		/*foreach(Stream s in _items)
 		{
 			s.CommitStreamChange();
@@ -196,6 +219,17 @@ public class StreamManager : IManager<Stream>
 		return nextPass.Count > 0;
 	}
 
+	private List<Bloc> GetStreamBlocs(System.Func<Stream, bool> functor)
+	{
+		List<Bloc> blocs = new List<Bloc>();
+		foreach(Stream s in _items)
+		{
+			if( (functor == null) || ((functor != null) && functor(s)) )
+				blocs.Add(s.Bloc);
+		}
+		return blocs;
+	}
+
 	//Singleton
 	private static StreamManager _instance = new StreamManager();
 	
@@ -224,6 +258,22 @@ public class StreamManager : IManager<Stream>
 	}
 
 	private class StreamVolumeComparer : IComparer<Stream>
+	{
+		public int Compare(Stream left, Stream right)
+		{
+			int leftAmount = left.GetVolume();
+			int rightAmount = right.GetVolume();
+			
+			if(leftAmount < rightAmount)
+				return 1;
+			else if(leftAmount > rightAmount)
+				return -1;
+			else 
+				return 0;
+		}
+	}
+
+	private class StreamBufferComparer : IComparer<Stream>
 	{
 		public int Compare(Stream left, Stream right)
 		{

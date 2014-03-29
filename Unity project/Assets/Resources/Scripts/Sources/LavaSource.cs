@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,7 +13,7 @@ public class LavaSource : Source
 		}
 
 		//put everything on self bloc
-		_bloc.Streams.Lava.value += _generate; //TODO animate
+		_bloc.Streams.Lava.Generate(_generate); //TODO animate
 
 		/*List<Bloc> update = new List<Bloc>();
 		//update.Add(_bloc);

@@ -31,15 +31,15 @@ public class FluidStream : Stream
 		foreach(Bloc destBloc in flatNeighbors)
 		{
 			int amountMoved = Mathf.FloorToInt(oneShare * _flatFactor);
-			_bloc.Streams[_type].buffer -= amountMoved;
-			destBloc.Streams[_type].buffer += amountMoved;
+			_bloc.Streams[_type].Buffer -= amountMoved;
+			destBloc.Streams[_type].Buffer += amountMoved;
 		}
 
 		foreach(Bloc destBloc in slopeNeighbors)
 		{
 			int amountMoved = Mathf.FloorToInt(oneShare * _slopeFactor);
-			_bloc.Streams[_type].buffer -= amountMoved;
-			destBloc.Streams[_type].buffer += amountMoved;
+			_bloc.Streams[_type].Buffer -= amountMoved;
+			destBloc.Streams[_type].Buffer += amountMoved;
 		}
 	}
 
@@ -96,7 +96,7 @@ public class FluidStream : Stream
 	{
 		List<Bloc> list = new List<Bloc>(neighbors);
 		list.RemoveAll(x => Bloc.IsHigher(x, refBloc));
-		list.RemoveAll(x => !Bloc.IsLower(x, refBloc) && (x.Streams[_type].value > refBloc.Streams[_type].value));
+		list.RemoveAll(x => !Bloc.IsLower(x, refBloc) && (x.Streams[_type].Value > refBloc.Streams[_type].Value));
 		return list; 
 	}
 
@@ -107,7 +107,9 @@ public class FluidStream : Stream
 
 		foreach(Bloc b in neighbors)
 		{
-			bool invalid = b.IsHigherThan(refBloc) || (!b.IsLowerThan(refBloc) && (b.Streams[_type].value > refBloc.Streams[_type].value));
+			bool invalid = b.IsHigherThan(refBloc) 
+						|| (!b.IsLowerThan(refBloc) 
+				    	&& (b.Streams[_type].Value > refBloc.Streams[_type].Value));
 			if(invalid)
 				continue;
 			else if(b.IsLowerThan(refBloc))
@@ -121,7 +123,7 @@ public class FluidStream : Stream
 
 	public override void UpdateStream()
 	{
-		Flow ();
+		Flow();
 	}
 
 	public override void UpdateStreamVisual()
@@ -132,5 +134,10 @@ public class FluidStream : Stream
 		float delta = (GetVolume() * (1.0f / maxVal));
 		Vector3 initialScale = gameObject.transform.localScale;
 		gameObject.transform.localScale = new Vector3(initialScale.x, delta, initialScale.z);
+	}
+
+	public override void Erode()
+	{
+		_bloc.Streams[_type].Erode(_erosion);
 	}
 }

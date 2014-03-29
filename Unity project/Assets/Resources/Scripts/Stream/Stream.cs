@@ -42,6 +42,22 @@ public abstract class Stream : MonoBehaviour
 	{	return Stream.IsFluid(_type);	}
 	
 	protected Bloc _bloc;
+	public Bloc Bloc
+	{
+		get { return _bloc; }
+		set 
+		{
+			if (value != null)
+			{
+				BlocIndex streamIndex = value.indexInMap;
+				streamIndex.z += 1;
+				transform.position = Map.IndexToPosition(streamIndex);
+				_bloc = value;
+			}
+			else
+				_bloc = null;
+		}
+	}
 
 	// Use this for initialization
 	void Start() {}
@@ -60,7 +76,7 @@ public abstract class Stream : MonoBehaviour
 	public int GetVolume()
 	{
 		if(_bloc)
-			return _bloc.Streams[_type].value;
+			return _bloc.Streams[_type].Value;
 		else
 			return -1;
 	}
@@ -72,9 +88,5 @@ public abstract class Stream : MonoBehaviour
 
 	public abstract void UpdateStream();
 	public abstract void UpdateStreamVisual();
-
-	public void CommitStreamChange()
-	{
-		_bloc.Streams[_type].TransmitBuffer();
-	}
+	public abstract void Erode();
 }
