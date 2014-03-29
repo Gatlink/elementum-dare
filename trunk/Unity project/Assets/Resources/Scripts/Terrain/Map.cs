@@ -117,11 +117,6 @@ public static class Map
 		return new Vector3(size.x * xRatio, 0.0f, size.z * yRatio);
 	}
 
-	public static Vector3 Get2DMapCenter()
-	{
-		return DimensionRatioToPosition(_width * 0.5f, _length * 0.5f); 
-	}
-
 	public static List<Bloc> FetchNeighbors(BlocIndex index, int range, bool volumetricSearch = false, bool includeStartBloc = false)
 	{
 		List<Bloc> list = new List<Bloc>();

@@ -54,6 +54,8 @@ public static class GameTicker
 		Unit.CleanDeadUnits();
 
 		Selector.Selected = GetNextUnit();
+
+        GameObject.Find("LookAt").GetComponent<CameraControl>().Target = Selector.Selected;
 	}
 
 	private static Unit GetNextUnit()
