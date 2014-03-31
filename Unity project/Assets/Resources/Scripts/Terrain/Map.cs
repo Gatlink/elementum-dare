@@ -83,7 +83,7 @@ public static class Map
 		{
 			Bloc prevBloc = GetBlocAt(x, y);
 			if (prevBloc != null)
-				prevBloc.ClearStreams();
+				prevBloc.Streams.ClearStreams();
 
 			int z = _internalMap[x,y].Count;
 

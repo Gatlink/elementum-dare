@@ -7,10 +7,7 @@ public class StreamFactory
 
 	private static Dictionary<Source.SourceType, StreamInfo> streamInfoByType = new Dictionary<Source.SourceType, StreamInfo>();
 
-	private static GameObject streamNode = new GameObject("Streams") ;
-	// Commodity, to assemble all streams under an object's hierarchy node in the editor
-
-	public static Stream CreateStream(Source.SourceType type)
+	public static Stream CreateStream(Source.SourceType type, Bloc onBloc, bool visible = true)
 	{
 		StreamInfo stream = streamInfoByType[type];
 		
@@ -20,10 +17,10 @@ public class StreamFactory
 			return null;
 		}
 
-		GameObject streamObj = CreateObjectFromStreamInfo(stream);
+		GameObject streamObj = CreateObjectFromStreamInfo(stream, visible);
 		streamObj.tag = "Stream";
 		streamObj.layer = LayerMask.NameToLayer("Streams");
-		streamObj.transform.parent = streamNode.transform;
+		streamObj.transform.parent = onBloc.gameObject.transform;
 		
 		if(!streamObj)
 		{
@@ -39,7 +36,7 @@ public class StreamFactory
 		streamInfoByType.Add(info.type, info);
 	}
 
-	private static GameObject CreateObjectFromStreamInfo(StreamInfo stream)
+	private static GameObject CreateObjectFromStreamInfo(StreamInfo stream, bool visible)
 	{
 		GameObject streamObj = new GameObject("Stream #" + streamID++);
 		
@@ -49,6 +46,7 @@ public class StreamFactory
 		
 		MeshRenderer renderer = streamObj.AddComponent("MeshRenderer") as MeshRenderer;
 		renderer.material = Object.Instantiate(stream.material) as Material;
+		renderer.enabled = visible;
 		
 		//Add a box collider
 		MeshCollider hitBox = streamObj.AddComponent("MeshCollider") as MeshCollider;
@@ -61,8 +59,7 @@ public class StreamFactory
 		else if (stream.type == Source.SourceType.Wind)
 			streamScript = "WindStream";
 
-		Stream script = streamObj.AddComponent(streamScript) as Stream;
-		script.Initialize(stream);
+		streamObj.AddComponent(streamScript);
 		
 		return streamObj;
 	}
@@ -70,5 +67,10 @@ public class StreamFactory
 	public static bool IsReady()
 	{
 		return streamInfoByType.Count >= Source.NB_OF_TYPES;
+	}
+
+	public static StreamInfo GetStreamSettingsByType(Source.SourceType type)
+	{
+		return streamInfoByType[type];
 	}
 }

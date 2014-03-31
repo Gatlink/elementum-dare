@@ -227,7 +227,7 @@ public class Unit : MonoBehaviour, PhaseEventListener
 
 	public Source CreateSource()
 	{
-		return SourceManager.Instance().SpawnSource(SourceType);
+		return SourceManager.Instance.SpawnSource(SourceType);
 	}
 
 	public Bloc CreateBloc()

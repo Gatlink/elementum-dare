@@ -86,12 +86,10 @@ public class StreamManager : IManager<Stream>
 
 	public Stream CreateStream(Source.SourceType type, Bloc onBloc)
 	{
-		Stream stream = StreamFactory.CreateStream(type);
+		Stream stream = StreamFactory.CreateStream(type, onBloc);
 
 		if(!(type == Source.SourceType.Wind || type == Source.SourceType.Electricity))
 			RegisterElement(stream);
-
-		stream.Bloc = onBloc;
 
 		return stream;
 	}
@@ -142,14 +140,14 @@ public class StreamManager : IManager<Stream>
 		//Simulate streams (all values go into buffers)
 		foreach(Stream s in _items)
 		{
-			s.UpdateStream();
+			s.UpdateStreamState();
 		}
 
 		Debug.Log("STARTING RESOLUTION");
 
 		Debug.Log("Fetching eroding streams");
 		//Retrieve and store all the blocs of streams that haven't changed this pass
-		List<Bloc> toErode = GetStreamBlocs( (stream) => !stream.Bloc.HasPendingStreamChanges() );
+		IEnumerable<Stream> toErode = _items.Where( (stream) => stream.IsFluid && !stream.Bloc.HasPendingStreamChanges() );
 
 		//Start stream animations and buffer validation
 		StreamSimulationPass currentPass = null;
@@ -172,13 +170,18 @@ public class StreamManager : IManager<Stream>
 		//Retrieve all the blocs of streams that have changed this pass but haven't been resolved yet (no source around)
 		List<Bloc> noSourceStreams = GetStreamBlocs( (stream) => stream.Bloc.HasPendingStreamChanges() );
 		//Sort them by buffer order (the one that transmitted the most is first)
-		noSourceStreams.Sort(); //TODO
+		//noSourceStreams.Sort(); //TODO
 
 		Debug.Log("Resolving streams without sources");
 		//TODO
 
 		Debug.Log("Resolving streams erosion");
-		//TODO
+		foreach(Stream str in toErode)
+		{
+			FluidStream fluid = str as FluidStream;
+			if(fluid != null)
+				fluid.Erode();
+		}
 
 		Debug.Log("END OF RESOLUTION");
 		/*foreach(Stream s in _items)
@@ -192,7 +195,7 @@ public class StreamManager : IManager<Stream>
 		if(currentPass == null) //fetching the first pass
 		{
 			currentPass = new StreamSimulationPass(null);
-			List<Bloc> firstPassBlocs = SourceManager.Instance().GetSourceBlocs();
+			List<Bloc> firstPassBlocs = SourceManager.Instance.GetSourceBlocs();
 			foreach(Bloc bloc in firstPassBlocs)
 			{
 				currentPass.Add(bloc.Source.Type, bloc);
@@ -231,11 +234,12 @@ public class StreamManager : IManager<Stream>
 	}
 
 	//Singleton
-	private static StreamManager _instance = new StreamManager();
+	private static StreamManager _instance = null;
 	
-	public static StreamManager Instance()
+	public static StreamManager Instance
 	{
-		return _instance;
+		get
+		{ return (_instance != null) ? _instance : _instance = new StreamManager(); }
 	}
 	
 	private StreamManager()	{}
@@ -251,38 +255,6 @@ public class StreamManager : IManager<Stream>
 			if(leftHeight < rightHeight)
 				return 1;
 			else if(leftHeight > rightHeight)
-				return -1;
-			else 
-				return 0;
-		}
-	}
-
-	private class StreamVolumeComparer : IComparer<Stream>
-	{
-		public int Compare(Stream left, Stream right)
-		{
-			int leftAmount = left.GetVolume();
-			int rightAmount = right.GetVolume();
-			
-			if(leftAmount < rightAmount)
-				return 1;
-			else if(leftAmount > rightAmount)
-				return -1;
-			else 
-				return 0;
-		}
-	}
-
-	private class StreamBufferComparer : IComparer<Stream>
-	{
-		public int Compare(Stream left, Stream right)
-		{
-			int leftAmount = left.GetVolume();
-			int rightAmount = right.GetVolume();
-			
-			if(leftAmount < rightAmount)
-				return 1;
-			else if(leftAmount > rightAmount)
 				return -1;
 			else 
 				return 0;
