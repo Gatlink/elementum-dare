@@ -1,13 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Windscript : Stream 
+public class WindStream : Stream 
 {
-	public override void UpdateStream()
+	public override void UpdateStreamState()
 	{ /*do nothing, handled by the source */}
 	
 	public override void UpdateStreamVisual()
 	{	}
-
-	public override void Erode(){}
 }

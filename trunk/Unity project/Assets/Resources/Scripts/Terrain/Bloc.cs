@@ -18,11 +18,11 @@ public class Bloc : MonoBehaviour
 	public static int NB_OF_TYPES = (int)BlocType.UpgradedPlant;
 	// must be last of enum
 
-	private StreamsState _streamsState = new StreamsState();
-	public StreamsState Streams { get{ return _streamsState; } }
+	private StreamCollection _streams = new StreamCollection();
+	public StreamCollection Streams { get{ return _streams; } }
 
 	public bool HasStreamOfType(Source.SourceType type)
-	{	return Streams[type].Value > 0;	}
+	{	return Streams[type].GetVolume() > 0;	}
 
 	public bool HasPendingStreamOfType(Source.SourceType type)
 	{	return Streams[type].HasChanged; }
@@ -57,6 +57,9 @@ public class Bloc : MonoBehaviour
 		set{ Streams[Source.SourceType.Wind].Trigger(value); }
 	}
 
+	public bool IsConductor()
+	{	return (_type == Bloc.BlocType.Metal) || IsFlooded;	}
+
 	private BlocType _type;
 	public BlocType Type 
 	{ 
@@ -80,7 +83,6 @@ public class Bloc : MonoBehaviour
 		set { _sourceObject = value;}
 	}
 
-	private Dictionary<Source.SourceType, Stream> _streamObjects = new Dictionary<Source.SourceType, Stream>();
 	private Unit _unitObject = null;
 
 	public bool HoldASource()
@@ -125,76 +127,26 @@ public class Bloc : MonoBehaviour
 	void Awake()
 	{
 		_gui = (GameObject) UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefab/BlocGUI"));
-		_gui.name = name + "GUI";
+		_gui.name = "GUI Bloc";
 		_gui.transform.position = transform.position;
+		_gui.transform.parent = transform;
 		_gui.SetActive(false);
+
+		Streams.Initialize(this);
 	}
 	
 	// Update is called once per frame
 	void Update() 
-	{
-		//TODO stream interaction
-		UpdateStreamsState();
-	}
-
-	void UpdateStreamsState()
-	{
-		List<Source.SourceType> currentTypes = Streams.CurrentTypes;
-		if(currentTypes.Count > 0)
-		{
-			//Remove all the streams that aren't supposed to still be there
-			List<Source.SourceType> disposableStreams = new List<Source.SourceType>();
-			foreach(KeyValuePair<Source.SourceType, Stream> p in _streamObjects)
-			{
-				if(!currentTypes.Contains(p.Key))
-					disposableStreams.Add(p.Key);
-			}
-
-			//Remove the corresponding entries in the dictionary
-			foreach(Source.SourceType key in disposableStreams)
-			{
-				StreamManager.Instance().RemoveStream(_streamObjects[key]);
-				_streamObjects.Remove(key);
-			}
-			disposableStreams.Clear();
-
-			//Create the missing streams
-			foreach(Source.SourceType key in currentTypes)
-			{
-				if(!_streamObjects.ContainsKey(key))
-				{
-					Stream tmpStream = StreamManager.Instance().CreateStream(key, this);
-					_streamObjects.Add(key, tmpStream);
-				}
-			}
-		}
-		else
-		{
-			//Remove all the streams
-			foreach(KeyValuePair<Source.SourceType, Stream> p in _streamObjects)
-			{
-				StreamManager.Instance().RemoveStream(p.Value);
-			}
-			_streamObjects.Clear();
-		}
-
-		foreach(KeyValuePair<Source.SourceType, Stream> p in _streamObjects)
-		{
-			p.Value.UpdateStreamVisual();
-		}
-	}
-
-	public bool IsConductor()
-	{	return (_type == Bloc.BlocType.Metal) || IsFlooded;	}
+	{}
 
 	public new string ToString()
 	{
 		string blocIdentifier = gameObject.name.ToUpper() + ":";
 		string blocCoords = "COORDS: " + indexInMap.ToString();
 		string blocType = "TYPE: " + Type.ToString();
-		string blocState = string.Format("STATE:\nElec: {0}\nWind: {1}", IsElectrified, HasWindBlowing);
+		//string blocState = string.Format("STATE:\nElec: {0}\nWind: {1}", IsElectrified, HasWindBlowing);
 		string blocStreams = Streams.ToString();
-		string msg = string.Format ("{0}\n{1}\n{2}\n{3}\n{4}\n", blocIdentifier, blocCoords, blocType, blocState, blocStreams);
+		string msg = string.Format ("{0}\n{1}\n{2}\n{3}\n", blocIdentifier, blocCoords, blocType, blocStreams);
 		return msg;
 	}
 
@@ -231,9 +183,9 @@ public class Bloc : MonoBehaviour
 
 		public int CompareAsc(Bloc left, Bloc right)
 		{
-			if(left.Streams[_checkType].Value < right.Streams[_checkType].Value)
+			if(left.Streams[_checkType].GetVolume() < right.Streams[_checkType].GetVolume())
 				return 1; //right goes after left
-			else if (left.Streams[_checkType].Value > right.Streams[_checkType].Value)
+			else if (left.Streams[_checkType].GetVolume() > right.Streams[_checkType].GetVolume())
 				return -1; //left goes after right
 			else
 				return 0; //equal
@@ -241,9 +193,9 @@ public class Bloc : MonoBehaviour
 
 		public int CompareDesc(Bloc left, Bloc right)
 		{
-			if(left.Streams[_checkType].Value > right.Streams[_checkType].Value)
+			if(left.Streams[_checkType].GetVolume() > right.Streams[_checkType].GetVolume())
 				return 1; //right goes after left
-			else if (left.Streams[_checkType].Value < right.Streams[_checkType].Value)
+			else if (left.Streams[_checkType].GetVolume() < right.Streams[_checkType].GetVolume())
 				return -1; //left goes after right
 			else
 				return 0; //equal
@@ -258,40 +210,6 @@ public class Bloc : MonoBehaviour
 	public Vector3 GetBlocSize()
 	{
 		return BlocFactory.GetBlocSizeByType(_type);
-	}
-
-	public Stream GetStreamOfType(Source.SourceType type)
-	{
-		if(_streamObjects.ContainsKey(type))
-			return _streamObjects[type];
-		else
-			return null;
-	}
-
-	public void ClearStreams()
-	{
-		var streamKeys = _streamObjects.Keys.ToList();
-		foreach(var streamKey in streamKeys)
-		{
-			if (streamKey != Source.SourceType.Electricity)
-			{
-				StreamManager.Instance().RemoveStream(_streamObjects[streamKey]);
-				_streamObjects.Remove(streamKey);
-			}
-		}
-
-		foreach(var streamType in (Source.SourceType[])Enum.GetValues(typeof(Source.SourceType)))
-		{
-			if (streamType != Source.SourceType.Electricity)
-				_streamsState[streamType].Reset();
-		}
-
-		if(!IsConductor() && _streamObjects.ContainsKey(Source.SourceType.Electricity))
-		{
-			_streamsState[Source.SourceType.Electricity].Reset();
-			StreamManager.Instance().RemoveStream(_streamObjects[Source.SourceType.Electricity]);
-			_streamObjects.Remove(Source.SourceType.Electricity);
-		}
 	}
 
 #region GUI

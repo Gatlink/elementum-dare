@@ -50,9 +50,10 @@ public class SourceManager : IManager<Source>
 
 	//Singleton
 	private static SourceManager _instance = null;
-	public static SourceManager Instance()
+	public static SourceManager Instance
 	{
-		return (_instance != null) ? _instance : _instance = new SourceManager();
+		get
+		{ return (_instance != null) ? _instance : _instance = new SourceManager(); }
 	}
 	
 	private SourceManager(){}

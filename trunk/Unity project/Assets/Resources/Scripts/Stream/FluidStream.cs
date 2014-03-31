@@ -15,7 +15,7 @@ public class FluidStream : Stream
 
 		//Debug.Log( GetAltitude().ToString() + "-" + GetVolume().ToString());
 
-		if(GetVolume() <= _treshold)
+		if(GetVolume() <= Settings.treshold)
 			return;
 		
 		List<Bloc> surroundings = Map.FetchNeighbors2D(_bloc.indexInMap, 1);
@@ -24,20 +24,20 @@ public class FluidStream : Stream
 		if(DivideNeighbors(_bloc, surroundings, out flatNeighbors, out slopeNeighbors) == 0) //no valid neighbors
 			return; //TODO débordement
 
-		float amountToRedist = GetVolume() * _granularity;
-		float nbOfShares = flatNeighbors.Count * _flatFactor + slopeNeighbors.Count * _slopeFactor;
+		float amountToRedist = GetVolume() * Settings.granularity;
+		float nbOfShares = flatNeighbors.Count * Settings.flatFactor + slopeNeighbors.Count * Settings.slopeFactor;
 		float oneShare = amountToRedist / nbOfShares;
 
 		foreach(Bloc destBloc in flatNeighbors)
 		{
-			int amountMoved = Mathf.FloorToInt(oneShare * _flatFactor);
+			int amountMoved = Mathf.FloorToInt(oneShare * Settings.flatFactor);
 			_bloc.Streams[_type].Buffer -= amountMoved;
 			destBloc.Streams[_type].Buffer += amountMoved;
 		}
 
 		foreach(Bloc destBloc in slopeNeighbors)
 		{
-			int amountMoved = Mathf.FloorToInt(oneShare * _slopeFactor);
+			int amountMoved = Mathf.FloorToInt(oneShare * Settings.slopeFactor);
 			_bloc.Streams[_type].Buffer -= amountMoved;
 			destBloc.Streams[_type].Buffer += amountMoved;
 		}
@@ -96,7 +96,7 @@ public class FluidStream : Stream
 	{
 		List<Bloc> list = new List<Bloc>(neighbors);
 		list.RemoveAll(x => Bloc.IsHigher(x, refBloc));
-		list.RemoveAll(x => !Bloc.IsLower(x, refBloc) && (x.Streams[_type].Value > refBloc.Streams[_type].Value));
+		list.RemoveAll(x => !Bloc.IsLower(x, refBloc) && (x.Streams[_type].GetVolume() > refBloc.Streams[_type].GetVolume()));
 		return list; 
 	}
 
@@ -109,7 +109,7 @@ public class FluidStream : Stream
 		{
 			bool invalid = b.IsHigherThan(refBloc) 
 						|| (!b.IsLowerThan(refBloc) 
-				    	&& (b.Streams[_type].Value > refBloc.Streams[_type].Value));
+				    	&& (b.Streams[_type].GetVolume() > refBloc.Streams[_type].GetVolume()));
 			if(invalid)
 				continue;
 			else if(b.IsLowerThan(refBloc))
@@ -121,7 +121,7 @@ public class FluidStream : Stream
 		return slope.Count + flat.Count;
 	}
 
-	public override void UpdateStream()
+	public override void UpdateStreamState()
 	{
 		Flow();
 	}
@@ -129,15 +129,15 @@ public class FluidStream : Stream
 	public override void UpdateStreamVisual()
 	{
 		const int maxVal = 48;
-		
+
 		//Update stream visual according to bloc value
 		float delta = (GetVolume() * (1.0f / maxVal));
 		Vector3 initialScale = gameObject.transform.localScale;
 		gameObject.transform.localScale = new Vector3(initialScale.x, delta, initialScale.z);
 	}
 
-	public override void Erode()
+	public void Erode()
 	{
-		_bloc.Streams[_type].Erode(_erosion);
+		_value = Mathf.Max(_value - Settings.erosion, 0);
 	}
 }

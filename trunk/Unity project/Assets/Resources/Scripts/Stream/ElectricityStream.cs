@@ -6,7 +6,7 @@ public class ElectricityStream : Stream
 	private float _animTimer = -1.0f;
 	private const float ANIM_TIME = 1.0f;
 
-	public override void UpdateStream()
+	public override void UpdateStreamState()
 	{ /*do nothing, handled by the source */}
 
 	public override void UpdateStreamVisual()
@@ -16,7 +16,7 @@ public class ElectricityStream : Stream
 		float height = 0;
 		if(_bloc.IsFlooded)
 		{
-			height = _bloc.GetStreamOfType(Source.SourceType.Water).gameObject.transform.localScale.y;
+			height = _bloc.Streams[Source.SourceType.Water].Visual.transform.localScale.y;
 		}
 
 		//Update stream to surround the bloc
@@ -26,8 +26,6 @@ public class ElectricityStream : Stream
 		gameObject.transform.position = _bloc.transform.position;
 		gameObject.transform.Translate( new Vector3(0.0f, height * 0.5f, 0.0f) );
 	}
-
-	public override void Erode(){}
 
 	public override void Update()
 	{
