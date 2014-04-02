@@ -6,6 +6,8 @@ public class InputBloc : MonoBehaviour
 {
 	public int Range = 1;
 
+	public GUIStyle arrowLeft;
+
 	private Bloc _handledBloc = null;
 	private Unit _unit = null;
 	private BlocAccessor _accessor = new BlocAccessor(Color.blue);
@@ -63,7 +65,7 @@ public class InputBloc : MonoBehaviour
 			Quit();
 		}
 	}
-	
+
 	private void Quit()
 	{
 		_accessor.Clear();
@@ -85,5 +87,16 @@ public class InputBloc : MonoBehaviour
 		index.z += 1;
 		if (_handledBloc.indexInMap != index)
 			_handledBloc.transform.position = Map.IndexToPosition(index);
+	}
+	
+	void OnGUI() 
+	{
+
+		if (GUI.Button (new Rect (10, Screen.height - 70, 60, 60), "", arrowLeft)) 
+		{
+			//shameless copié collé de la section "if getKeyDown = escape"
+			GameObject.Destroy(_handledBloc.gameObject);
+			Quit();		
+		}
 	}
 }
