@@ -6,6 +6,8 @@ public class InputSource : MonoBehaviour
 {
 	public int Range = 1;
 
+	public GUIStyle arrowLeft;
+
 	private Source _handledSource = null;
 	private Unit _unit = null;
 	private BlocAccessor _accessor = new BlocAccessor(Color.green);
@@ -68,5 +70,18 @@ public class InputSource : MonoBehaviour
 		_unit = null;
 		enabled = false;
 		GetComponent<InputUnit>().enabled = true;
+	}
+
+	void OnGUI() 
+	{
+		if (GUI.Button (new Rect (10, Screen.height - 70, 60, 60), "", arrowLeft)) 
+		{
+			//shameless copié-collé du "if getKeyDown = Escape"
+			_handledSource.Bloc.Source = null;
+			GameObject.Destroy(_handledSource.gameObject);
+			Quit();
+			return;
+
+		}
 	}
 }
