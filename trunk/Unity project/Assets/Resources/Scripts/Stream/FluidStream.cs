@@ -137,8 +137,8 @@ public class FluidStream : Stream
 		{
 			iTween.ScaleTo(gameObject, iTween.Hash(
 													"y", delta,
-													"speed", 1f,
-													"easeType", iTween.EaseType.easeOutBack
+													"time", 1f,
+													"easeType", iTween.EaseType.easeOutElastic
 												)
 			               );
 		}
@@ -160,8 +160,8 @@ public class FluidStream : Stream
 		UpdateStreamVisual();
 		iTween.ScaleFrom(gameObject, iTween.Hash(
 													"y", 0f,
-													"speed", 1f,
-													"easeType", iTween.EaseType.easeOutBack
+													"time", 1f,
+													"easeType", iTween.EaseType.easeOutElastic
 												)
 		                 );
 	}
@@ -170,8 +170,8 @@ public class FluidStream : Stream
 	{
 		iTween.ScaleTo(gameObject, iTween.Hash(
 													"y", 0f,
-													"speed", 1f,
-													"easeType", iTween.EaseType.easeInBack
+													"time", 1f,
+													"easeType", iTween.EaseType.easeOutElastic
 												)
 		                 );
 	}
