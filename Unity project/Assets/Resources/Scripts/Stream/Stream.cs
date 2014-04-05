@@ -43,7 +43,7 @@ public abstract class Stream : MonoBehaviour
 
 	public void TransmitBuffer()
 	{
-		Debug.Log("Transmiting buffer of " + _type + " for " + _bloc.ToString());
+		Debug.Log("Transmiting buffer [" + _buffer + "] of " + _type + " for " + _bloc.ToString());
 		_value += _buffer;
 		_buffer = 0;
 		_hasChanged = false;
@@ -52,18 +52,17 @@ public abstract class Stream : MonoBehaviour
 	public void Generate( int val )
 	{	
 		_buffer += val;
-		_bloc.Streams.Resolve(this._type, true);
+		_bloc.Streams.Resolve(_type, true);
 	}
 
 	public void Erode( int val )
 	{ 	
-		Debug.Log("Eroding stream of " + _type + " for " + _bloc.ToString());
+		Debug.Log("Eroding stream for [" + val + "] of " + _type + " for " + _bloc.ToString());
 		_value -= Mathf.Max(0, _value - val); 
 	}
 
 	public void ResetValues()
 	{
-		Debug.Log("Reseting stream values of " + _type + " for " + _bloc.ToString());
 		_value = 0;
 		_buffer = 0;
 		_hasChanged = false;
@@ -115,7 +114,9 @@ public abstract class Stream : MonoBehaviour
 
 	// Use this for initialization
 	void Start() 
-	{}
+	{
+		iTween.Init(gameObject);
+	}
 
 	public void Initialize(Bloc parent, Source.SourceType type)
 	{
@@ -160,5 +161,5 @@ public abstract class Stream : MonoBehaviour
 	}
 	
 	public abstract void UpdateStreamState();
-	public abstract void UpdateStreamVisual();
+	public abstract void UpdateStreamVisual(bool animated = false);
 }

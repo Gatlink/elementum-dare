@@ -60,12 +60,12 @@ public class StreamCollection : Dictionary<Source.SourceType, Stream>
 		}
 	}
 
-	public Stream CurrentFluidStream
+	public FluidStream CurrentFluidStream
 	{
 		get
 		{
 			KeyValuePair<Source.SourceType, Stream> elem = this.FirstOrDefault( (pair) => pair.Value.IsFluid && pair.Value.GetVolume() > 0 );
-			return elem.Value;
+			return elem.Value as FluidStream;
 		}
 	}
 
@@ -84,12 +84,14 @@ public class StreamCollection : Dictionary<Source.SourceType, Stream>
 
 	public void Resolve(Source.SourceType type, bool animated)
 	{
-		Stream currentStream = CurrentFluidStream;
-		Stream newStream = null;
+		FluidStream currentStream = CurrentFluidStream;
+		FluidStream newStream = null;
 
-		Stream interacting;
-		if(this.TryGetValue(type, out interacting))
+		Stream tmp;
+		if(this.TryGetValue(type, out tmp))
 		{
+			FluidStream interacting = tmp as FluidStream;
+
 			interacting.TransmitBuffer();
 
 			if(interacting != currentStream)
@@ -112,13 +114,16 @@ public class StreamCollection : Dictionary<Source.SourceType, Stream>
 			newStream = currentStream;
 		}
 
-		bool masterStreamHasChanged = (currentStream != newStream);
+		bool masterStreamHasChanged = (currentStream != newStream) && (newStream != null);
+		//Debug.Log("cur: " + currentStream);
+		//Debug.Log("next: " + newStream);
+		//Debug.Log("changed: " + masterStreamHasChanged);
 
 		if(masterStreamHasChanged)
 		{
 			if(currentStream != null)
 			{
-				//dryout
+				currentStream.DryOut();
 				StreamManager.Instance.UnregisterElement(currentStream);
 				currentStream.renderer.enabled = false;
 			}
@@ -126,7 +131,7 @@ public class StreamCollection : Dictionary<Source.SourceType, Stream>
 			if(newStream != null)
 			{
 				newStream.renderer.enabled = true;
-				//fill up
+				newStream.FillUp();
 				StreamManager.Instance.RegisterElement(newStream);
 			}
 		}
@@ -134,7 +139,7 @@ public class StreamCollection : Dictionary<Source.SourceType, Stream>
 		{
 			if(currentStream != null)
 			{
-				currentStream.UpdateStreamVisual();
+				currentStream.UpdateStreamVisual(true);
 			}
 		}
 	}

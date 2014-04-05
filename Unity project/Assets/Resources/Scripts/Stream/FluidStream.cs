@@ -126,18 +126,53 @@ public class FluidStream : Stream
 		Flow();
 	}
 
-	public override void UpdateStreamVisual()
+	public override void UpdateStreamVisual(bool animated = false)
 	{
 		const int maxVal = 48;
 
 		//Update stream visual according to bloc value
 		float delta = (GetVolume() * (1.0f / maxVal));
-		Vector3 initialScale = gameObject.transform.localScale;
-		gameObject.transform.localScale = new Vector3(initialScale.x, delta, initialScale.z);
+
+		if(animated)
+		{
+			iTween.ScaleTo(gameObject, iTween.Hash(
+													"y", delta,
+													"speed", 1f,
+													"easeType", iTween.EaseType.easeOutBack
+												)
+			               );
+		}
+		else
+		{
+			Vector3 initialScale = gameObject.transform.localScale;
+			Vector3 newScale = new Vector3(initialScale.x, delta, initialScale.z);
+			gameObject.transform.localScale = newScale;
+		}
 	}
 
 	public void Erode()
 	{
 		_value = Mathf.Max(_value - Settings.erosion, 0);
+	}
+
+	public void FillUp()
+	{
+		UpdateStreamVisual();
+		iTween.ScaleFrom(gameObject, iTween.Hash(
+													"y", 0f,
+													"speed", 1f,
+													"easeType", iTween.EaseType.easeOutBack
+												)
+		                 );
+	}
+
+	public void DryOut()
+	{
+		iTween.ScaleTo(gameObject, iTween.Hash(
+													"y", 0f,
+													"speed", 1f,
+													"easeType", iTween.EaseType.easeInBack
+												)
+		                 );
 	}
 }
