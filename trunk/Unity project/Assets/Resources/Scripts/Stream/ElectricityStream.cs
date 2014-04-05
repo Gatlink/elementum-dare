@@ -9,7 +9,7 @@ public class ElectricityStream : Stream
 	public override void UpdateStreamState()
 	{ /*do nothing, handled by the source */}
 
-	public override void UpdateStreamVisual()
+	public override void UpdateStreamVisual(bool animated = false)
 	{
 		Vector3 bias = new Vector3(1.12f, 1.12f, 1.12f);
 

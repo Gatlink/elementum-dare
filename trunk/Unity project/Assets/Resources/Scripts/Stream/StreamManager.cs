@@ -80,7 +80,23 @@ public class StreamManager : IManager<Stream>
 
 		public new string ToString()
 		{
-			return "Pass #" + _id + " (" + Count + ")";
+			string str = "Pass #" + _id + " (" + Count + ")\n";
+			string sep;
+			foreach(KeyValuePair<Source.SourceType, HashSet<Bloc>> pass in _blocs)
+			{
+				sep = "";
+				str += pass.Key + ":";
+
+				foreach(Bloc b in pass.Value)
+				{
+					str += sep + " " + b.gameObject.name; 
+					sep = ",";
+				}
+
+				str += "\n";
+			}
+
+			return str;
 		}
 	}
 
@@ -145,65 +161,70 @@ public class StreamManager : IManager<Stream>
 
 		Debug.Log("STARTING RESOLUTION");
 
-		Debug.Log("Fetching eroding streams");
+		//Debug.Log("Fetching eroding streams");
 		//Retrieve and store all the blocs of streams that haven't changed this pass
-		IEnumerable<Stream> toErode = _items.Where( (stream) => stream.IsFluid && !stream.Bloc.HasPendingStreamChanges() );
+		//IEnumerable<Stream> toErode = _items.Where( (stream) => stream.IsFluid && !stream.Bloc.HasPendingStreamChanges() );
 
 		//Start stream animations and buffer validation
 		StreamSimulationPass currentPass = null;
 		StreamSimulationPass nextPass = null;
-		bool continueSimulation = true;
+		bool continueSimulation = FetchFirstPass(out currentPass);
 
 		Debug.Log("Resolving streams around sources");
 
 		while(continueSimulation)
 		{
-			continueSimulation = FetchNextPass(ref currentPass, out nextPass);
 			Debug.Log ("Resolving " + currentPass.ToString());
 			currentPass.Resolve();
+			continueSimulation = FetchNextPass(ref currentPass, out nextPass);
 			Debug.Log ("Next pass is " + nextPass.ToString());
 			currentPass = nextPass;
 			nextPass = null;
 		}
 
-		Debug.Log("Fetching streams without sources");
+		//Debug.Log("Fetching streams without sources");
 		//Retrieve all the blocs of streams that have changed this pass but haven't been resolved yet (no source around)
-		List<Bloc> noSourceStreams = GetStreamBlocs( (stream) => stream.Bloc.HasPendingStreamChanges() );
+		//List<Bloc> noSourceStreams = GetStreamBlocs( (stream) => stream.Bloc.HasPendingStreamChanges() );
 		//Sort them by buffer order (the one that transmitted the most is first)
 		//noSourceStreams.Sort(); //TODO
 
-		Debug.Log("Resolving streams without sources");
+		//Debug.Log("Resolving streams without sources");
 		//TODO
 
+		/*
 		Debug.Log("Resolving streams erosion");
 		foreach(Stream str in toErode)
 		{
 			FluidStream fluid = str as FluidStream;
 			if(fluid != null)
 				fluid.Erode();
-		}
+		}*/
 
 		Debug.Log("END OF RESOLUTION");
-		/*foreach(Stream s in _items)
+	}
+
+	private bool FetchFirstPass(out StreamSimulationPass firstPass)
+	{
+		firstPass = new StreamSimulationPass(null);
+
+		List<Bloc> firstPassBlocs = SourceManager.Instance.GetSourceBlocs();
+		foreach(Bloc bloc in firstPassBlocs)
 		{
-			s.CommitStreamChange();
-		}*/
+			firstPass.Add(bloc.Source.Type, bloc);
+		}
+		Debug.Log("Deduced first pass: " + firstPass.ToString());
+
+		return firstPass.Count > 0;
 	}
 
 	private bool FetchNextPass(ref StreamSimulationPass currentPass, out StreamSimulationPass nextPass)
-	{
+	{		
+		nextPass = new StreamSimulationPass(currentPass);
+
 		if(currentPass == null) //fetching the first pass
 		{
-			currentPass = new StreamSimulationPass(null);
-			List<Bloc> firstPassBlocs = SourceManager.Instance.GetSourceBlocs();
-			foreach(Bloc bloc in firstPassBlocs)
-			{
-				currentPass.Add(bloc.Source.Type, bloc);
-			}
-			Debug.Log("Deduced first pass: " + currentPass.ToString());
+			return false;
 		}
-
-		nextPass = new StreamSimulationPass(currentPass);
 
 		foreach(KeyValuePair<Source.SourceType, HashSet<Bloc>> pass in currentPass)
 		{
@@ -217,6 +238,7 @@ public class StreamManager : IManager<Stream>
 				nextPass.AddRange(pass.Key, neighbors);
 			}
 		}
+
 		Debug.Log("Fetched " + nextPass.ToString());
 
 		return nextPass.Count > 0;
