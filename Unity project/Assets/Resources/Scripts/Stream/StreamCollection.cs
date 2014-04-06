@@ -123,7 +123,7 @@ public class StreamCollection : Dictionary<Source.SourceType, Stream>
 		{
 			if(currentStream != null)
 			{
-				currentStream.DryOut();
+				currentStream.DryOut(animated);
 				StreamManager.Instance.UnregisterElement(currentStream);
 				currentStream.renderer.enabled = false;
 			}
@@ -131,7 +131,7 @@ public class StreamCollection : Dictionary<Source.SourceType, Stream>
 			if(newStream != null)
 			{
 				newStream.renderer.enabled = true;
-				newStream.FillUp();
+				newStream.FillUp(animated);
 				StreamManager.Instance.RegisterElement(newStream);
 			}
 		}
@@ -139,7 +139,7 @@ public class StreamCollection : Dictionary<Source.SourceType, Stream>
 		{
 			if(currentStream != null)
 			{
-				currentStream.UpdateStreamVisual(true);
+				currentStream.UpdateStreamVisual(animated);
 			}
 		}
 	}

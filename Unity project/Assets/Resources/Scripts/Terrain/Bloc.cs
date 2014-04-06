@@ -162,46 +162,6 @@ public class Bloc : MonoBehaviour
 		return Map.GetBlocAt(indexInMap.x, indexInMap.y) == this;
 	}
 
-	public struct SortByStreamVolume : IComparer<Bloc>
-	{
-		private Source.SourceType _checkType;
-		private bool _desc;
-		
-		public SortByStreamVolume(Source.SourceType type, bool desc)
-		{ 
-			_checkType = type;
-			_desc = desc;
-		}
-
-		public int Compare(Bloc left, Bloc right)
-		{
-			if(_desc)
-				return CompareDesc(left, right);
-			else
-				return CompareAsc(left, right);
-		}
-
-		public int CompareAsc(Bloc left, Bloc right)
-		{
-			if(left.Streams[_checkType].GetVolume() < right.Streams[_checkType].GetVolume())
-				return 1; //right goes after left
-			else if (left.Streams[_checkType].GetVolume() > right.Streams[_checkType].GetVolume())
-				return -1; //left goes after right
-			else
-				return 0; //equal
-		}
-
-		public int CompareDesc(Bloc left, Bloc right)
-		{
-			if(left.Streams[_checkType].GetVolume() > right.Streams[_checkType].GetVolume())
-				return 1; //right goes after left
-			else if (left.Streams[_checkType].GetVolume() < right.Streams[_checkType].GetVolume())
-				return -1; //left goes after right
-			else
-				return 0; //equal
-		}
-	}
-	
 	public static Vector3 GetBlocSizeByType(Bloc.BlocType type = Bloc.BlocType.TerrainBloc)
 	{
 		return BlocFactory.GetBlocSizeByType(type);
