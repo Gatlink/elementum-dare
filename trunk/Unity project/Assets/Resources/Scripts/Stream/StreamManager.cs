@@ -59,7 +59,7 @@ public class StreamManager : IManager<Stream>
 			{
 				foreach(Bloc bloc in pass.Value)
 				{
-					Debug.Log("Resolving " + bloc + "type: " + pass.Key);
+					//Debug.Log("Resolving " + bloc + "type: " + pass.Key);
 					bloc.Streams.Resolve(pass.Key, true);
 				}
 			}
@@ -122,37 +122,7 @@ public class StreamManager : IManager<Stream>
 	{
 		if(_items.Count <= 0)
 			return;
-/*
-		Stream[] orderedStreams = _items.ToArray();
 
-		System.Array.Sort(orderedStreams, new StreamAltitudeComparer());
-
-		int count = 1;
-		int mark = 0;
-		int currentHeight = orderedStreams[0].GetAltitude();
-		for(int i = 1; i < orderedStreams.Length; ++i)
-		{
-			if(orderedStreams[i].GetAltitude() != currentHeight)
-			{
-				System.Array.Sort<Stream>(orderedStreams, mark, count, new StreamVolumeComparer());
-
-				mark = i;
-				count = 1;
-				currentHeight = orderedStreams[i].GetAltitude();
-			}
-			else
-			{
-				count += 1;
-			}
-		}
-
-		System.Array.Sort<Stream>(orderedStreams, mark, count, new StreamVolumeComparer());
-
-		foreach(Stream s in orderedStreams)
-		{
-			s.UpdateStream();
-		}
-*/
 		//Simulate streams (all values go into buffers)
 		foreach(Stream s in _items)
 		{
@@ -161,59 +131,43 @@ public class StreamManager : IManager<Stream>
 
 		Debug.Log("STARTING RESOLUTION");
 
-		//Debug.Log("Fetching eroding streams");
-		//Retrieve and store all the blocs of streams that haven't changed this pass
-		//IEnumerable<Stream> toErode = _items.Where( (stream) => stream.IsFluid && !stream.Bloc.HasPendingStreamChanges() );
-
-		//Start stream animations and buffer validation
-		StreamSimulationPass currentPass = null;
-		StreamSimulationPass nextPass = null;
-		bool continueSimulation = FetchFirstPass(out currentPass);
-
-		Debug.Log("Resolving streams around sources");
-
-		while(continueSimulation)
-		{
-			Debug.Log ("Resolving " + currentPass.ToString());
-			currentPass.Resolve();
-			continueSimulation = FetchNextPass(ref currentPass, out nextPass);
-			Debug.Log ("Next pass is " + nextPass.ToString());
-			currentPass = nextPass;
-			nextPass = null;
-		}
-
-		//Debug.Log("Fetching streams without sources");
-		//Retrieve all the blocs of streams that have changed this pass but haven't been resolved yet (no source around)
-		//List<Bloc> noSourceStreams = GetStreamBlocs( (stream) => stream.Bloc.HasPendingStreamChanges() );
-		//Sort them by buffer order (the one that transmitted the most is first)
-		//noSourceStreams.Sort(); //TODO
-
-		//Debug.Log("Resolving streams without sources");
-		//TODO
-
-		/*
-		Debug.Log("Resolving streams erosion");
-		foreach(Stream str in toErode)
-		{
-			FluidStream fluid = str as FluidStream;
-			if(fluid != null)
-				fluid.Erode();
-		}*/
+		ResolveStreamsFromSources();
+		ResolveStreamsWithoutSources();
+		ResolveErodingStreams();
 
 		Debug.Log("END OF RESOLUTION");
 	}
 
-	private bool FetchFirstPass(out StreamSimulationPass firstPass)
+	private bool FetchFirstPassFromSources(out StreamSimulationPass firstPass)
 	{
 		firstPass = new StreamSimulationPass(null);
 
+		//Retrieve all the blocs that hold a source
 		List<Bloc> firstPassBlocs = SourceManager.Instance.GetSourceBlocs();
 		foreach(Bloc bloc in firstPassBlocs)
 		{
 			firstPass.Add(bloc.Source.Type, bloc);
 		}
-		Debug.Log("Deduced first pass: " + firstPass.ToString());
 
+		return firstPass.Count > 0;
+	}
+
+	private bool FetchFirstPassFromUnresolvedStream(out StreamSimulationPass firstPass)
+	{
+		firstPass = new StreamSimulationPass(null);
+
+		//Retrieve all the streams that have changed this pass but haven't been resolved yet (no source around)
+		List<Stream> noSourceStreams = _items.Where( (stream) => stream.HasChanged && !stream.Resolved );
+		//Among those, keep only the streams with a negative buffer. As they transmit to the others, they act like a source
+		List<Stream> givingStreams = noSourceStreams.Where( (stream) => stream.Buffer < 0 );
+		//Sort them by buffer order (the one that transmitted the most is first)
+		givingStreams.Sort(new StreamUtils.StreamBufferComparer());
+
+		foreach(Stream stream in givingStreams)
+		{
+			firstPass.Add(stream.Type, stream.Bloc);
+		}
+		
 		return firstPass.Count > 0;
 	}
 
@@ -239,9 +193,64 @@ public class StreamManager : IManager<Stream>
 			}
 		}
 
-		Debug.Log("Fetched " + nextPass.ToString());
-
 		return nextPass.Count > 0;
+	}
+
+	private void ResolveStreamsFromSources()
+	{
+		Debug.Log("RESOLVING [1]: streams with sources");
+
+		//Start stream animations and buffer validation
+		StreamSimulationPass currentPass = null;
+		StreamSimulationPass nextPass = null;
+
+		bool continueSimulation = FetchFirstPassFromSources(out currentPass);		
+		while(continueSimulation)
+		{
+			Debug.Log ("Resolving " + currentPass.ToString());
+			currentPass.Resolve();
+			continueSimulation = FetchNextPass(ref currentPass, out nextPass);
+			currentPass = nextPass;
+			nextPass = null;
+		}
+
+		Debug.Log("END OF RESOLUTION [1]: streams with sources");
+	}
+
+	private void ResolveStreamsWithoutSources()
+	{
+		Debug.Log("RESOLVING [2]: streams without sources");
+
+		StreamSimulationPass currentPass = null;
+		StreamSimulationPass nextPass = null;
+		
+		bool continueSimulation = FetchFirstPassFromUnresolvedStream(out currentPass);		
+		while(continueSimulation)
+		{
+			Debug.Log ("Resolving " + currentPass.ToString());
+			currentPass.Resolve();
+			continueSimulation = FetchNextPass(ref currentPass, out nextPass);
+			currentPass = nextPass;
+			nextPass = null;
+		}
+
+		Debug.Log("END OF RESOLUTION [2]: streams without sources");
+	}
+
+	private void ResolveErodingStreams()
+	{
+		Debug.Log("RESOLVING [3]: eroding streams");
+
+		//Retrieve all the streams that haven't changed this pass but haven't been resolved yet
+		List<Stream> toErode = _items.Where( (stream) => stream.IsFluid && !stream.Resolved && !stream.Bloc.HasPendingStreamChanges() );
+		foreach(Stream str in toErode)
+		{
+			FluidStream fluid = str as FluidStream;
+			if(fluid != null)
+				fluid.Erode();
+		}
+
+		Debug.Log("END OF RESOLUTION [3]: eroding streams");
 	}
 
 	private List<Bloc> GetStreamBlocs(System.Func<Stream, bool> functor)

@@ -123,6 +123,7 @@ public class FluidStream : Stream
 
 	public override void UpdateStreamState()
 	{
+		_resolved = false;
 		Flow();
 	}
 
@@ -153,26 +154,40 @@ public class FluidStream : Stream
 	public void Erode()
 	{
 		_value = Mathf.Max(_value - Settings.erosion, 0);
+		_resolved = true;
 	}
 
-	public void FillUp()
+	public void FillUp(bool animated)
 	{
 		UpdateStreamVisual();
-		iTween.ScaleFrom(gameObject, iTween.Hash(
-													"y", 0f,
-													"time", 1f,
-													"easeType", iTween.EaseType.easeOutElastic
-												)
-		                 );
+
+		if(animated)
+		{
+			iTween.ScaleFrom(gameObject, iTween.Hash(
+														"y", 0f,
+														"time", 1f,
+														"easeType", iTween.EaseType.easeOutElastic
+													)
+			                 );
+		}
 	}
 
-	public void DryOut()
+	public void DryOut(bool animated)
 	{
-		iTween.ScaleTo(gameObject, iTween.Hash(
-													"y", 0f,
-													"time", 1f,
-													"easeType", iTween.EaseType.easeOutElastic
-												)
-		                 );
+		if(animated)
+		{
+			iTween.ScaleTo(gameObject, iTween.Hash(
+														"y", 0f,
+														"time", 1f,
+														"easeType", iTween.EaseType.easeOutElastic
+													)
+			                 );
+		}
+		else
+		{
+			Vector3 initialScale = gameObject.transform.localScale;
+			Vector3 newScale = new Vector3(initialScale.x, 0, initialScale.z);
+			gameObject.transform.localScale = newScale;
+		}
 	}
 }

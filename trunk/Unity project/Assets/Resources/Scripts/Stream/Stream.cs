@@ -41,12 +41,19 @@ public abstract class Stream : MonoBehaviour
 		get { return _hasChanged; }
 	}
 
+	protected bool _resolved;
+	public bool Resolved
+	{
+		get { return _resolved; }
+	}
+
 	public void TransmitBuffer()
 	{
-		Debug.Log("Transmiting buffer [" + _buffer + "] of " + _type + " for " + _bloc.ToString());
+		//Debug.Log("Transmiting buffer [" + _buffer + "] of " + _type + " for " + _bloc.ToString());
 		_value += _buffer;
 		_buffer = 0;
 		_hasChanged = false;
+		_resolved = true;
 	}
 
 	public void Generate( int val )
@@ -66,6 +73,7 @@ public abstract class Stream : MonoBehaviour
 		_value = 0;
 		_buffer = 0;
 		_hasChanged = false;
+		_resolved = true;
 	}
 
 	public void Trigger(bool state)
@@ -73,7 +81,7 @@ public abstract class Stream : MonoBehaviour
 
 	public void LostInInteraction( int val )
 	{	
-		Debug.Log("Interacting [" + val + "] of " + _type + " for " + _bloc.ToString());
+		//Debug.Log("Interacting [" + val + "] of " + _type + " for " + _bloc.ToString());
 		_value = Mathf.Max(0, _value - val); 
 	}
 
@@ -136,9 +144,6 @@ public abstract class Stream : MonoBehaviour
 
 		ResetValues();
 	}
-	
-	// Update is called once per frame
-	public virtual void Update() {}
 
 	public void Clear()
 	{
