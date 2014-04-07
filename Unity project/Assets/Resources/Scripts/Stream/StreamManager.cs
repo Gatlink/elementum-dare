@@ -157,9 +157,17 @@ public class StreamManager : IManager<Stream>
 		firstPass = new StreamSimulationPass(null);
 
 		//Retrieve all the streams that have changed this pass but haven't been resolved yet (no source around)
-		List<Stream> noSourceStreams = _items.Where( (stream) => stream.HasChanged && !stream.Resolved );
+		List<Stream> noSourceStreams = _items.Where( (stream) => stream.HasChanged && !stream.Resolved ).ToList();
+
+		if(noSourceStreams == null || noSourceStreams.Count <= 0)
+			return false;
+
 		//Among those, keep only the streams with a negative buffer. As they transmit to the others, they act like a source
-		List<Stream> givingStreams = noSourceStreams.Where( (stream) => stream.Buffer < 0 );
+		List<Stream> givingStreams = noSourceStreams.Where( (stream) => stream.Buffer < 0 ).ToList();
+
+		if(givingStreams == null || givingStreams.Count <= 0)
+			return false; //CAN'T HAPPEN, in theory
+
 		//Sort them by buffer order (the one that transmitted the most is first)
 		givingStreams.Sort(new StreamUtils.StreamBufferComparer());
 
@@ -167,7 +175,6 @@ public class StreamManager : IManager<Stream>
 		{
 			firstPass.Add(stream.Type, stream.Bloc);
 		}
-		
 		return firstPass.Count > 0;
 	}
 
@@ -242,12 +249,21 @@ public class StreamManager : IManager<Stream>
 		Debug.Log("RESOLVING [3]: eroding streams");
 
 		//Retrieve all the streams that haven't changed this pass but haven't been resolved yet
-		List<Stream> toErode = _items.Where( (stream) => stream.IsFluid && !stream.Resolved && !stream.Bloc.HasPendingStreamChanges() );
-		foreach(Stream str in toErode)
+		List<Stream> toErode = _items.Where( (stream) => stream.IsFluid && !stream.Resolved 
+		                                    			&& !stream.Bloc.HasPendingStreamChanges() ).ToList();
+
+		if(toErode != null && toErode.Count > 0)
 		{
-			FluidStream fluid = str as FluidStream;
-			if(fluid != null)
-				fluid.Erode();
+			foreach(Stream str in toErode)
+			{
+				FluidStream fluid = str as FluidStream;
+				if(fluid != null)
+				{
+					Debug.Log("Eroding fluid: " + fluid.ToString());
+					fluid.Erode();
+					fluid.UpdateStreamVisual();
+				}
+			}
 		}
 
 		Debug.Log("END OF RESOLUTION [3]: eroding streams");

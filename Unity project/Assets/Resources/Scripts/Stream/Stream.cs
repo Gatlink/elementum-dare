@@ -101,13 +101,30 @@ public abstract class Stream : MonoBehaviour
 	{
 		get { return gameObject; }
 	}
-	
+
+	protected bool _visible;
+	public bool Visible
+	{
+		get { return _visible; }
+		set
+		{
+			_visible = value;
+			renderer.enabled = _visible;
+		}
+	}
+
+	public void SetVisible(bool state)
+	{ Visible = state; }
+
+	///////////////////////////////////////////////////// 
+	/// OTHER & MISC
+	///////////////////////////////////////////////////// 
 	public new string ToString()
 	{
 		return _type.ToString() + " : " + "v[" + _value + "] - b[" + _buffer + "] - vis[ " + ((renderer != null && renderer.enabled) ? "X" : " ") + "]";
 	}
 
-	public static bool IsFluidType( Source.SourceType streamType)
+	public static bool IsFluidType( Source.SourceType streamType )
 	{
 		return ( streamType == Source.SourceType.Sand
 		        || streamType == Source.SourceType.Water
@@ -167,4 +184,6 @@ public abstract class Stream : MonoBehaviour
 	
 	public abstract void UpdateStreamState();
 	public abstract void UpdateStreamVisual(bool animated = false);
+
+	public virtual void Update(){}
 }
