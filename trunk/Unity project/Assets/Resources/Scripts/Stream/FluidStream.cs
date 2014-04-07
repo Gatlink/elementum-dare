@@ -5,6 +5,8 @@ using System.Linq;
 
 public class FluidStream : Stream
 {
+	public static int MAX_FLUID = 48;
+
 	private void Flow() 
 	{
 		if(!_bloc)
@@ -129,17 +131,18 @@ public class FluidStream : Stream
 
 	public override void UpdateStreamVisual(bool animated = false)
 	{
-		const int maxVal = 48;
-
 		//Update stream visual according to bloc value
-		float delta = (GetVolume() * (1.0f / maxVal));
+		float delta = (GetVolume() * (1.0f / MAX_FLUID));
 
 		if(animated)
 		{
 			iTween.ScaleTo(gameObject, iTween.Hash(
 													"y", delta,
 													"time", 1f,
-													"easeType", iTween.EaseType.easeOutElastic
+													"easeType", iTween.EaseType.easeOutElastic,
+													"oncomplete", "SetVisible",
+													"oncompletetarget", Visual,
+													"oncompleteparams", (delta > 0)
 												)
 			               );
 		}
@@ -148,6 +151,7 @@ public class FluidStream : Stream
 			Vector3 initialScale = gameObject.transform.localScale;
 			Vector3 newScale = new Vector3(initialScale.x, delta, initialScale.z);
 			gameObject.transform.localScale = newScale;
+			Visible = (delta > 0);
 		}
 	}
 
@@ -159,7 +163,14 @@ public class FluidStream : Stream
 
 	public void FillUp(bool animated)
 	{
-		UpdateStreamVisual();
+		float delta = (GetVolume() * (1.0f / MAX_FLUID));
+
+		Vector3 initialScale = gameObject.transform.localScale;
+		Vector3 newScale = new Vector3(initialScale.x, delta, initialScale.z);
+		gameObject.transform.localScale = newScale;
+
+		if(delta > 0)
+			Visible = true;
 
 		if(animated)
 		{
@@ -179,7 +190,10 @@ public class FluidStream : Stream
 			iTween.ScaleTo(gameObject, iTween.Hash(
 														"y", 0f,
 														"time", 1f,
-														"easeType", iTween.EaseType.easeOutElastic
+														"easeType", iTween.EaseType.easeOutElastic,
+														"oncompletetarget", gameObject,
+														"oncomplete", "SetVisible",
+														"oncompleteparams", false
 													)
 			                 );
 		}
@@ -188,6 +202,7 @@ public class FluidStream : Stream
 			Vector3 initialScale = gameObject.transform.localScale;
 			Vector3 newScale = new Vector3(initialScale.x, 0, initialScale.z);
 			gameObject.transform.localScale = newScale;
+			Visible = false;
 		}
 	}
 }
