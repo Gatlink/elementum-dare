@@ -202,6 +202,8 @@ public class Unit : MonoBehaviour, PhaseEventListener
 	{
 		if (brokenMaterialTotem == null)
 			brokenMaterialTotem = Resources.Load<Material>("Mesh/Materials/Totem_Broken");
+		if (brokenMaterialMonster == null)
+			brokenMaterialMonster = Resources.Load<Material>("Mesh/Materials/Monster_Broken");
 	}
 
 	void Update()
