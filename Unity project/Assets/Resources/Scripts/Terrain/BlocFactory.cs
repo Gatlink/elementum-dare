@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class BlocFactory
+public class BlocFactory : MonoBehaviour
 {
 	private static int blocID = 0;
 
@@ -71,5 +71,16 @@ public class BlocFactory
 	public static bool IsReady()
 	{
 		return blocInfoByType.Count >= Bloc.NB_OF_TYPES;
+	}
+
+	//Singleton
+	private BlocFactory _instance = null;
+	public static BlocFactory Instance
+	{ get { return _instance; } }
+
+	//MonoBehaviour
+	public void Start() 
+	{
+		_instance = this;
 	}
 }

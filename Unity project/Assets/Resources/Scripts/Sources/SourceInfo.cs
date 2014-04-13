@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
-public class SourceInfo : MonoBehaviour {
-
+public class SourceInfo : MonoBehaviour 
+{
 	public Source.SourceType type;
 	public int generate;
 	public int duration;
