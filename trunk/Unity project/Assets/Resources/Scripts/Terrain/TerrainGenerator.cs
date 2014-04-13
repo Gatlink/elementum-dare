@@ -190,12 +190,12 @@ public class TerrainGenerator : MonoBehaviour
 			{
 				for(int count = 0; count < (_heightMatrix[x,y] / 10); ++count)
 				{
-					Map.InsertBloc(x, y, BlocFactory.CreateBloc());
+					Map.InsertBloc(x, y, BlocFactory.Instance.CreateBloc());
 				}
 				string key = _elementsMatrix[x,y];
 				Bloc.BlocType type = _stringToElementType[key];
 
-				Bloc bloc = BlocFactory.CreateBloc(type);
+				Bloc bloc = BlocFactory.Instance.CreateBloc(type);
 				Map.InsertBloc(x, y, bloc);
 
 				if (_stringToTeams.ContainsKey(key))
@@ -271,12 +271,5 @@ public class TerrainGenerator : MonoBehaviour
 		sourceDict.Add (4, Source.SourceType.Wind);
 
 		return sourceDict;
-	}
-
-	private static bool FactoriesReady()
-	{
-		return BlocFactory.IsReady()
-			&& SourceFactory.IsReady()
-			&& StreamFactory.IsReady();
 	}
 }
