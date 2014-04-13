@@ -8,15 +8,14 @@ public class BlocFactory : MonoBehaviour
 
 	public Bloc CreateBloc(Bloc.BlocType type = Bloc.BlocType.TerrainBloc)
 	{
-		GameObject blocObj = (GameObject) UnityEngine.Object.Instantiate(_instance.BlocReferences[(int)type]);
-		blocObj.tag = "Bloc";
+		GameObject blocObj = GameObject.Instantiate(_instance.BlocReferences[(int)type]) as GameObject;
 		
 		if(!blocObj)
 		{
 			Debug.LogError("Error creating the bloc. [" + type.ToString() + "]");
 			return null;
 		}
-		
+
 		return blocObj.GetComponent<Bloc>();
 	}
 	
@@ -36,7 +35,7 @@ public class BlocFactory : MonoBehaviour
 	{ get { return _instance; } }
 
 	//MonoBehaviour
-	public void Start() 
+	public void Awake() 
 	{
 		_instance = this;
 	}
