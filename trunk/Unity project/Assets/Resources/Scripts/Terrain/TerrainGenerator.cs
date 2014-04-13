@@ -37,11 +37,6 @@ public class TerrainGenerator : MonoBehaviour
 		GenerateMatrixes();
 		ParameterMap();
 
-		if(!FactoriesReady())
-		{
-			Debug.Log("Factories not ready. A reference object may be missing or is not registering properly unsing Awake()");
-		}
-
 		FillMap();
 		GameTicker.StartNewPhase();
 	}

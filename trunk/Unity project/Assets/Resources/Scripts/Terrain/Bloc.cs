@@ -100,7 +100,7 @@ public class Bloc : MonoBehaviour
 
 		transform.position = Map.IndexToPosition(pos);
 		transform.parent = Map.GetMapRefTransform();
-		_gui.transform.position = transform.position;
+        gameObject.transform.FindChild("GUI").gameObject.transform.position = transform.position;
 	}
 
 	public bool IsReachable()
@@ -126,12 +126,6 @@ public class Bloc : MonoBehaviour
 	// Use this for initialization
 	void Awake()
 	{
-		_gui = (GameObject) UnityEngine.Object.Instantiate(Resources.Load<GameObject>("Prefab/BlocGUI"));
-		_gui.name = "GUI Bloc";
-		_gui.transform.position = transform.position;
-		_gui.transform.parent = transform;
-		_gui.SetActive(false);
-
 		Streams.Initialize(this);
 	}
 	
@@ -164,27 +158,26 @@ public class Bloc : MonoBehaviour
 
 	public static Vector3 GetBlocSizeByType(Bloc.BlocType type = Bloc.BlocType.TerrainBloc)
 	{
-		return BlocFactory.GetBlocSizeByType(type);
+		return BlocFactory.Instance.GetBlocSizeByType(type);
 	}
 
 	public Vector3 GetBlocSize()
 	{
-		return BlocFactory.GetBlocSizeByType(_type);
+		return BlocFactory.Instance.GetBlocSizeByType(_type);
 	}
 
 #region GUI
 
-	private GameObject _gui;
-
 	public void Highlight(Color color)
 	{
-		_gui.SetActive(true);
-		_gui.renderer.material.color = color;
+        var gui = gameObject.transform.FindChild("GUI").gameObject;
+		gui.SetActive(true);
+		gui.renderer.material.color = color;
 	}
 
 	public void RemoveHighlight()
 	{
-		_gui.SetActive(false);
+        gameObject.transform.FindChild("GUI").gameObject.SetActive(false);
 	}
 	
 #endregion
