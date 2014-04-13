@@ -68,13 +68,8 @@ public class BlocFactory : MonoBehaviour
 		return blocInfoByType[Bloc.BlocType.TerrainBloc].mesh.bounds.size;
 	}
 
-	public static bool IsReady()
-	{
-		return blocInfoByType.Count >= Bloc.NB_OF_TYPES;
-	}
-
 	//Singleton
-	private BlocFactory _instance = null;
+	private static BlocFactory _instance = null;
 	public static BlocFactory Instance
 	{ get { return _instance; } }
 

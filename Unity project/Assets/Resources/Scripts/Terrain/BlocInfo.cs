@@ -10,7 +10,7 @@ public class BlocInfo : MonoBehaviour {
 	// Use this for initialization
 	void Awake ()
 	{
-		BlocFactory.RegisterBlocInfo(this);
+		BlocFactory.Instance.RegisterBlocInfo(this);
 	}
 }
 
