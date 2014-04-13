@@ -234,7 +234,7 @@ public class Unit : MonoBehaviour, PhaseEventListener
 
 	public Bloc CreateBloc()
 	{
-		return BlocFactory.CreateBloc(BlocType);
+		return BlocFactory.Instance.CreateBloc(BlocType);
 	}
 
 	private void Die()

@@ -4,21 +4,11 @@ using System.Collections.Generic;
 
 public class BlocFactory : MonoBehaviour
 {
-	private static int blocID = 0;
+    public GameObject[] BlocReferences;
 
-	private static Dictionary<Bloc.BlocType, BlocInfo> blocInfoByType = new Dictionary<Bloc.BlocType, BlocInfo>();
-
-	public static Bloc CreateBloc(Bloc.BlocType type = Bloc.BlocType.TerrainBloc)
+	public Bloc CreateBloc(Bloc.BlocType type = Bloc.BlocType.TerrainBloc)
 	{
-		BlocInfo bloc = blocInfoByType[type];
-		
-		if(!bloc)
-		{
-			Debug.LogError("Creating a bloc of an unknown type. [" + type.ToString() + "]");
-			return null;
-		}
-
-		GameObject blocObj = CreateObjectFromBlocInfo(bloc);
+		GameObject blocObj = (GameObject) UnityEngine.Object.Instantiate(_instance.BlocReferences[(int)type]);
 		blocObj.tag = "Bloc";
 		
 		if(!blocObj)
@@ -29,43 +19,15 @@ public class BlocFactory : MonoBehaviour
 		
 		return blocObj.GetComponent<Bloc>();
 	}
-
-	public static void RegisterBlocInfo(BlocInfo info)
-	{
-		blocInfoByType.Add(info.type, info);
-	}
 	
-	private static GameObject CreateObjectFromBlocInfo(BlocInfo bloc)
+	public Vector3 GetBlocSizeByType(Bloc.BlocType type)
 	{
-		GameObject obj = new GameObject("Bloc #" + blocID++);
-		
-		//Need a mesh filter and a mesh renderer for the stream's mesh rendering
-		MeshFilter filter = obj.AddComponent("MeshFilter") as MeshFilter;
-		filter.mesh = Object.Instantiate(bloc.mesh) as Mesh;
-		
-		MeshRenderer renderer = obj.AddComponent("MeshRenderer") as MeshRenderer;
-		renderer.material = Object.Instantiate(bloc.material) as Material;
-		
-		//Add a box collider
-		MeshCollider hitBox = obj.AddComponent("MeshCollider") as MeshCollider;
-		hitBox.transform.parent = obj.transform;
-		
-		//Add proper bloc script
-		obj.AddComponent("Selectable");
-		Bloc b = obj.AddComponent("Bloc") as Bloc;
-		b.Type = bloc.type;
-		
-		return obj;
-	}
-	
-	public static Vector3 GetBlocSizeByType(Bloc.BlocType type)
-	{
-		return blocInfoByType[type].mesh.bounds.size;
+		return BlocReferences[(int)type].GetComponent<MeshFilter>().mesh.bounds.size;
 	}
 
-	public static Vector3 GetBlocSize()
+	public Vector3 GetBlocSize()
 	{
-		return blocInfoByType[Bloc.BlocType.TerrainBloc].mesh.bounds.size;
+        return BlocReferences[(int)Bloc.BlocType.TerrainBloc].GetComponent<MeshFilter>().mesh.bounds.size;
 	}
 
 	//Singleton
