@@ -97,8 +97,9 @@ public class Bloc : MonoBehaviour
 	public void InsertedAt(BlocIndex pos)
 	{
 		indexInMap = pos;
-
+		//Debug.Log(pos.ToString());
 		transform.position = Map.IndexToPosition(pos);
+		//Debug.Log(transform.position);
 		transform.parent = Map.GetMapRefTransform();
         gameObject.transform.FindChild("GUI").gameObject.transform.position = transform.position;
 	}

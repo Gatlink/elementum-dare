@@ -4,12 +4,15 @@ using System.Collections.Generic;
 
 public class BlocFactory : MonoBehaviour
 {
+	private static int _blocID = 0; 
+
     public GameObject[] BlocReferences;
 
 	public Bloc CreateBloc(Bloc.BlocType type = Bloc.BlocType.TerrainBloc)
 	{
 		GameObject blocObj = GameObject.Instantiate(_instance.BlocReferences[(int)type]) as GameObject;
-		
+		blocObj.name = "Bloc #" + _blocID++ + " : " + type.ToString();
+
 		if(!blocObj)
 		{
 			Debug.LogError("Error creating the bloc. [" + type.ToString() + "]");
@@ -21,12 +24,17 @@ public class BlocFactory : MonoBehaviour
 	
 	public Vector3 GetBlocSizeByType(Bloc.BlocType type)
 	{
-		return BlocReferences[(int)type].GetComponent<MeshFilter>().mesh.bounds.size;
+		MeshFilter mf = BlocReferences[(int)type].GetComponent<MeshFilter>();
+
+		if(mf != null)
+			return mf.sharedMesh.bounds.size;
+		else
+			return Vector3.zero;
 	}
 
 	public Vector3 GetBlocSize()
 	{
-        return BlocReferences[(int)Bloc.BlocType.TerrainBloc].GetComponent<MeshFilter>().mesh.bounds.size;
+		return GetBlocSizeByType(Bloc.BlocType.TerrainBloc);
 	}
 
 	//Singleton
