@@ -193,9 +193,10 @@ public class TerrainGenerator : MonoBehaviour
 				Bloc bloc = BlocFactory.Instance.CreateBloc(type);
 				Map.InsertBloc(x, y, bloc);
 
-				if (_stringToTeams.ContainsKey(key))
+				if(_stringToTeams.ContainsKey(key))
 				{
-					if (key == "1"){
+					if(key == "1")
+					{
 						Unit unit = UnitFactory.CreateUnit(_stringToTeams[key], _intToUnitBloc[_totemBloc[_totemTeamMember]], _intToUnitSource[_totemSource[_totemTeamMember]]);
 						unit.MoveToBloc(bloc);
 						unit.FaceYourOpponent();
@@ -203,7 +204,8 @@ public class TerrainGenerator : MonoBehaviour
 						GameTicker.RegisterListener(unit);
 						++ _totemTeamMember;
 					}
-					else if (key == "2"){
+					else if(key == "2")
+					{
 						Unit unit = UnitFactory.CreateUnit(_stringToTeams[key], _intToUnitBloc[_monsterBloc[_monsterTeamMember]], _intToUnitSource[_monsterSource[_monsterTeamMember]]);
 						unit.MoveToBloc(bloc);
 						unit.FaceYourOpponent();
