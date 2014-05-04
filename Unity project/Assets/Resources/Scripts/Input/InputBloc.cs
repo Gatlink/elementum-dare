@@ -32,6 +32,7 @@ public class InputBloc : MonoBehaviour
 		}
 		
 		_handledBloc = _unit.CreateBloc();
+		_handledBloc.gameObject.layer = 0;
 		PlaceHandledBloc(_accessor.AccessibleBlocs.First());
 	}
 	
@@ -60,7 +61,8 @@ public class InputBloc : MonoBehaviour
 
 		if (Input.GetMouseButtonDown(0))
 		{
-			_unit.HasActed = true;
+			_unit.HasActed = true;			
+			_handledBloc.gameObject.layer = LayerMask.NameToLayer("Terrain");
 			Map.InsertBloc(bloc.indexInMap.x, bloc.indexInMap.y, _handledBloc);
 			Quit();
 		}

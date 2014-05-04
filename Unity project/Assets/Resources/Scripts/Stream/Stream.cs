@@ -155,7 +155,9 @@ public abstract class Stream : MonoBehaviour
 		
 		BlocIndex streamIndex = _bloc.indexInMap;
 		streamIndex.z += 1;
-		transform.position = Map.IndexToPosition(streamIndex);
+		//transform.position = Map.IndexToPosition(streamIndex);
+		transform.parent = parent.transform;
+		transform.localPosition = Vector3.zero;
 		
 		_type = type;	
 
